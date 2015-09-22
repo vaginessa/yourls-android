@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory
+        android:key="@string/pref_key_server_settings"
+        android:title="@string/pref_cat_server_settings">
+        <EditTextPreference
+            android:key="@string/pref_key_server_url"
+            android:title="@string/pref_server_url_title"/>
+        <EditTextPreference
+            android:key="@string/pref_key_server_token"
+            android:title="@string/pref_server_token_title"/>
+        <Preference
+            android:key="@string/pref_key_server_check"
+            android:title="@string/pref_server_check_title"/>
+    </PreferenceCategory>
+</PreferenceScreen>
