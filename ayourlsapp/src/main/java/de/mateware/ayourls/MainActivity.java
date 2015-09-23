@@ -1,15 +1,22 @@
 package de.mateware.ayourls;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
-public class StartActivity extends AppCompatActivity {
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+public class MainActivity extends AppCompatActivity {
+
+    private static Logger log = LoggerFactory.getLogger(MainActivity.class);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_start);
+
+        setContentView(R.layout.activity_main);
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
                                        .replace(R.id.content_frame, new LinkLibraryFragment())
@@ -34,15 +41,14 @@ public class StartActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            showPreferenceFragment();
+            showSettings();
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
-    private void showPreferenceFragment() {
-        getSupportFragmentManager().beginTransaction()
-                                   .replace(R.id.content_frame, new SettingsFragment())
-                                   .commit();
+    private void showSettings() {
+        Intent intent = new Intent(this,SettingsActivity.class);
+        startActivity(intent);
     }
 }
