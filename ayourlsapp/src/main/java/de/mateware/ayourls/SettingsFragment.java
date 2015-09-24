@@ -10,7 +10,6 @@ import android.text.TextUtils;
 import android.webkit.URLUtil;
 
 import com.android.volley.Response;
-import com.android.volley.VolleyError;
 
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -75,14 +74,14 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     }
 
     private void checkServer() {
-        YourlsRequest request = new YourlsRequest("https://url.bunteban.de/yourls-api.php", new Response.Listener<JSONObject>() {
+        YourlsRequest request = new YourlsRequest(getContext(), new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                 log.info(response.toString());
             }
-        }, new Response.ErrorListener() {
+        }, new YourlsRequest.ErrorListener() {
             @Override
-            public void onErrorResponse(VolleyError error) {
+            public void onErrorResponse(YourlsRequest.Error error) {
                 log.info(error.toString());
             }
         });
