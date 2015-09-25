@@ -3,9 +3,13 @@ package de.mateware.ayourls;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
 import android.support.v7.preference.PreferenceManager;
+import android.support.v7.preference.TwoStatePreference;
 import android.text.TextUtils;
 import android.webkit.URLUtil;
 
@@ -15,6 +19,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.mateware.ayourls.dialog.Dialog;
 import de.mateware.ayourls.yourslapi.Volley;
 import de.mateware.ayourls.yourslapi.YourlsRequest;
 
@@ -23,12 +28,15 @@ import de.mateware.ayourls.yourslapi.YourlsRequest;
  */
 public class SettingsFragment extends PreferenceFragmentCompat {
 
+
     private static Logger log = LoggerFactory.getLogger(SettingsFragment.class);
     private Preference serverCheckPreference;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
         addPreferencesFromResource(R.xml.preferences);
 
         Preference serverUrlPreference = findPreference(getString(R.string.pref_key_server_url));
@@ -45,20 +53,44 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                          .registerOnSharedPreferenceChangeListener(new SharedPreferences.OnSharedPreferenceChangeListener() {
                              @Override
                              public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-                                 if (!TextUtils.isEmpty(key) && (key.equals(getString(R.string.pref_key_server_url)) || key.equals(getString(R.string.pref_key_server_token)))) {
-                                     checkServerCheckEnabled();
+                                 if (!TextUtils.isEmpty(key)) {
+                                     if (key.equals(getString(R.string.pref_key_server_url)) || key.equals(getString(R.string.pref_key_server_token))) {
+                                         checkServerCheckEnabled();
+                                     } else if (key.equals(getString(R.string.pref_key_server_check))) {
+                                         new Dialog().withMessage("TEST")
+                                                     .withTitle("TEST")
+                                                     .show(getFragmentManager(), "TEST");
+                                     }
                                  }
                              }
                          });
+    }
 
-        serverCheckPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                checkServer();
-                return true;
-            }
-        });
+    @Override
+    public void onResume() {
+        super.onResume();
+    }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+    }
+
+    @Override
+    public void onDisplayPreferenceDialog(Preference preference) {
+        //Workaround for not working xml prefences
+        log.info(preference.toString());
+
+        final String DIALOG_FRAGMENT_TAG = "android.support.v7.preference.PreferenceFragment.DIALOG";
+        if (preference.getKey()
+                      .equals(getString(R.string.pref_key_server_url)) || preference.getKey()
+                                                                                    .equals(getString(R.string.pref_key_server_token))) {
+            DialogFragment f = EditTextPreferenceDialogFragmentCompatSingleLine.newInstance(preference.getKey());
+            f.setTargetFragment(this, 0);
+            f.show(getFragmentManager(), DIALOG_FRAGMENT_TAG);
+        } else {
+            super.onDisplayPreferenceDialog(preference);
+        }
     }
 
     private void checkServerCheckEnabled() {
@@ -85,10 +117,11 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 log.info(error.toString());
             }
         });
-        Volley.getInstance(getContext()).addToRequestQueue(request);
-//        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest()
-//
-//        Volley.getInstance(getContext()).addToRequestQueue();
+        Volley.getInstance(getContext())
+              .addToRequestQueue(request);
+        //        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest()
+        //
+        //        Volley.getInstance(getContext()).addToRequestQueue();
     }
 
 
@@ -103,8 +136,10 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             preference.setOnPreferenceChangeListener(sBindPreferenceSummaryToValueListener);
             // Trigger the listener immediately with the preference's
             // current value.
-            sBindPreferenceSummaryToValueListener.onPreferenceChange(preference, PreferenceManager.getDefaultSharedPreferences(preference.getContext())
-                                                                                                  .getString(preference.getKey(), ""));
+            if (!(preference instanceof TwoStatePreference)) {
+                sBindPreferenceSummaryToValueListener.onPreferenceChange(preference, PreferenceManager.getDefaultSharedPreferences(preference.getContext())
+                                                                                                      .getString(preference.getKey(), ""));
+            }
         }
     }
 
@@ -130,6 +165,31 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             return true;
         }
     };
+
+    public static class WorkerFragment extends Fragment {
+
+        private static final String TAG_WORKER_FRAGMENT = "task_fragment";
+        private WorkerCallback callback;
+
+        public WorkerFragment() {
+        }
+
+        public static WorkerFragment findOrCreateFragment(FragmentManager fm, WorkerCallback callback) {
+            WorkerFragment fragment = (WorkerFragment) fm.findFragmentByTag(TAG_WORKER_FRAGMENT);
+            if (fragment == null) {
+                fragment = new WorkerFragment();
+                fm.beginTransaction()
+                  .add(fragment, TAG_WORKER_FRAGMENT)
+                  .commit();
+            }
+            fragment.callback = callback;
+            return fragment;
+        }
+
+        public interface WorkerCallback {
+
+        }
+    }
 
 
 }

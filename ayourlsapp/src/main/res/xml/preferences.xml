@@ -14,7 +14,7 @@
             android:key="@string/pref_key_server_token"
             android:password="true"
             android:title="@string/pref_server_token_title"/>
-        <Preference
+        <CheckBoxPreference
             android:key="@string/pref_key_server_check"
             android:title="@string/pref_server_check_title"
             />
