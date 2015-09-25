@@ -1,4 +1,4 @@
-package de.mateware.ayourls;
+package de.mateware.ayourls.settings;
 
 import android.os.Bundle;
 import android.support.v7.preference.EditTextPreferenceDialogFragmentCompat;

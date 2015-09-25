@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import de.mateware.ayourls.R;
+import de.mateware.ayourls.yourslapi.action.YourlsAction;
 
 /**
  * Created by mate on 24.09.2015.
@@ -28,15 +29,17 @@ public class YourlsRequest extends Request<JSONObject> {
 
     private static final String API_URL_PART = "/yourls-api.php";
 
-    private static final String PARAM_FORMAT = "format";
-    private static final String PARAM_SIGNATURE = "signature";
+    public static final String PARAM_FORMAT = "format";
+    public static final String PARAM_SIGNATURE = "signature";
+    public static final String PARAM_ACTION = "action";
 
     Logger log = LoggerFactory.getLogger(YourlsRequest.class);
-    private Response.Listener<JSONObject> listener;
+    private Response.Listener<YourlsAction> listener;
     private ErrorListener errorListener;
     Map<String, String> params = new HashMap<>();
+    private  YourlsAction action;
 
-    public YourlsRequest(Context context, Response.Listener<JSONObject> responseListener, ErrorListener errorListener) {
+    public YourlsRequest(Context context, YourlsAction action, Response.Listener<YourlsAction> responseListener, ErrorListener errorListener) {
         super(Method.POST, getApiUrl(context), null);
         this.listener = responseListener;
         this.errorListener = errorListener;
@@ -44,6 +47,8 @@ public class YourlsRequest extends Request<JSONObject> {
         params.put(PARAM_SIGNATURE, PreferenceManager.getDefaultSharedPreferences(context)
                                                      .getString(context.getString(R.string.pref_key_server_token), null));
         params.put(PARAM_FORMAT, "json");
+        params.putAll(action.getParams());
+        this.action = action;
     }
 
     private static String getApiUrl(Context context) {
@@ -84,7 +89,13 @@ public class YourlsRequest extends Request<JSONObject> {
     @Override
     protected void deliverResponse(JSONObject response) {
         // TODO Auto-generated method stub
-        listener.onResponse(response);
+        try {
+            action.setResult(response);
+            listener.onResponse(action);
+        } catch (JSONException e) {
+            deliverError(new VolleyError(e));
+        }
+
     }
 
     @Override
@@ -97,6 +108,7 @@ public class YourlsRequest extends Request<JSONObject> {
     public interface ErrorListener {
         void onErrorResponse(Error error);
     }
+
 
     public class Error {
 
@@ -122,7 +134,8 @@ public class YourlsRequest extends Request<JSONObject> {
                     errorCode = httpStatus.getCode();
                 }
             } else {
-                message = error.getCause().getMessage();
+                message = error.getCause()
+                               .getMessage();
             }
         }
 
@@ -134,6 +147,4 @@ public class YourlsRequest extends Request<JSONObject> {
             return message;
         }
     }
-
-
 }

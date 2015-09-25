@@ -18,7 +18,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".SettingsActivity"
+            android:name=".settings.SettingsActivity"
             android:label="@string/action_settings"
             android:parentActivityName=".MainActivity">
             <meta-data

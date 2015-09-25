@@ -1,7 +1,18 @@
 <resources>
     <string name="app_name">aYourls</string>
     <string name="hello_world">Hello world!</string>
+
+
+
     <string name="action_settings">Settings</string>
+
+    <string name="dialog_error_title">Error</string>
+
+    <string name="dialog_check_server_title">Checking server</string>
+    <string name="dialog_check_server_message">Please wait…</string>
+    <string name="dialog_check_server_success_title">Successfully connected</string>
+    <string name="dialog_check_server_success_message">Your server contains %1$d links with %2$d clicks.</string>
+
 
     <string name="pref_cat_server_settings">Server settings</string>
 

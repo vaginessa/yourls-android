@@ -1,7 +1,9 @@
-package de.mateware.ayourls;
+package de.mateware.ayourls.settings;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+
+import de.mateware.ayourls.R;
 
 /**
  * Created by mate on 23.09.2015.
