@@ -3,6 +3,7 @@ package de.mateware.ayourls.yourslapi;
 import android.content.Context;
 import android.support.v7.preference.PreferenceManager;
 
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.NetworkResponse;
 import com.android.volley.ParseError;
 import com.android.volley.Request;
@@ -10,12 +11,15 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpHeaderParser;
 
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,20 +36,34 @@ public class YourlsRequest extends Request<JSONObject> {
     public static final String PARAM_FORMAT = "format";
     public static final String PARAM_SIGNATURE = "signature";
     public static final String PARAM_ACTION = "action";
+    public static final String PARAM_TIMESTAMP = "timestamp";
 
     Logger log = LoggerFactory.getLogger(YourlsRequest.class);
     private Response.Listener<YourlsAction> listener;
     private ErrorListener errorListener;
     Map<String, String> params = new HashMap<>();
-    private  YourlsAction action;
+    private YourlsAction action;
 
     public YourlsRequest(Context context, YourlsAction action, Response.Listener<YourlsAction> responseListener, ErrorListener errorListener) {
         super(Method.POST, getApiUrl(context), null);
         this.listener = responseListener;
         this.errorListener = errorListener;
 
-        params.put(PARAM_SIGNATURE, PreferenceManager.getDefaultSharedPreferences(context)
-                                                     .getString(context.getString(R.string.pref_key_server_token), null));
+        setRetryPolicy(new DefaultRetryPolicy(30000,DefaultRetryPolicy.DEFAULT_MAX_RETRIES,DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+
+        String signature = PreferenceManager.getDefaultSharedPreferences(context)
+                                            .getString(context.getString(R.string.pref_key_server_token), null);
+        try {
+            MessageDigest digest = MessageDigest.getInstance("MD5");
+            digest.reset();
+            String unixTime = String.valueOf(System.currentTimeMillis() / 1000L);
+            String data = unixTime + signature;
+            signature = convertByteArrayToHexString(digest.digest(data.getBytes()));
+            params.put(PARAM_TIMESTAMP, unixTime);
+        } catch (NoSuchAlgorithmException e) {
+
+        }
+        params.put(PARAM_SIGNATURE, signature);
         params.put(PARAM_FORMAT, "json");
         params.putAll(action.getParams());
         this.action = action;
@@ -134,8 +152,10 @@ public class YourlsRequest extends Request<JSONObject> {
                     errorCode = httpStatus.getCode();
                 }
             } else {
-                message = error.getCause()
-                               .getMessage();
+                if (error.getMessage() != null)
+                    message = error.getMessage();
+                else
+                    message = error.getClass().getSimpleName();
             }
         }
 
@@ -146,5 +166,15 @@ public class YourlsRequest extends Request<JSONObject> {
         public String getMessage() {
             return message;
         }
+    }
+
+
+    private static String convertByteArrayToHexString(byte[] arrayBytes) {
+        StringBuilder stringBuffer = new StringBuilder();
+        for (byte arrayByte : arrayBytes) {
+            stringBuffer.append(Integer.toString((arrayByte & 0xff) + 0x100, 16)
+                                       .substring(1));
+        }
+        return stringBuffer.toString();
     }
 }
