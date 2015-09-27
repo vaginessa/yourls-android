@@ -28,4 +28,10 @@
     <string name="pref_server_check_title">Check server credentials</string>
     <string name="pref_server_check_summary">Connects to your installation to prove your credentials are working.</string>
 
+    <string name="pref_cat_app_settings">App settings</string>
+
+    <string name="pref_app_clipboard_monitor_title">Clipboard monitor</string>
+    <string name="pref_app_clipboard_monitor_summary">Checking clipboard for URL. Works only on Android 3 and higher.</string>
+
+
 </resources>

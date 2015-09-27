@@ -2,6 +2,7 @@ package de.mateware.ayourls.settings;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.preference.CheckBoxPreference;
@@ -29,36 +30,11 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Settin
     private static final String TAG_DIALOG_CHECK_SUCCESS = "TDCSS";
     private static final String TAG_DIALOG_CHECK_ERROR = "TDCE";
 
-
     private static Logger log = LoggerFactory.getLogger(SettingsFragment.class);
-
-    private static OnPreferenceChangeListenerImpl sPreferenceChangeListenerStandard = new OnPreferenceChangeListenerImpl();
-
 
     private CheckBoxPreference serverCheckPreference;
     private SharedPreferences prefs;
     private SettingsWorkerFragment workerFragment;
-
-    private OnPreferenceChangeListenerImpl preferenceChangeListenerForUrlAndToken = new OnPreferenceChangeListenerImpl() {
-        @Override
-        public boolean onPreferenceChange(Preference preference, Object o) {
-            String url = null;
-            String token = null;
-            if (preference.getKey()
-                          .equals(getString(R.string.pref_key_server_url))) {
-                url = (String) o;
-                token = preference.getSharedPreferences()
-                                  .getString(getString(R.string.pref_key_server_token), null);
-            } else if (preference.getKey()
-                                 .equals(getString(R.string.pref_key_server_token))) {
-                url = preference.getSharedPreferences()
-                                .getString(getString(R.string.pref_key_server_url), null);
-                token = (String) o;
-            }
-            checkServerCheckEnabled(url, token);
-            return super.onPreferenceChange(preference, o);
-        }
-    };
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -73,6 +49,27 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Settin
         Preference serverTokenPreference = findPreference(getString(R.string.pref_key_server_token));
         serverCheckPreference = (CheckBoxPreference) findPreference(getString(R.string.pref_key_server_check));
 
+        OnPreferenceChangeListenerImpl preferenceChangeListenerForUrlAndToken = new OnPreferenceChangeListenerImpl() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object o) {
+                String url = null;
+                String token = null;
+                if (preference.getKey()
+                              .equals(getString(R.string.pref_key_server_url))) {
+                    url = (String) o;
+                    token = preference.getSharedPreferences()
+                                      .getString(getString(R.string.pref_key_server_token), null);
+                } else if (preference.getKey()
+                                     .equals(getString(R.string.pref_key_server_token))) {
+                    url = preference.getSharedPreferences()
+                                    .getString(getString(R.string.pref_key_server_url), null);
+                    token = (String) o;
+                }
+                checkServerCheckEnabled(url, token);
+                return super.onPreferenceChange(preference, o);
+            }
+        };
+
         bindPreference(serverUrlPreference, preferenceChangeListenerForUrlAndToken);
         bindPreference(serverTokenPreference, preferenceChangeListenerForUrlAndToken);
         bindPreference(serverCheckPreference, new OnPreferenceChangeListenerImpl() {
@@ -81,6 +78,8 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Settin
                 log.trace(o.toString());
                 if ((Boolean) o) {
                     checkServer();
+                } else {
+                    enableAppPreferenceCategory((Boolean)o);
                 }
                 return super.onPreferenceChange(preference, o);
             }
@@ -90,6 +89,19 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Settin
         //Check for enabling server check and register for check on change
 
         checkServerCheckEnabled(prefs.getString(getString(R.string.pref_key_server_url), null), prefs.getString(getString(R.string.pref_key_server_token), null));
+        enableAppPreferenceCategory(prefs.getBoolean(getString(R.string.pref_key_server_check), false));
+    }
+
+    private void enableAppPreferenceCategory(boolean value) {
+        CheckBoxPreference appClipboardPreference = (CheckBoxPreference) findPreference(getString(R.string.pref_key_app_clipboard_monitor));
+        bindPreference(appClipboardPreference, new OnPreferenceChangeListenerImpl() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object o) {
+                return super.onPreferenceChange(preference, o);
+            }
+        });
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+            appClipboardPreference.setEnabled(value);
 
     }
 
@@ -125,11 +137,8 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Settin
 
 
     private static void setPreferenceSummaryToValue(Preference preference, Object value) {
-
         Context context = preference.getContext();
-
         String valueString = ((value != null) ? value.toString() : "");
-
         String summaryKey = preference.getKey() + "_summary";
         int summaryId = context.getResources()
                                .getIdentifier(summaryKey, "string", context.getPackageName());
@@ -140,7 +149,6 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Settin
         }
         if (summaryId != 0) preference.setSummary(context.getString(summaryId, valueString));
         else preference.setSummary(valueString);
-
     }
 
 
@@ -180,9 +188,10 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Settin
         DbStats dbStats = (DbStats) yourlsAction;
         Dialog.dismissDialog(getFragmentManager(), TAG_DIALOG_CHECK_SERVER);
         new Dialog().withTitle(R.string.dialog_check_server_success_title)
-                    .withMessage(getString(R.string.dialog_check_server_success_message,dbStats.getTotalLinks(),dbStats.getTotalClicks()))
+                    .withMessage(getString(R.string.dialog_check_server_success_message, dbStats.getTotalLinks(), dbStats.getTotalClicks()))
                     .withPositiveButton()
                     .show(getFragmentManager(), TAG_DIALOG_CHECK_SUCCESS);
+        enableAppPreferenceCategory(true);
     }
 
     @Override
@@ -193,10 +202,10 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Settin
                     .withMessage(error.getMessage())
                     .withPositiveButton()
                     .show(getFragmentManager(), TAG_DIALOG_CHECK_ERROR);
+        enableAppPreferenceCategory(false);
     }
 
     private static class OnPreferenceChangeListenerImpl implements Preference.OnPreferenceChangeListener {
-
         @Override
         public boolean onPreferenceChange(Preference preference, Object o) {
             setPreferenceSummaryToValue(preference, o);

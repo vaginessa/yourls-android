@@ -19,4 +19,12 @@
             android:title="@string/pref_server_check_title"
             />
     </PreferenceCategory>
+    <PreferenceCategory
+        android:key="@string/pref_key_app_settings"
+        android:title="@string/pref_cat_app_settings">
+        <CheckBoxPreference
+            android:key="@string/pref_key_app_clipboard_monitor"
+            android:title="@string/pref_app_clipboard_monitor_title"
+            />
+    </PreferenceCategory>
 </PreferenceScreen>
