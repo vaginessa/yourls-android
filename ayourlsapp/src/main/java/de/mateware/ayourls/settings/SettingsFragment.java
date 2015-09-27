@@ -18,6 +18,7 @@ import de.mateware.ayourls.R;
 import de.mateware.ayourls.dialog.Dialog;
 import de.mateware.ayourls.yourslapi.YourlsRequest;
 import de.mateware.ayourls.yourslapi.action.DbStats;
+import de.mateware.ayourls.yourslapi.action.YourlsAction;
 
 /**
  * Created by mate on 22.09.2015.
@@ -175,21 +176,23 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Settin
     }
 
     @Override
-    public void onServerCheckFinished(boolean success, Object data) {
-        serverCheckPreference.setChecked(success);
+    public void onServerCheckSuccess(YourlsAction yourlsAction) {
+        DbStats dbStats = (DbStats) yourlsAction;
         Dialog.dismissDialog(getFragmentManager(), TAG_DIALOG_CHECK_SERVER);
-        if (!success) {
-            new Dialog().withTitle(R.string.dialog_error_title)
-                        .withMessage(((YourlsRequest.Error) data).getMessage())
-                                .withPositiveButton()
-                                .show(getFragmentManager(), TAG_DIALOG_CHECK_ERROR);
-        } else {
-            DbStats dbStats = (DbStats) data;
-            new Dialog().withTitle(R.string.dialog_check_server_success_title)
-                        .withMessage(getString(R.string.dialog_check_server_success_message,dbStats.getTotalLinks(),dbStats.getTotalClicks()))
-                        .withPositiveButton()
-                        .show(getFragmentManager(), TAG_DIALOG_CHECK_SUCCESS);
-        }
+        new Dialog().withTitle(R.string.dialog_check_server_success_title)
+                    .withMessage(getString(R.string.dialog_check_server_success_message,dbStats.getTotalLinks(),dbStats.getTotalClicks()))
+                    .withPositiveButton()
+                    .show(getFragmentManager(), TAG_DIALOG_CHECK_SUCCESS);
+    }
+
+    @Override
+    public void onServerCheckFail(YourlsRequest.Error error) {
+        serverCheckPreference.setChecked(false);
+        Dialog.dismissDialog(getFragmentManager(), TAG_DIALOG_CHECK_SERVER);
+        new Dialog().withTitle(R.string.dialog_error_title)
+                    .withMessage(error.getMessage())
+                    .withPositiveButton()
+                    .show(getFragmentManager(), TAG_DIALOG_CHECK_ERROR);
     }
 
     private static class OnPreferenceChangeListenerImpl implements Preference.OnPreferenceChangeListener {

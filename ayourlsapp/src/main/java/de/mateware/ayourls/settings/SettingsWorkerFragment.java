@@ -51,13 +51,13 @@ public class SettingsWorkerFragment extends Fragment {
             public void onResponse(YourlsAction response) {
 
                 log.info(response.toString());
-                callback.onServerCheckFinished(true,response);
+                callback.onServerCheckSuccess(response);
             }
         }, new YourlsRequest.ErrorListener() {
             @Override
             public void onErrorResponse(YourlsRequest.Error error) {
                 log.info(error.toString());
-                callback.onServerCheckFinished(false,error);
+                callback.onServerCheckFail(error);
             }
         });
         Volley.getInstance(getContext())
@@ -67,7 +67,8 @@ public class SettingsWorkerFragment extends Fragment {
 
 
     public interface SettingsWorkerCallback {
-        void onServerCheckFinished(boolean success, Object data);
+        void onServerCheckSuccess(YourlsAction yourlsAction);
+        void onServerCheckFail(YourlsRequest.Error error);
     }
 
 }
