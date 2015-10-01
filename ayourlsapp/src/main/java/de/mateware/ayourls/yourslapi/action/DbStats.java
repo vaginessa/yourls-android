@@ -11,7 +11,7 @@ public class DbStats extends YourlsAction {
     private long totalClicks;
 
     public DbStats() {
-        super("db-stats");
+        super("db-stats", "db-stats");
     }
 
     @Override

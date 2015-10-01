@@ -35,8 +35,8 @@ public class YourlsRequest extends Request<JSONObject> {
 
     public static final String PARAM_FORMAT = "format";
     public static final String PARAM_SIGNATURE = "signature";
-    public static final String PARAM_ACTION = "action";
     public static final String PARAM_TIMESTAMP = "timestamp";
+
 
     Logger log = LoggerFactory.getLogger(YourlsRequest.class);
     private Response.Listener<YourlsAction> listener;
