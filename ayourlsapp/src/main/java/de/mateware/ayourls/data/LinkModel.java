@@ -13,14 +13,14 @@ import com.raizlabs.android.dbflow.structure.provider.ContentUtils;
 /**
  * Created by mate on 01.10.2015.
  */
-@TableEndpoint(name = LinkModel.NAME, contentProviderName = "AYDatabase")
-@Table(databaseName = AYDatabase.NAME)
+@TableEndpoint(name = LinkModel.NAME, contentProviderName = "AyourlsDatabase")
+@Table(databaseName = AyourlsDatabase.NAME)
 public class LinkModel extends BaseSyncableProviderModel<LinkModel> {
 
     public static final String NAME = "LinkModel";
 
     @ContentUri(path = NAME, type = ContentUri.ContentType.VND_MULTIPLE + NAME)
-    public static final Uri CONTENT_URI = ContentUtils.buildUri(AYDatabase.AUTHORITY);
+    public static final Uri CONTENT_URI = ContentUtils.buildUri(AyourlsDatabase.AUTHORITY);
 
     @Column
     @PrimaryKey

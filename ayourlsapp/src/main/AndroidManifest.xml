@@ -27,6 +27,12 @@
                 android:value=".MainActivity"/>
         </activity>
 
+        <receiver android:name=".ClipboardChangeReceiver" >
+            <intent-filter>
+                <action android:name="de.mateware.ayourls.action.CLIP_CHANGE" />
+            </intent-filter>
+        </receiver>
+
     </application>
 
 </manifest>
