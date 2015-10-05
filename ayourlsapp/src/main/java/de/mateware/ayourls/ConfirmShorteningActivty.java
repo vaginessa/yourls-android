@@ -36,24 +36,29 @@ public class ConfirmShorteningActivty extends AppCompatActivity implements Dialo
 
     @Override
     public void onDialogClick(String tag, Bundle arguments, int which) {
-        log.debug(tag,which);
+        log.debug(tag, which);
         if (DIALOG_CONFIRM.equals(tag)){
             if (which == Dialog.BUTTON_POSITIVE){
 
             }
         }
-        finish();
+        closeActivity();
     }
 
     @Override
     public void onDialogCancel(String tag, Bundle arguments) {
         log.debug(tag);
-        finish();
+        closeActivity();
     }
 
     @Override
     public void onDialogDismiss(String tag, Bundle arguments) {
         log.debug(tag);
+        closeActivity();
+    }
+
+    private void closeActivity() {
         finish();
+        overridePendingTransition(0, 0);
     }
 }
