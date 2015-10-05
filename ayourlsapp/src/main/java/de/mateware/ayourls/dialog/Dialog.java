@@ -248,7 +248,11 @@ public class Dialog extends DialogFragment {
         } catch (ClassCastException e) {
             log.warn(e.getMessage());
         }
-
+        try {
+            cancelListener = (DialogCancelListener) activity;
+        } catch (ClassCastException e) {
+            log.warn(e.getMessage());
+        }
     }
 
     @Override

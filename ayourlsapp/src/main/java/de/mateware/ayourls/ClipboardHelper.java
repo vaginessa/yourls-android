@@ -6,10 +6,16 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Created by mate on 02.10.2015.
  */
 public class ClipboardHelper {
+
+    private static Logger log = LoggerFactory.getLogger(ClipboardHelper.class);
+
     private static ClipboardHelper instance;
 
     public static ClipboardHelper getInstance(Context context) {
@@ -29,6 +35,7 @@ public class ClipboardHelper {
             listener = new ClipboardManager.OnPrimaryClipChangedListener() {
                 @Override
                 public void onPrimaryClipChanged() {
+                    log.debug("clipboard content changed, listener:"+this.toString());
                     Intent intent = new Intent(ClipboardChangeReceiver.ACTION);
                     context.sendBroadcast(intent);
                 }
@@ -45,7 +52,7 @@ public class ClipboardHelper {
                 clipboardManager.addPrimaryClipChangedListener(listener);
             }
         } else {
-            //TODO find solution for pre HoneyComp
+            //TODO find solution for pre Honeycomb
         }
     }
 
@@ -55,7 +62,7 @@ public class ClipboardHelper {
                 clipboardManager.removePrimaryClipChangedListener(listener);
             }
         } else {
-            //TODO find solution for pre HoneyComp
+            //TODO find solution for pre Honeycomb
         }
     }
 

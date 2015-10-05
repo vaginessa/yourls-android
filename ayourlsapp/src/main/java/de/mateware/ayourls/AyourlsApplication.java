@@ -13,6 +13,6 @@ public class AyourlsApplication extends Application {
         super.onCreate();
         FlowManager.init(this);
         ClipboardHelper.getInstance(this).registerClipBoardListener();
-        ClipboardHelper.getInstance(this).unregisterClipboardListener();
+        //ClipboardHelper.getInstance(this).unregisterClipboardListener();
     }
 }
