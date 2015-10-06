@@ -1,4 +1,4 @@
-package de.mateware.ayourls;
+package de.mateware.ayourls.clipboard;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;

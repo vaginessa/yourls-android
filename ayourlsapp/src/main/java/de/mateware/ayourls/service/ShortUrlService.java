@@ -4,11 +4,24 @@ import android.app.IntentService;
 import android.content.Intent;
 import android.text.TextUtils;
 
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.RequestFuture;
+
 import org.apache.commons.validator.routines.UrlValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.mateware.ayourls.ConfirmShorteningActivty;
+import java.io.UnsupportedEncodingException;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
+import de.mateware.ayourls.DialogActivty;
+import de.mateware.ayourls.data.LinkModel;
+import de.mateware.ayourls.yourslapi.Volley;
+import de.mateware.ayourls.yourslapi.YourlsRequest;
+import de.mateware.ayourls.yourslapi.action.ShortUrl;
+import de.mateware.ayourls.yourslapi.action.YourlsAction;
 
 /**
  * Created by mate on 01.10.2015.
@@ -32,12 +45,44 @@ public class ShortUrlService extends IntentService {
             String url = intent.getStringExtra(EXTRA_URL);
             log.debug(url);
             if (!TextUtils.isEmpty(url)) {
-                UrlValidator urlValidator = new UrlValidator(new String[]{"http", "https"},UrlValidator.ALLOW_2_SLASHES);
+                UrlValidator urlValidator = new UrlValidator(new String[]{"http", "https"}, UrlValidator.ALLOW_2_SLASHES);
                 if (urlValidator.isValid(url)) {
                     if (intent.hasExtra(EXTRA_CONFIRMED) && intent.getBooleanExtra(EXTRA_CONFIRMED, false)) {
                         log.debug("start url shortening");
+                        RequestFuture<YourlsAction> future = RequestFuture.newFuture();
+                        try {
+                            try {
+                                YourlsRequest request = new YourlsRequest(this, new ShortUrl(url), future, future);
+                                Volley.getInstance(this)
+                                      .addToRequestQueue(request);
+                                ShortUrl action = (ShortUrl) future.get(20, TimeUnit.SECONDS);
+
+
+                                if (action.getStatus() == YourlsAction.STATUS_SUCCESS) {
+                                    LinkModel link = new LinkModel();
+                                    link.setKeyword(action.getKeyword());
+                                    link.setUrl(action.getUrl());
+                                    link.setDate(action.getDate());
+                                    link.setIp(action.getIp());
+                                    link.setTitle(action.getTitle());
+                                    link.save();
+                                } else {
+                                    throw new VolleyError(action.getMessage());
+                                }
+                            } catch (InterruptedException | ExecutionException | TimeoutException | UnsupportedEncodingException e) {
+                                throw new VolleyError(e);
+                            }
+                        } catch (VolleyError e) {
+                            Intent errorIntent = new Intent(this, DialogActivty.class);
+                            errorIntent.putExtra(DialogActivty.EXTRA_DIALOG,DialogActivty.DIALOG_ERROR_SHORTENING);
+                            errorIntent.putExtra(DialogActivty.EXTRA_ERROR_MESSAGE,e.getMessage() != null ? e.getMessage():e.getCause().getClass().getSimpleName());
+                            errorIntent.putExtra(EXTRA_URL, url);
+                            errorIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                            startActivity(errorIntent);
+                        }
                     } else {
-                        Intent confirmIntent = new Intent(this, ConfirmShorteningActivty.class);
+                        Intent confirmIntent = new Intent(this, DialogActivty.class);
+                        confirmIntent.putExtra(DialogActivty.EXTRA_DIALOG,DialogActivty.DIALOG_CONFIRM);
                         confirmIntent.putExtra(EXTRA_URL, url);
                         confirmIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NO_ANIMATION);
                         startActivity(confirmIntent);

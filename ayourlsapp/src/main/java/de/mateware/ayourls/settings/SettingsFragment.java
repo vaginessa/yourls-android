@@ -10,14 +10,15 @@ import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
 import android.support.v7.preference.PreferenceManager;
 import android.text.TextUtils;
-import android.webkit.URLUtil;
 
+import org.apache.commons.validator.routines.UrlValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.mateware.ayourls.R;
+import de.mateware.ayourls.clipboard.ClipboardHelper;
 import de.mateware.ayourls.dialog.Dialog;
-import de.mateware.ayourls.yourslapi.YourlsRequest;
+import de.mateware.ayourls.yourslapi.YourlsError;
 import de.mateware.ayourls.yourslapi.action.DbStats;
 import de.mateware.ayourls.yourslapi.action.YourlsAction;
 
@@ -36,12 +37,22 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Settin
     private SharedPreferences prefs;
     private SettingsWorkerFragment workerFragment;
 
+    private SharedPreferences.OnSharedPreferenceChangeListener sharedPreferenceChangeListener;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         workerFragment = SettingsWorkerFragment.findOrCreateFragment(getFragmentManager(), this);
         prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        sharedPreferenceChangeListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
+            @Override
+            public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+                if (getString(R.string.pref_key_server_check).equals(key)||getString(R.string.pref_key_app_clipboard_monitor).equals(key)){
+                    ClipboardHelper.checkClipboardActivation(getContext());
+                }
+            }
+        };
 
         addPreferencesFromResource(R.xml.preferences);
 
@@ -86,10 +97,22 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Settin
         });
 
 
-        //Check for enabling server check and register for check on change
+        //Check for enabling server checkClipboardActivation and register for checkClipboardActivation on change
 
         checkServerCheckEnabled(prefs.getString(getString(R.string.pref_key_server_url), null), prefs.getString(getString(R.string.pref_key_server_token), null));
         enableAppPreferenceCategory(prefs.getBoolean(getString(R.string.pref_key_server_check), false));
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        prefs.registerOnSharedPreferenceChangeListener(sharedPreferenceChangeListener);
+    }
+
+    @Override
+    public void onPause() {
+        prefs.unregisterOnSharedPreferenceChangeListener(sharedPreferenceChangeListener);
+        super.onPause();
     }
 
     private void enableAppPreferenceCategory(boolean value) {
@@ -123,9 +146,13 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Settin
     }
 
     private void checkServerCheckEnabled(String url, String token) {
-        if (!TextUtils.isEmpty(url) && !TextUtils.isEmpty(token) && (URLUtil.isHttpsUrl(url) || URLUtil.isHttpUrl(url))) {
-            serverCheckPreference.setEnabled(true);
-            return;
+
+        if (!TextUtils.isEmpty(url) && !TextUtils.isEmpty(token)) {
+            UrlValidator urlValidator = new UrlValidator(new String[]{"http", "https"},UrlValidator.ALLOW_LOCAL_URLS);
+            if (urlValidator.isValid(url)) {
+                serverCheckPreference.setEnabled(true);
+                return;
+            }
         }
         prefs.edit()
              .putBoolean(getString(R.string.pref_key_server_check), false)
@@ -195,7 +222,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Settin
     }
 
     @Override
-    public void onServerCheckFail(YourlsRequest.Error error) {
+    public void onServerCheckFail(YourlsError error) {
         serverCheckPreference.setChecked(false);
         Dialog.dismissDialog(getFragmentManager(), TAG_DIALOG_CHECK_SERVER);
         new Dialog().withTitle(R.string.dialog_error_title)

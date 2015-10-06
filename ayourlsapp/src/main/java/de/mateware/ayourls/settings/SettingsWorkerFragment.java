@@ -5,11 +5,13 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 
 import com.android.volley.Response;
+import com.android.volley.VolleyError;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.mateware.ayourls.yourslapi.Volley;
+import de.mateware.ayourls.yourslapi.YourlsError;
 import de.mateware.ayourls.yourslapi.YourlsRequest;
 import de.mateware.ayourls.yourslapi.action.DbStats;
 import de.mateware.ayourls.yourslapi.action.YourlsAction;
@@ -46,18 +48,18 @@ public class SettingsWorkerFragment extends Fragment {
     }
 
     public void checkServer() {
-        YourlsRequest request = new YourlsRequest(getContext(), new DbStats(), new Response.Listener<YourlsAction>() {
+        final YourlsRequest request = new YourlsRequest(getContext(), new DbStats(), new Response.Listener<YourlsAction>() {
             @Override
             public void onResponse(YourlsAction response) {
 
                 log.info(response.toString());
                 callback.onServerCheckSuccess(response);
             }
-        }, new YourlsRequest.ErrorListener() {
+        }, new Response.ErrorListener() {
             @Override
-            public void onErrorResponse(YourlsRequest.Error error) {
+            public void onErrorResponse(VolleyError error) {
                 log.info(error.toString());
-                callback.onServerCheckFail(error);
+                callback.onServerCheckFail(new YourlsError(error));
             }
         });
         Volley.getInstance(getContext())
@@ -68,7 +70,7 @@ public class SettingsWorkerFragment extends Fragment {
 
     public interface SettingsWorkerCallback {
         void onServerCheckSuccess(YourlsAction yourlsAction);
-        void onServerCheckFail(YourlsRequest.Error error);
+        void onServerCheckFail(YourlsError error);
     }
 
 }

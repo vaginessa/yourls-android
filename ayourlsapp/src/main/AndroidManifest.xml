@@ -28,14 +28,14 @@
                 android:value=".MainActivity"/>
         </activity>
         <activity
-            android:name=".ConfirmShorteningActivty"
+            android:name=".DialogActivty"
             android:theme="@style/TranslucentTheme"
             android:launchMode="singleInstance"
             android:excludeFromRecents="true"
             android:taskAffinity=""
             />
 
-        <receiver android:name=".ClipboardChangeReceiver">
+        <receiver android:name=".clipboard.ClipboardChangeReceiver">
             <intent-filter>
                 <action android:name="de.mateware.ayourls.action.CLIP_CHANGE"/>
             </intent-filter>
@@ -44,6 +44,11 @@
         <service android:name=".service.ShortUrlService">
 
         </service>
+
+        <provider
+            android:authorities="de.mateware.ayourls.provider"
+            android:exported="false"
+            android:name=".data.AyourlsDatabase$Provider"/>
 
     </application>
 

@@ -2,7 +2,8 @@
     <string name="app_name">aYourls</string>
     <string name="hello_world">Hello world!</string>
 
-
+    <string name="unknown">unknown</string>
+    <string name="retry">Retry</string>
 
     <string name="action_settings">Settings</string>
 
@@ -15,6 +16,9 @@
 
     <string name="dialog_confirm_shortening_title">URL Shortening</string>
     <string name="dialog_confirm_shortening_message">Do you really want to shorten this URL?\n\n%1$s</string>
+
+    <string name="dialog_error_shortening_title">URL Shortening Error</string>
+    <string name="dialog_error_shortening_message">An error has occurred during the shortening of the URL:\n\n%1$s</string>
 
     <string name="pref_cat_server_settings">Server settings</string>
 

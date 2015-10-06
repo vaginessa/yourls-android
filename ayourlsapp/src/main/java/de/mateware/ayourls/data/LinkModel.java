@@ -24,7 +24,7 @@ public class LinkModel extends BaseSyncableProviderModel<LinkModel> {
 
     @Column
     @PrimaryKey
-    String keyword;
+    public String keyword;
 
     @Column
     String url;
@@ -62,4 +62,51 @@ public class LinkModel extends BaseSyncableProviderModel<LinkModel> {
     }
 
 
+    public String getKeyword() {
+        return keyword;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public String getIp() {
+        return ip;
+    }
+
+    public long getClicks() {
+        return clicks;
+    }
+
+    public void setKeyword(String keyword) {
+        this.keyword = keyword;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
+
+    public void setIp(String ip) {
+        this.ip = ip;
+    }
+
+    public void setClicks(long clicks) {
+        this.clicks = clicks;
+    }
 }

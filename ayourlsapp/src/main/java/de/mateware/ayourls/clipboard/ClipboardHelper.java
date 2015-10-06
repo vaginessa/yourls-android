@@ -1,13 +1,17 @@
-package de.mateware.ayourls;
+package de.mateware.ayourls.clipboard;
 
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
+import android.support.v7.preference.PreferenceManager;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import de.mateware.ayourls.R;
 
 /**
  * Created by mate on 02.10.2015.
@@ -46,9 +50,24 @@ public class ClipboardHelper {
         }
     }
 
+    public static void checkClipboardActivation(Context context) {
+        context = context.getApplicationContext();
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        boolean serverCheck = prefs.getBoolean(context.getString(R.string.pref_key_server_check), false);
+        boolean clipboardMonitor = prefs.getBoolean(context.getString(R.string.pref_key_app_clipboard_monitor),false);
+
+        ClipboardHelper clipboardHelper = getInstance(context);
+        if (clipboardMonitor && serverCheck) {
+            clipboardHelper.registerClipBoardListener();
+        } else {
+            clipboardHelper.unregisterClipboardListener();
+        }
+    }
+
     public void registerClipBoardListener() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             if (clipboardManager != null) {
+                log.debug("Register clipboard listener");
                 clipboardManager.addPrimaryClipChangedListener(listener);
             }
         } else {
@@ -59,6 +78,7 @@ public class ClipboardHelper {
     public void unregisterClipboardListener() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             if (clipboardManager != null) {
+                log.debug("Unregister clipboard listener");
                 clipboardManager.removePrimaryClipChangedListener(listener);
             }
         } else {

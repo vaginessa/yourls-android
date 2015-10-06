@@ -19,7 +19,7 @@ public class ShortUrl extends YourlsAction {
     long clicks;
 
     public ShortUrl(String url) throws UnsupportedEncodingException {
-        super("shorturl","url");
+        super("shorturl", "url");
         addParam(YourlsAction.PARAM_URL, URLEncoder.encode(url, YourlsAction.CHARSET));
     }
 
@@ -34,6 +34,36 @@ public class ShortUrl extends YourlsAction {
 
     @Override
     public void performData(JSONObject data) throws JSONException {
+        url = data.getString("url");
+        title = data.getString("title");
+        date = data.getString("date");
+        ip = data.getString("ip");
+        keyword = data.getString("keyword");
+        if (data.has("clicks"))
+            clicks = data.getLong("clicks");
     }
 
+    public String getKeyword() {
+        return keyword;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public String getIp() {
+        return ip;
+    }
+
+    public long getClicks() {
+        return clicks;
+    }
 }

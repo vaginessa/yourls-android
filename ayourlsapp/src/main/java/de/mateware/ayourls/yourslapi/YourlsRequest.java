@@ -40,14 +40,15 @@ public class YourlsRequest extends Request<JSONObject> {
 
     Logger log = LoggerFactory.getLogger(YourlsRequest.class);
     private Response.Listener<YourlsAction> listener;
-    private ErrorListener errorListener;
+//    private Response.ErrorListener errorListener;
     Map<String, String> params = new HashMap<>();
     private YourlsAction action;
 
-    public YourlsRequest(Context context, YourlsAction action, Response.Listener<YourlsAction> responseListener, ErrorListener errorListener) {
+
+    public YourlsRequest(Context context, YourlsAction action, Response.Listener<YourlsAction> responseListener, Response.ErrorListener errorListener) {
         super(Method.POST, getApiUrl(context), null);
         this.listener = responseListener;
-        this.errorListener = errorListener;
+        //this.errorListener = errorListener;
 
         setRetryPolicy(new DefaultRetryPolicy(30000,DefaultRetryPolicy.DEFAULT_MAX_RETRIES,DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
 
@@ -116,57 +117,56 @@ public class YourlsRequest extends Request<JSONObject> {
 
     }
 
-    @Override
-    public void deliverError(VolleyError error) {
-        if (errorListener != null) {
-            errorListener.onErrorResponse(new Error(error));
-        }
-    }
-
-    public interface ErrorListener {
-        void onErrorResponse(Error error);
-    }
+//    @Override
+//    public void deliverError(VolleyError error) {
+//
+//
+//        if (errorListener != null) {
+//            errorListener.onErrorResponse(new Error(error));
+//        }
+//    }
 
 
-    public class Error {
-
-        private static final String JSON_MESSAGE = "message";
-        private static final String JSON_ERROR_CODE = "errorCode";
-
-        private VolleyError error;
-        private String message;
-        private int errorCode = -1;
-
-        public Error(VolleyError error) {
-            this.error = error;
-            if (error.networkResponse != null) {
-                JSONObject jsonObject = null;
-                try {
-                    jsonObject = new JSONObject(new String(error.networkResponse.data));
-                    message = jsonObject.getString(JSON_MESSAGE);
-                    errorCode = jsonObject.getInt(JSON_ERROR_CODE);
-                } catch (JSONException e) {
-                    log.warn("Error parsing json, catch HttpStatus");
-                    HttpStatus httpStatus = HttpStatus.getByCode(error.networkResponse.statusCode);
-                    message = httpStatus.getName() + ": " + httpStatus.getDescription();
-                    errorCode = httpStatus.getCode();
-                }
-            } else {
-                if (error.getMessage() != null)
-                    message = error.getMessage();
-                else
-                    message = error.getClass().getSimpleName();
-            }
-        }
-
-        public int getErrorCode() {
-            return errorCode;
-        }
-
-        public String getMessage() {
-            return message;
-        }
-    }
+//
+//    public class Error {
+//
+//        private static final String JSON_MESSAGE = "message";
+//        private static final String JSON_ERROR_CODE = "errorCode";
+//
+//        private VolleyError error;
+//        private String message;
+//        private int errorCode = -1;
+//
+//        public Error(VolleyError error) {
+//            this.error = error;
+//            if (error.networkResponse != null) {
+//                JSONObject jsonObject = null;
+//                try {
+//                    jsonObject = new JSONObject(new String(error.networkResponse.data));
+//                    message = jsonObject.getString(JSON_MESSAGE);
+//                    errorCode = jsonObject.getInt(JSON_ERROR_CODE);
+//                } catch (JSONException e) {
+//                    log.warn("Error parsing json, catch HttpStatus");
+//                    HttpStatus httpStatus = HttpStatus.getByCode(error.networkResponse.statusCode);
+//                    message = httpStatus.getName() + ": " + httpStatus.getDescription();
+//                    errorCode = httpStatus.getCode();
+//                }
+//            } else {
+//                if (error.getMessage() != null)
+//                    message = error.getMessage();
+//                else
+//                    message = error.getClass().getSimpleName();
+//            }
+//        }
+//
+//        public int getErrorCode() {
+//            return errorCode;
+//        }
+//
+//        public String getMessage() {
+//            return message;
+//        }
+//    }
 
 
     private static String convertByteArrayToHexString(byte[] arrayBytes) {
