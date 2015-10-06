@@ -2,8 +2,6 @@ package de.mateware.ayourls;
 
 import android.app.Application;
 
-import com.raizlabs.android.dbflow.config.FlowManager;
-
 import de.mateware.ayourls.clipboard.ClipboardHelper;
 
 /**
@@ -13,10 +11,6 @@ public class AyourlsApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        FlowManager.init(this);
         ClipboardHelper.checkClipboardActivation(this);
-
-        //ClipboardHelper.getInstance(this).registerClipBoardListener();
-        //ClipboardHelper.getInstance(this).unregisterClipboardListener();
     }
 }

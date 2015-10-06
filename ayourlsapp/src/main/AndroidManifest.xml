@@ -45,10 +45,6 @@
 
         </service>
 
-        <provider
-            android:authorities="de.mateware.ayourls.provider"
-            android:exported="false"
-            android:name=".data.AyourlsDatabase$Provider"/>
 
     </application>
 

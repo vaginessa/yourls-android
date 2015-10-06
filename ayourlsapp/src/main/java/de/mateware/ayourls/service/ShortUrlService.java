@@ -17,7 +17,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import de.mateware.ayourls.DialogActivty;
-import de.mateware.ayourls.data.LinkModel;
+import de.mateware.ayourls.NetworkHelper;
+import de.mateware.ayourls.R;
 import de.mateware.ayourls.yourslapi.Volley;
 import de.mateware.ayourls.yourslapi.YourlsRequest;
 import de.mateware.ayourls.yourslapi.action.ShortUrl;
@@ -51,22 +52,18 @@ public class ShortUrlService extends IntentService {
                         log.debug("start url shortening");
                         RequestFuture<YourlsAction> future = RequestFuture.newFuture();
                         try {
+                            if (!NetworkHelper.isConnected(this))
+                                throw new VolleyError(getString(R.string.dialog_error_no_connection_message));
                             try {
                                 YourlsRequest request = new YourlsRequest(this, new ShortUrl(url), future, future);
                                 Volley.getInstance(this)
                                       .addToRequestQueue(request);
                                 ShortUrl action = (ShortUrl) future.get(20, TimeUnit.SECONDS);
 
-
                                 if (action.getStatus() == YourlsAction.STATUS_SUCCESS) {
-                                    LinkModel link = new LinkModel();
-                                    link.setKeyword(action.getKeyword());
-                                    link.setUrl(action.getUrl());
-                                    link.setDate(action.getDate());
-                                    link.setIp(action.getIp());
-                                    link.setTitle(action.getTitle());
-                                    link.save();
+                                    //TODO Save in Database
                                 } else {
+                                    //TODO Check if update of data is possible
                                     throw new VolleyError(action.getMessage());
                                 }
                             } catch (InterruptedException | ExecutionException | TimeoutException | UnsupportedEncodingException e) {

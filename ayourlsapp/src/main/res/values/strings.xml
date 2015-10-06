@@ -8,6 +8,7 @@
     <string name="action_settings">Settings</string>
 
     <string name="dialog_error_title">Error</string>
+    <string name="dialog_error_no_connection_message">No network connection.</string>
 
     <string name="dialog_check_server_title">Checking server</string>
     <string name="dialog_check_server_message">Please wait…</string>
