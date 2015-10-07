@@ -1,0 +1,65 @@
+def version = "1.0"
+
+println('+-+ +-+ +-+ +-+ +-+ +-+ +-+ +-+')
+println(' M   A   T   E   W   A   R   E ')
+println('+-+ +-+ +-+ +-+ +-+ +-+ +-+ +-+')
+println('mateware Gradle script version '+version)
+
+println(name)
+//if (file('mateware.properties').exists())
+
+def matewarePropertyFile = "mateware.properties"
+def matewarePropertyName = "mateware"
+def keyDebugStoreFile = "debugStoreFile"
+def keyReleaseStoreFile = "releaseStoreFile"
+def keyReleaseStorePassword = "releaseStorePassword"
+def keyReleaseKeyAlias = "releaseKeyAlias"
+def keyReleaseKeyPassword = "releaseKeyPassword"
+
+
+if (loadExtraProperties(matewarePropertyFile)) {
+    if (project.ext.has(matewarePropertyName)) {
+        if (loadExtraProperties(new File(project.ext[matewarePropertyName] as String, name + ".signing").getAbsolutePath())) {
+            android {
+                signingConfigs {
+                    if (project.ext.has(keyDebugStoreFile)) {
+                        debug {
+                            storeFile new File(project.ext[matewarePropertyName] as String, project.ext[keyDebugStoreFile] as String)
+                        }
+                    }
+                    if (project.ext.has(keyReleaseStoreFile)) {
+                        release {
+                            storeFile new File(project.ext[matewarePropertyName] as String, project.ext[keyReleaseStoreFile] as String)
+                            if (project.ext.has(keyReleaseStorePassword))
+                                storePassword project.ext[keyReleaseStorePassword]
+                            if (project.ext.has(keyReleaseKeyAlias))
+                                keyAlias project.ext[keyReleaseKeyAlias]
+                            if (project.ext.has(keyReleaseKeyPassword))
+                                keyPassword project.ext[keyReleaseKeyPassword]
+                        }
+                    }
+                }
+            }
+        }
+    } else {
+        logger.error(matewarePropertyName + " property not found, add it to your module directory")
+    }
+}
+
+
+def boolean loadExtraProperties(String fileName) {
+    def file = file(fileName)
+    println("Load properties: " + file.getAbsolutePath())
+    if (file.exists()) {
+        def props = new Properties()
+        props.load(file.newDataInputStream())
+        props.each {
+            //println(it.key + "=" + it.value)
+            project.ext.set(it.key, it.value)
+        }
+        return true;
+    } else {
+        logger.error("file not found: " + fileName)
+    }
+    return false;
+}
