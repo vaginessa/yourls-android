@@ -6,6 +6,7 @@
 /build
 /captures
 
+/ayourlsapp/fabric.properties
 # Created by https://www.gitignore.io/api/android,gradle,intellij
 
 ### Android ###
