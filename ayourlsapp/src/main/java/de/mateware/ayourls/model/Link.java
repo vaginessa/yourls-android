@@ -1,9 +1,12 @@
 package de.mateware.ayourls.model;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.BaseColumns;
+import android.support.annotation.NonNull;
+import android.text.TextUtils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Locale;
 
 import de.mateware.ayourls.provider.AyourlsProvider;
+import de.mateware.ayourls.yourslapi.action.ShortUrl;
 
 /**
  * Created by mate on 07.10.2015.
@@ -22,7 +26,7 @@ public class Link {
     public static String NAME = Link.class.getSimpleName();
     public static String AUTHORITY = AyourlsProvider.AUTHORITY;
 
-    public static Uri CONTENT_URI;
+    private static Uri CONTENT_URI;
     public static String CONTENT_TYPE;
     public static String CONTENT_ITEM_TYPE;
 
@@ -45,6 +49,16 @@ public class Link {
         public static final String CLICKS = "clicks";
     }
 
+    public static Uri getContentUri() {
+        return CONTENT_URI;
+    }
+
+    public static Uri getContentUri(@NonNull String keyword) {
+        return getContentUri().buildUpon()
+                              .appendPath(keyword)
+                              .build();
+    }
+
     private String keyword;
     private String url;
     private String title;
@@ -52,23 +66,70 @@ public class Link {
     private String ip;
     private long clicks;
 
-    public Link(Cursor cursor) {
-        keyword = cursor.getString(cursor.getColumnIndex(Columns.KEYWORD));
-        url = cursor.getString(cursor.getColumnIndex(Columns.URL));
-        title = cursor.getString(cursor.getColumnIndex(Columns.TITLE));
-        date = cursor.getString(cursor.getColumnIndex(Columns.DATE));
-        ip = cursor.getString(cursor.getColumnIndex(Columns.IP));
-        clicks = cursor.getLong(cursor.getColumnIndex(Columns.CLICKS));
+    public Link(){
     }
+
+    public boolean load(Context context,String keyword) {
+        Cursor cursor = context.getApplicationContext()
+                               .getContentResolver()
+                               .query(Link.getContentUri(keyword), null, null, null, null);
+        if (cursor != null) {
+            try {
+                if (cursor.moveToNext()) load(cursor);
+                return true;
+            } finally {
+                cursor.close();
+            }
+        }
+        return false;
+    }
+
+    public void load(Cursor cursor) {
+        setKeyword(cursor.getString(cursor.getColumnIndex(Columns.KEYWORD)));
+        setUrl(cursor.getString(cursor.getColumnIndex(Columns.URL)));
+        setTitle(cursor.getString(cursor.getColumnIndex(Columns.TITLE)));
+        setDate(cursor.getString(cursor.getColumnIndex(Columns.DATE)));
+        setIp(cursor.getString(cursor.getColumnIndex(Columns.IP)));
+        setClicks(cursor.getLong(cursor.getColumnIndex(Columns.CLICKS)));
+    }
+
+    public void load(ShortUrl action) {
+        setKeyword(action.getKeyword());
+        setDate(action.getDate());
+        setTitle(action.getTitle());
+        setUrl(action.getUrl());
+        setIp(action.getIp());
+        setClicks(action.getClicks());
+    }
+
+    public void save(@NonNull Context context) {
+        if (TextUtils.isEmpty(getKeyword()))
+            throw new IllegalStateException("Cannot save without keyword");
+        Cursor cursor = context.getContentResolver().query(Link.getContentUri(getKeyword()),null,null,null,null);
+        if (cursor != null) {
+            try {
+                if (cursor.moveToNext()) {
+                    //TODO UPDATE
+                    log.debug("updating link "+getKeyword());
+                } else {
+                    //TODO INSERT
+                    log.debug("inserting link "+getKeyword());
+                }
+            } finally {
+                cursor.close();
+            }
+        }
+    }
+
 
     public ContentValues getContentValues() {
         ContentValues cv = new ContentValues();
-        cv.put(Columns.KEYWORD,keyword);
-        cv.put(Columns.URL,url);
-        cv.put(Columns.TITLE,title);
-        cv.put(Columns.DATE,date);
-        cv.put(Columns.IP,ip);
-        cv.put(Columns.CLICKS,clicks);
+        cv.put(Columns.KEYWORD, keyword);
+        cv.put(Columns.URL, url);
+        cv.put(Columns.TITLE, title);
+        cv.put(Columns.DATE, date);
+        cv.put(Columns.IP, ip);
+        cv.put(Columns.CLICKS, clicks);
         return cv;
     }
 

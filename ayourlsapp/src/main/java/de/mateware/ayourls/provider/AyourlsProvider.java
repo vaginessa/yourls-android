@@ -1,10 +1,13 @@
 package de.mateware.ayourls.provider;
 
 import android.content.ContentProvider;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -38,11 +41,6 @@ public class AyourlsProvider extends ContentProvider {
         return true;
     }
 
-    @Nullable
-    @Override
-    public Cursor query(@NonNull Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
-        return null;
-    }
 
     @Nullable
     @Override
@@ -59,8 +57,49 @@ public class AyourlsProvider extends ContentProvider {
 
     @Nullable
     @Override
+    public Cursor query(@NonNull Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
+        SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
+
+        switch (sUriMatcher.match(uri)) {
+            case LINK_DIR:
+                queryBuilder.setTables(Link.NAME);
+                break;
+            case LINK_KEYWORD:
+                queryBuilder.setTables(Link.NAME);
+                queryBuilder.appendWhere(Link.Columns.KEYWORD + "=" + uri.getLastPathSegment());
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown URI " + uri);
+        }
+
+        Cursor cursor = queryBuilder.query(database,projection,selection,selectionArgs,null,null,sortOrder);
+        cursor.setNotificationUri(getContext().getContentResolver(), uri);
+        return cursor;
+    }
+
+    @Nullable
+    @Override
     public Uri insert(@NonNull Uri uri, ContentValues values) {
-        return null;
+        long rowId = -1;
+        switch (sUriMatcher.match(uri)) {
+            case LINK_DIR:
+                rowId = database.insert(Link.NAME,null,values);
+                if (rowId > -1) {
+                    Uri contentUri = uri.buildUpon().appendPath(values.getAsString(Link.Columns.KEYWORD)).build();
+                    getContext().getContentResolver().notifyChange(contentUri, null);
+                    return contentUri;
+                }
+                break;
+            default:
+                throw new IllegalArgumentException("unsupported uri: " + uri);
+        }
+        if (rowId > -1)
+        {
+            Uri contentUri = ContentUris.withAppendedId(uri, rowId);
+            getContext().getContentResolver().notifyChange(contentUri, null);
+            return contentUri;
+        }
+        throw new SQLException("Could not insert in " + uri);
     }
 
     @Override

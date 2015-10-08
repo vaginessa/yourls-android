@@ -19,6 +19,7 @@ import java.util.concurrent.TimeoutException;
 import de.mateware.ayourls.DialogActivty;
 import de.mateware.ayourls.NetworkHelper;
 import de.mateware.ayourls.R;
+import de.mateware.ayourls.model.Link;
 import de.mateware.ayourls.yourslapi.Volley;
 import de.mateware.ayourls.yourslapi.YourlsRequest;
 import de.mateware.ayourls.yourslapi.action.ShortUrl;
@@ -60,7 +61,11 @@ public class ShortUrlService extends IntentService {
                                       .addToRequestQueue(request);
                                 ShortUrl action = (ShortUrl) future.get(20, TimeUnit.SECONDS);
 
+                                Link link = new Link();
                                 if (action.getStatus() == YourlsAction.STATUS_SUCCESS) {
+                                    link.load(action);
+                                    link.save(this);
+
                                     //TODO Save in Database
                                 } else {
                                     //TODO Check if update of data is possible
