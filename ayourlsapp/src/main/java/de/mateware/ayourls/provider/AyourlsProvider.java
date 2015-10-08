@@ -11,13 +11,21 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 import de.mateware.ayourls.model.Link;
 
 /**
  * Created by mate on 07.10.2015.
  */
+@SuppressWarnings("ConstantConditions")
 public class AyourlsProvider extends ContentProvider {
+
+    private static final Logger log = LoggerFactory.getLogger(AyourlsProvider.class);
 
     public static final String AUTHORITY = "de.mateware.ayourls.provider";
 
@@ -58,6 +66,7 @@ public class AyourlsProvider extends ContentProvider {
     @Nullable
     @Override
     public Cursor query(@NonNull Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
+        log.debug("query: {} {} {} {} {}", uri, projection, selection, selectionArgs, sortOrder);
         SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
 
         switch (sUriMatcher.match(uri)) {
@@ -66,13 +75,13 @@ public class AyourlsProvider extends ContentProvider {
                 break;
             case LINK_KEYWORD:
                 queryBuilder.setTables(Link.NAME);
-                queryBuilder.appendWhere(Link.Columns.KEYWORD + "=" + uri.getLastPathSegment());
+                queryBuilder.appendWhere(Link.Columns.KEYWORD + "='" + uri.getLastPathSegment() + "'");
                 break;
             default:
                 throw new IllegalArgumentException("Unknown URI " + uri);
         }
 
-        Cursor cursor = queryBuilder.query(database,projection,selection,selectionArgs,null,null,sortOrder);
+        Cursor cursor = queryBuilder.query(database, projection, selection, selectionArgs, null, null, sortOrder);
         cursor.setNotificationUri(getContext().getContentResolver(), uri);
         return cursor;
     }
@@ -80,23 +89,27 @@ public class AyourlsProvider extends ContentProvider {
     @Nullable
     @Override
     public Uri insert(@NonNull Uri uri, ContentValues values) {
-        long rowId = -1;
+        log.debug("insert: {} {}", uri, values);
+        long rowId;
         switch (sUriMatcher.match(uri)) {
             case LINK_DIR:
-                rowId = database.insert(Link.NAME,null,values);
+                rowId = database.insert(Link.NAME, null, values);
                 if (rowId > -1) {
-                    Uri contentUri = uri.buildUpon().appendPath(values.getAsString(Link.Columns.KEYWORD)).build();
-                    getContext().getContentResolver().notifyChange(contentUri, null);
+                    Uri contentUri = uri.buildUpon()
+                                        .appendPath(values.getAsString(Link.Columns.KEYWORD))
+                                        .build();
+                    getContext().getContentResolver()
+                                .notifyChange(contentUri, null);
                     return contentUri;
                 }
                 break;
             default:
                 throw new IllegalArgumentException("unsupported uri: " + uri);
         }
-        if (rowId > -1)
-        {
+        if (rowId > -1) {
             Uri contentUri = ContentUris.withAppendedId(uri, rowId);
-            getContext().getContentResolver().notifyChange(contentUri, null);
+            getContext().getContentResolver()
+                        .notifyChange(contentUri, null);
             return contentUri;
         }
         throw new SQLException("Could not insert in " + uri);
@@ -104,11 +117,43 @@ public class AyourlsProvider extends ContentProvider {
 
     @Override
     public int delete(@NonNull Uri uri, String selection, String[] selectionArgs) {
-        return 0;
+        log.debug("delete: {} {} {}", uri, selection, selectionArgs);
+        int count = 0;
+        switch (sUriMatcher.match(uri)) {
+            case LINK_DIR:
+                //Delete all Links from table
+                count = database.delete(Link.NAME, selection, selectionArgs);
+                break;
+            case LINK_KEYWORD:
+                count = database.delete(Link.NAME, Link.Columns.KEYWORD + " = '" + uri.getLastPathSegment() + "'" + (!TextUtils.isEmpty(selection) ? " AND (" + selection + ')' : ""), selectionArgs);
+                break;
+            default:
+                throw new IllegalArgumentException("unsupported uri: " + uri);
+        }
+        if (count > 0)
+            getContext().getContentResolver()
+                        .notifyChange(uri, null);
+        return count;
     }
 
     @Override
     public int update(@NonNull Uri uri, ContentValues values, String selection, String[] selectionArgs) {
-        return 0;
+        log.debug("update: {} {} {} {}", uri, values, selection, selectionArgs);
+        int count = 0;
+        switch (sUriMatcher.match(uri)) {
+            case LINK_DIR:
+                count = database.update(Link.NAME, values, selection, selectionArgs);
+                break;
+            case LINK_KEYWORD:
+                count = database.update(Link.NAME, values, Link.Columns.KEYWORD + " = '" + uri.getLastPathSegment() + "'" + (!TextUtils.isEmpty(selection) ? " AND (" + selection + ')' : ""), selectionArgs);
+                break;
+            default:
+                throw new IllegalArgumentException("unsupported uri: " + uri);
+        }
+        if (count > 0)
+            getContext().getContentResolver()
+                        .notifyChange(uri, null);
+
+        return count;
     }
 }

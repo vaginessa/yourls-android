@@ -62,13 +62,9 @@ public class ShortUrlService extends IntentService {
                                 ShortUrl action = (ShortUrl) future.get(20, TimeUnit.SECONDS);
 
                                 Link link = new Link();
-                                if (action.getStatus() == YourlsAction.STATUS_SUCCESS) {
-                                    link.load(action);
-                                    link.save(this);
-
-                                    //TODO Save in Database
-                                } else {
-                                    //TODO Check if update of data is possible
+                                link.load(action);
+                                link.save(this);
+                                if (action.getStatus() != YourlsAction.STATUS_SUCCESS) {
                                     throw new VolleyError(action.getMessage());
                                 }
                             } catch (InterruptedException | ExecutionException | TimeoutException | UnsupportedEncodingException e) {
