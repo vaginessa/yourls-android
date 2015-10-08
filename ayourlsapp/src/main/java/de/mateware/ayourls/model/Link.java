@@ -23,7 +23,8 @@ public class Link {
 
     private static Logger log = LoggerFactory.getLogger(Link.class);
 
-    public static String NAME = Link.class.getSimpleName();
+    public static String NAME = Link.class.getSimpleName()
+                                          .toLowerCase(Locale.getDefault());
     public static String AUTHORITY = AyourlsProvider.AUTHORITY;
 
     private static Uri CONTENT_URI;
@@ -66,10 +67,11 @@ public class Link {
     private String ip;
     private long clicks;
 
-    public Link(){
+    public Link() {
     }
 
-    public boolean load(Context context,String keyword) {
+    public boolean load(@NonNull Context context, @NonNull String keyword) {
+        setKeyword(keyword);
         Cursor cursor = context.getApplicationContext()
                                .getContentResolver()
                                .query(Link.getContentUri(keyword), null, null, null, null);
@@ -84,7 +86,7 @@ public class Link {
         return false;
     }
 
-    public void load(Cursor cursor) {
+    public void load(@NonNull Cursor cursor) {
         setKeyword(cursor.getString(cursor.getColumnIndex(Columns.KEYWORD)));
         setUrl(cursor.getString(cursor.getColumnIndex(Columns.URL)));
         setTitle(cursor.getString(cursor.getColumnIndex(Columns.TITLE)));
@@ -93,7 +95,7 @@ public class Link {
         setClicks(cursor.getLong(cursor.getColumnIndex(Columns.CLICKS)));
     }
 
-    public void load(ShortUrl action) {
+    public void load(@NonNull ShortUrl action) {
         setKeyword(action.getKeyword());
         setDate(action.getDate());
         setTitle(action.getTitle());
@@ -105,20 +107,27 @@ public class Link {
     public void save(@NonNull Context context) {
         if (TextUtils.isEmpty(getKeyword()))
             throw new IllegalStateException("Cannot save without keyword");
-        Cursor cursor = context.getContentResolver().query(Link.getContentUri(getKeyword()),null,null,null,null);
+        Cursor cursor = context.getContentResolver()
+                               .query(Link.getContentUri(getKeyword()), null, null, null, null);
         if (cursor != null) {
             try {
                 if (cursor.moveToNext()) {
-                    //TODO UPDATE
-                    log.debug("updating link "+getKeyword());
+                    context.getContentResolver()
+                           .update(Link.getContentUri(getKeyword()), getContentValues(), null, null);
                 } else {
-                    //TODO INSERT
-                    log.debug("inserting link "+getKeyword());
+                    context.getContentResolver()
+                           .insert(Link.getContentUri(), getContentValues());
                 }
             } finally {
                 cursor.close();
             }
         }
+    }
+
+    public void delete(@NonNull Context context) {
+        if (TextUtils.isEmpty(getKeyword()))
+            throw new IllegalStateException("Cannot delete without keyword");
+        context.getContentResolver().delete(Link.getContentUri(getKeyword()),null,null);
     }
 
 
