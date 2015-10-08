@@ -7,17 +7,16 @@ buildscript {
         classpath 'io.fabric.tools:gradle:1.+'
     }
 }
+
 apply plugin: 'com.android.application'
-apply plugin: 'io.fabric'
 
-repositories {
-    maven { url 'https://maven.fabric.io/public' }
+def matewarePropFile = file("mateware.properties")
+if (matewarePropFile.exists()) {
+    def matewareProps = new Properties();
+    matewareProps.load(matewarePropFile.newDataInputStream())
+    project.ext.set('mateware',matewareProps.getProperty('dir'))
+    apply from: project.ext.mateware+"/mateware.gradle"
 }
-
-
-def extraGradle = file('mateware.gradle')
-if (extraGradle.exists())
-    apply from: extraGradle
 
 android {
     compileSdkVersion 23
@@ -54,9 +53,7 @@ dependencies {
     compile('commons-validator:commons-validator:1.4.1') {
         exclude group: 'commons-beanutils', module: 'commons-beanutils'
     }
-    compile('com.crashlytics.sdk.android:crashlytics:2.5.2@aar') {
-        transitive = true;
-    }
+
 }
 
 
