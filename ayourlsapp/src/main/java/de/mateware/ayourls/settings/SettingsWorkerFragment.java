@@ -54,7 +54,6 @@ public class SettingsWorkerFragment extends Fragment {
             YourlsRequest request = new YourlsRequest(getContext(), new DbStats(), new Response.Listener<YourlsAction>() {
                 @Override
                 public void onResponse(YourlsAction response) {
-
                     log.info(response.toString());
                     callback.onServerCheckSuccess(response);
                 }

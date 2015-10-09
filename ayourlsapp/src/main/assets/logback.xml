@@ -1,6 +1,7 @@
 <configuration>
     <!-- Create a logcat appender -->
     <appender name="logcat" class="ch.qos.logback.classic.android.LogcatAppender">
+        <checkLoggable>false</checkLoggable>
         <encoder>
             <pattern>%method [%thread] %msg%n</pattern>
         </encoder>

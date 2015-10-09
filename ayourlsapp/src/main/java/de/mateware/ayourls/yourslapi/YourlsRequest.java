@@ -40,17 +40,17 @@ public class YourlsRequest extends Request<JSONObject> {
 
     Logger log = LoggerFactory.getLogger(YourlsRequest.class);
     private Response.Listener<YourlsAction> listener;
-//    private Response.ErrorListener errorListener;
+    //    private Response.ErrorListener errorListener;
     Map<String, String> params = new HashMap<>();
     private YourlsAction action;
 
 
     public YourlsRequest(Context context, YourlsAction action, Response.Listener<YourlsAction> responseListener, Response.ErrorListener errorListener) {
-        super(Method.POST, getApiUrl(context), null);
+        super(Method.POST, getApiUrl(context), errorListener);
         this.listener = responseListener;
         //this.errorListener = errorListener;
 
-        setRetryPolicy(new DefaultRetryPolicy(30000,DefaultRetryPolicy.DEFAULT_MAX_RETRIES,DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        setRetryPolicy(new DefaultRetryPolicy(30000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
 
         String signature = PreferenceManager.getDefaultSharedPreferences(context)
                                             .getString(context.getString(R.string.pref_key_server_token), null);
@@ -74,29 +74,24 @@ public class YourlsRequest extends Request<JSONObject> {
         String serverUrl = PreferenceManager.getDefaultSharedPreferences(context)
                                             .getString(context.getString(R.string.pref_key_server_url), null);
 
-        if (serverUrl == null)
-            throw new IllegalStateException("Cannot make request without server url");
+        if (serverUrl == null) throw new IllegalStateException("Cannot make request without server url");
 
-        while (serverUrl.endsWith("/"))
-            serverUrl = serverUrl.substring(0, serverUrl.length() - 1);
+        while (serverUrl.endsWith("/")) serverUrl = serverUrl.substring(0, serverUrl.length() - 1);
 
         serverUrl += API_URL_PART;
 
         return serverUrl;
     }
 
-    protected Map<String, String> getParams()
-            throws com.android.volley.AuthFailureError {
+    protected Map<String, String> getParams() throws com.android.volley.AuthFailureError {
         return params;
     }
 
     @Override
     protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
         try {
-            String jsonString = new String(response.data,
-                    HttpHeaderParser.parseCharset(response.headers));
-            return Response.success(new JSONObject(jsonString),
-                    HttpHeaderParser.parseCacheHeaders(response));
+            String jsonString = new String(response.data, HttpHeaderParser.parseCharset(response.headers));
+            return Response.success(new JSONObject(jsonString), HttpHeaderParser.parseCacheHeaders(response));
         } catch (UnsupportedEncodingException e) {
             return Response.error(new ParseError(e));
         } catch (JSONException je) {
@@ -116,57 +111,6 @@ public class YourlsRequest extends Request<JSONObject> {
         }
 
     }
-
-//    @Override
-//    public void deliverError(VolleyError error) {
-//
-//
-//        if (errorListener != null) {
-//            errorListener.onErrorResponse(new Error(error));
-//        }
-//    }
-
-
-//
-//    public class Error {
-//
-//        private static final String JSON_MESSAGE = "message";
-//        private static final String JSON_ERROR_CODE = "errorCode";
-//
-//        private VolleyError error;
-//        private String message;
-//        private int errorCode = -1;
-//
-//        public Error(VolleyError error) {
-//            this.error = error;
-//            if (error.networkResponse != null) {
-//                JSONObject jsonObject = null;
-//                try {
-//                    jsonObject = new JSONObject(new String(error.networkResponse.data));
-//                    message = jsonObject.getString(JSON_MESSAGE);
-//                    errorCode = jsonObject.getInt(JSON_ERROR_CODE);
-//                } catch (JSONException e) {
-//                    log.warn("Error parsing json, catch HttpStatus");
-//                    HttpStatus httpStatus = HttpStatus.getByCode(error.networkResponse.statusCode);
-//                    message = httpStatus.getName() + ": " + httpStatus.getDescription();
-//                    errorCode = httpStatus.getCode();
-//                }
-//            } else {
-//                if (error.getMessage() != null)
-//                    message = error.getMessage();
-//                else
-//                    message = error.getClass().getSimpleName();
-//            }
-//        }
-//
-//        public int getErrorCode() {
-//            return errorCode;
-//        }
-//
-//        public String getMessage() {
-//            return message;
-//        }
-//    }
 
 
     private static String convertByteArrayToHexString(byte[] arrayBytes) {

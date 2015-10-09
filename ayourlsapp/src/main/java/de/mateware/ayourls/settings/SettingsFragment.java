@@ -206,6 +206,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Settin
     private void checkServer() {
         new Dialog().withTitle(R.string.dialog_check_server_message)
                     .withMessage(R.string.dialog_check_server_message)
+                    .withCancelable(false)
                     .show(getFragmentManager(), TAG_DIALOG_CHECK_SERVER);
         workerFragment.checkServer();
     }
