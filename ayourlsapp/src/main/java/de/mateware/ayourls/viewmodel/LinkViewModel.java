@@ -22,4 +22,7 @@ public class LinkViewModel extends BaseObservable{
     public String getUrl() {
         return link.getUrl();
     }
+
+    public String getKeyword() { return link.getKeyword(); }
+
 }
