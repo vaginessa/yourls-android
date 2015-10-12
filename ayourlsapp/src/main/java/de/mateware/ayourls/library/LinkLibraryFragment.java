@@ -1,4 +1,4 @@
-package de.mateware.ayourls;
+package de.mateware.ayourls.library;
 
 import android.database.Cursor;
 import android.os.Bundle;
@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.mateware.ayourls.R;
 import de.mateware.ayourls.model.Link;
 
 public class LinkLibraryFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {

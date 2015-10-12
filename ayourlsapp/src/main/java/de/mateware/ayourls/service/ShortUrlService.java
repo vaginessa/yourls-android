@@ -16,8 +16,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import de.mateware.ayourls.DialogActivty;
-import de.mateware.ayourls.NetworkHelper;
+import de.mateware.ayourls.dialog.DialogActivty;
+import de.mateware.ayourls.network.NetworkHelper;
 import de.mateware.ayourls.R;
 import de.mateware.ayourls.model.Link;
 import de.mateware.ayourls.yourslapi.Volley;

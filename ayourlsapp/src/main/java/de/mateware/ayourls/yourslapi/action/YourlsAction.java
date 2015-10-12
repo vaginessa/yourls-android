@@ -23,13 +23,10 @@ public abstract class YourlsAction  {
     public static final String PARAM_TITLE = "title";
 
     Map<String, String> params = new HashMap<>();
-    private String answerName;
-    private JSONObject data;
     private int status = STATUS_UNKNOWN;
     private String message;
 
-    public YourlsAction(String actionName, String answerName) {
-        this.answerName = answerName;
+    public YourlsAction(String actionName) {
         addParam(PARAM_ACTION, actionName);
     }
 
@@ -44,12 +41,8 @@ public abstract class YourlsAction  {
         if (result.has("message"))
             message = result.getString("message");
 
-        this.data = result.getJSONObject(answerName);
-        performData(data);
-    }
 
-    public JSONObject getData() {
-        return data;
+        performResultData(result);
     }
 
     public String getMessage() {
@@ -68,6 +61,6 @@ public abstract class YourlsAction  {
         return params;
     }
 
-    public abstract void performData(JSONObject data) throws JSONException;
+    public abstract void performResultData(JSONObject data) throws JSONException;
 
 }

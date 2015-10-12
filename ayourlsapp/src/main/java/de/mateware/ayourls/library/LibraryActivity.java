@@ -1,4 +1,4 @@
-package de.mateware.ayourls;
+package de.mateware.ayourls.library;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -8,11 +8,12 @@ import android.view.MenuItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.mateware.ayourls.R;
 import de.mateware.ayourls.settings.SettingsActivity;
 
-public class MainActivity extends AppCompatActivity {
+public class LibraryActivity extends AppCompatActivity {
 
-    private static Logger log = LoggerFactory.getLogger(MainActivity.class);
+    private static Logger log = LoggerFactory.getLogger(LibraryActivity.class);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

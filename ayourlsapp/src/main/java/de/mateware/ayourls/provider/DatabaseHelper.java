@@ -44,11 +44,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     private static final String CREATE_LINK_V1 = "CREATE TABLE " + Link.NAME + " (" +
-            Link.Columns.KEYWORD + " TEXT PRIMARY KEY," +
+            Link.Columns._ID + " INTEGER PRIMARY KEY," +
+            Link.Columns.KEYWORD + " TEXT," +
             Link.Columns.URL + " TEXT," +
             Link.Columns.TITLE + " TEXT," +
             Link.Columns.DATE + " TEXT," +
             Link.Columns.IP + " TEXT," +
+            Link.Columns.SHORTURL + " TEXT," +
             Link.Columns.CLICKS + " INTEGER" +
             ");";
 

@@ -44,12 +44,12 @@ android {
 dependencies {
     final SUPPORT_LIBRARY_VERSION = "23.0.1"
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile 'com.android.support:appcompat-v7:' + SUPPORT_LIBRARY_VERSION
-    compile 'com.android.support:support-v4:' + SUPPORT_LIBRARY_VERSION
-    compile 'com.android.support:preference-v7:' + SUPPORT_LIBRARY_VERSION
-    compile 'com.android.support:recyclerview-v7:' + SUPPORT_LIBRARY_VERSION
-    compile 'com.android.support:design:' + SUPPORT_LIBRARY_VERSION
-    compile 'com.android.support:cardview-v7:' + SUPPORT_LIBRARY_VERSION
+    compile 'com.android.support:appcompat-v7:' + SUPPORT_LIBRARY_VERSION;
+    compile 'com.android.support:support-v4:' + SUPPORT_LIBRARY_VERSION;
+    compile 'com.android.support:preference-v7:' + SUPPORT_LIBRARY_VERSION;
+    compile 'com.android.support:recyclerview-v7:' + SUPPORT_LIBRARY_VERSION;
+    compile 'com.android.support:design:' + SUPPORT_LIBRARY_VERSION;
+    compile 'com.android.support:cardview-v7:' + SUPPORT_LIBRARY_VERSION;
     compile 'com.github.tony19:logback-android-core:1.1.1-4'
     compile 'com.github.tony19:logback-android-classic:1.1.1-4'
     compile 'org.slf4j:slf4j-api:1.7.12'
@@ -57,8 +57,9 @@ dependencies {
     compile('commons-validator:commons-validator:1.4.1') {
         exclude group: 'commons-beanutils', module: 'commons-beanutils'
     }
-    compile 'com.google.zxing:core:3.2.1'
-
+    compile 'com.squareup.picasso:picasso:2.5.2'
+    compile 'com.squareup.okhttp:okhttp:2.5.0'
+    compile 'com.squareup.okhttp:okhttp-urlconnection:2.5.0'
 }
 
 

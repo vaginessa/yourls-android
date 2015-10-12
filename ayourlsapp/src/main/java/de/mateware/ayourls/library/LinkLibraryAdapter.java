@@ -1,4 +1,4 @@
-package de.mateware.ayourls;
+package de.mateware.ayourls.library;
 
 import android.databinding.DataBindingUtil;
 import android.support.v7.widget.RecyclerView;
@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 
 import java.util.List;
 
+import de.mateware.ayourls.R;
 import de.mateware.ayourls.databinding.ItemLinkBinding;
 import de.mateware.ayourls.model.Link;
 import de.mateware.ayourls.viewmodel.LinkViewModel;

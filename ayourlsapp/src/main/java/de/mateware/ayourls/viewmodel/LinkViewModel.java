@@ -7,7 +7,7 @@ import de.mateware.ayourls.model.Link;
 /**
  * Created by mate on 09.10.2015.
  */
-public class LinkViewModel extends BaseObservable{
+public class LinkViewModel extends BaseObservable {
 
     private Link link;
 
@@ -23,6 +23,12 @@ public class LinkViewModel extends BaseObservable{
         return link.getUrl();
     }
 
-    public String getKeyword() { return link.getKeyword(); }
+    public String getKeyword() {
+        return link.getKeyword();
+    }
+
+    public String getShorturl() {
+        return link.getShorturl();
+    }
 
 }

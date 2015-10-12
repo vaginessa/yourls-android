@@ -11,13 +11,14 @@ public class DbStats extends YourlsAction {
     private long totalClicks;
 
     public DbStats() {
-        super("db-stats", "db-stats");
+        super("db-stats");
     }
 
     @Override
-    public void performData(JSONObject data) throws JSONException {
-        totalLinks = data.getLong("total_links");
-        totalClicks = data.getLong("total_clicks");
+    public void performResultData(JSONObject data) throws JSONException {
+        JSONObject details = data.getJSONObject("db-stats");
+        totalLinks = details.getLong("total_links");
+        totalClicks = details.getLong("total_clicks");
     }
 
     public long getTotalClicks() {

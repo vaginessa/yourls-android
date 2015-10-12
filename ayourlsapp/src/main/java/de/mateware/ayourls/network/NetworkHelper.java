@@ -1,4 +1,4 @@
-package de.mateware.ayourls;
+package de.mateware.ayourls.network;
 
 import android.content.Context;
 import android.net.ConnectivityManager;

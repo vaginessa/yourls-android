@@ -1,4 +1,4 @@
-package de.mateware.ayourls;
+package de.mateware.ayourls.dialog;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -7,7 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.mateware.ayourls.dialog.Dialog;
+import de.mateware.ayourls.R;
 import de.mateware.ayourls.service.ShortUrlService;
 
 /**

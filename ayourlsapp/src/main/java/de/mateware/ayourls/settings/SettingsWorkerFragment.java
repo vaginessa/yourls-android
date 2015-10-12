@@ -10,7 +10,7 @@ import com.android.volley.VolleyError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.mateware.ayourls.NetworkHelper;
+import de.mateware.ayourls.network.NetworkHelper;
 import de.mateware.ayourls.R;
 import de.mateware.ayourls.yourslapi.Volley;
 import de.mateware.ayourls.yourslapi.YourlsError;

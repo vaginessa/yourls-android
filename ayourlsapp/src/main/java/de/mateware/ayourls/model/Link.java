@@ -1,12 +1,12 @@
 package de.mateware.ayourls.model;
 
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.BaseColumns;
 import android.support.annotation.NonNull;
-import android.text.TextUtils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,33 +48,33 @@ public class Link {
         public static final String DATE = "date";
         public static final String IP = "ip";
         public static final String CLICKS = "clicks";
+        public static final String SHORTURL = "shorturl";
     }
 
     public static Uri getContentUri() {
         return CONTENT_URI;
     }
 
-    public static Uri getContentUri(@NonNull String keyword) {
-        return getContentUri().buildUpon()
-                              .appendPath(keyword)
-                              .build();
+    public static Uri getContentUri(@NonNull long id) {
+        return ContentUris.withAppendedId(getContentUri(), id);
     }
 
+    private long id = -1;
     private String keyword;
     private String url;
     private String title;
     private String date;
     private String ip;
+    private String shorturl;
     private long clicks;
 
     public Link() {
     }
 
-    public boolean load(@NonNull Context context, @NonNull String keyword) {
-        setKeyword(keyword);
+    public boolean load(@NonNull Context context, @NonNull long id) {
         Cursor cursor = context.getApplicationContext()
                                .getContentResolver()
-                               .query(Link.getContentUri(keyword), null, null, null, null);
+                               .query(Link.getContentUri(id), null, null, null, null);
         if (cursor != null) {
             try {
                 if (cursor.moveToNext()) load(cursor);
@@ -87,12 +87,14 @@ public class Link {
     }
 
     public void load(@NonNull Cursor cursor) {
+        setId(cursor.getLong(cursor.getColumnIndex(Columns._ID)));
         setKeyword(cursor.getString(cursor.getColumnIndex(Columns.KEYWORD)));
         setUrl(cursor.getString(cursor.getColumnIndex(Columns.URL)));
         setTitle(cursor.getString(cursor.getColumnIndex(Columns.TITLE)));
         setDate(cursor.getString(cursor.getColumnIndex(Columns.DATE)));
         setIp(cursor.getString(cursor.getColumnIndex(Columns.IP)));
         setClicks(cursor.getLong(cursor.getColumnIndex(Columns.CLICKS)));
+        setShorturl(cursor.getString(cursor.getColumnIndex(Columns.SHORTURL)));
     }
 
     public void load(@NonNull ShortUrl action) {
@@ -102,32 +104,42 @@ public class Link {
         setUrl(action.getUrl());
         setIp(action.getIp());
         setClicks(action.getClicks());
+        setShorturl(action.getShorturl());
     }
 
     public void save(@NonNull Context context) {
-        if (TextUtils.isEmpty(getKeyword()))
-            throw new IllegalStateException("Cannot save without keyword");
-        Cursor cursor = context.getContentResolver()
-                               .query(Link.getContentUri(getKeyword()), null, null, null, null);
+        Cursor cursor = null;
+        if (id != -1) {
+            cursor = context.getContentResolver()
+                            .query(Link.getContentUri(getId()), null, null, null, null);
+        } else {
+            cursor = context.getContentResolver()
+                            .query(Link.getContentUri(), null, Columns.SHORTURL + " LIKE '"+ getShorturl() +"'", null, null);
+        }
         if (cursor != null) {
             try {
                 if (cursor.moveToNext()) {
+                    setId(cursor.getLong(cursor.getColumnIndex(Columns._ID)));
                     context.getContentResolver()
-                           .update(Link.getContentUri(getKeyword()), getContentValues(), null, null);
-                } else {
-                    context.getContentResolver()
-                           .insert(Link.getContentUri(), getContentValues());
+                           .update(Link.getContentUri(getId()), getContentValues(), null, null);
+                    return;
                 }
             } finally {
                 cursor.close();
             }
         }
+        setId(ContentUris.parseId(context.getContentResolver()
+                                         .insert(Link.getContentUri(), getContentValues())));
     }
 
-    public void delete(@NonNull Context context) {
-        if (TextUtils.isEmpty(getKeyword()))
-            throw new IllegalStateException("Cannot delete without keyword");
-        context.getContentResolver().delete(Link.getContentUri(getKeyword()),null,null);
+    public boolean delete(@NonNull Context context) {
+        if (getId() != -1) {
+            if (context.getContentResolver()
+                       .delete(Link.getContentUri(getId()), null, null) > 0) {
+                return true;
+            }
+        }
+        return false;
     }
 
 
@@ -138,8 +150,26 @@ public class Link {
         cv.put(Columns.TITLE, title);
         cv.put(Columns.DATE, date);
         cv.put(Columns.IP, ip);
+        cv.put(Columns.SHORTURL, shorturl);
         cv.put(Columns.CLICKS, clicks);
+        cv.put(Columns._ID, id);
         return cv;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public String getShorturl() {
+        return shorturl;
+    }
+
+    public void setShorturl(String shorturl) {
+        this.shorturl = shorturl;
     }
 
     public String getKeyword() {

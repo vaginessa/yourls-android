@@ -30,7 +30,7 @@ public class AyourlsProvider extends ContentProvider {
     public static final String AUTHORITY = "de.mateware.ayourls.provider";
 
     private static final int LINK_DIR = 1;
-    private static final int LINK_KEYWORD = 2;
+    private static final int LINK_ID = 2;
 
     private SQLiteDatabase database;
 
@@ -39,7 +39,7 @@ public class AyourlsProvider extends ContentProvider {
     static {
         sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
         sUriMatcher.addURI(AUTHORITY, Link.NAME, LINK_DIR);
-        sUriMatcher.addURI(AUTHORITY, Link.NAME + "/*", LINK_KEYWORD);
+        sUriMatcher.addURI(AUTHORITY, Link.NAME + "/#", LINK_ID);
     }
 
     @Override
@@ -56,7 +56,7 @@ public class AyourlsProvider extends ContentProvider {
         switch (sUriMatcher.match(uri)) {
             case LINK_DIR:
                 return Link.CONTENT_TYPE;
-            case LINK_KEYWORD:
+            case LINK_ID:
                 return Link.CONTENT_ITEM_TYPE;
             default:
                 throw new IllegalArgumentException("Unknown provider type: " + uri);
@@ -73,9 +73,10 @@ public class AyourlsProvider extends ContentProvider {
             case LINK_DIR:
                 queryBuilder.setTables(Link.NAME);
                 break;
-            case LINK_KEYWORD:
+            case LINK_ID:
                 queryBuilder.setTables(Link.NAME);
-                queryBuilder.appendWhere(Link.Columns.KEYWORD + "='" + uri.getLastPathSegment() + "'");
+                long id = ContentUris.parseId(uri);
+                queryBuilder.appendWhere(Link.Columns._ID + "=" + id);
                 break;
             default:
                 throw new IllegalArgumentException("Unknown URI " + uri);
@@ -93,15 +94,8 @@ public class AyourlsProvider extends ContentProvider {
         long rowId;
         switch (sUriMatcher.match(uri)) {
             case LINK_DIR:
+                values.remove(Link.Columns._ID);
                 rowId = database.insert(Link.NAME, null, values);
-                if (rowId > -1) {
-                    Uri contentUri = uri.buildUpon()
-                                        .appendPath(values.getAsString(Link.Columns.KEYWORD))
-                                        .build();
-                    getContext().getContentResolver()
-                                .notifyChange(contentUri, null);
-                    return contentUri;
-                }
                 break;
             default:
                 throw new IllegalArgumentException("unsupported uri: " + uri);
@@ -124,8 +118,9 @@ public class AyourlsProvider extends ContentProvider {
                 //Delete all Links from table
                 count = database.delete(Link.NAME, selection, selectionArgs);
                 break;
-            case LINK_KEYWORD:
-                count = database.delete(Link.NAME, Link.Columns.KEYWORD + " = '" + uri.getLastPathSegment() + "'" + (!TextUtils.isEmpty(selection) ? " AND (" + selection + ')' : ""), selectionArgs);
+            case LINK_ID:
+                long id = ContentUris.parseId(uri);
+                count = database.delete(Link.NAME, Link.Columns._ID + " = " + id + (!TextUtils.isEmpty(selection) ? " AND (" + selection + ')' : ""), selectionArgs);
                 break;
             default:
                 throw new IllegalArgumentException("unsupported uri: " + uri);
@@ -144,8 +139,9 @@ public class AyourlsProvider extends ContentProvider {
             case LINK_DIR:
                 count = database.update(Link.NAME, values, selection, selectionArgs);
                 break;
-            case LINK_KEYWORD:
-                count = database.update(Link.NAME, values, Link.Columns.KEYWORD + " = '" + uri.getLastPathSegment() + "'" + (!TextUtils.isEmpty(selection) ? " AND (" + selection + ')' : ""), selectionArgs);
+            case LINK_ID:
+                long id = ContentUris.parseId(uri);
+                count = database.update(Link.NAME, values, Link.Columns._ID + " = " + id + (!TextUtils.isEmpty(selection) ? " AND (" + selection + ')' : ""), selectionArgs);
                 break;
             default:
                 throw new IllegalArgumentException("unsupported uri: " + uri);
