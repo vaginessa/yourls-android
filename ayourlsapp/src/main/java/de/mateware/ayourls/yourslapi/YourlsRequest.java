@@ -102,7 +102,6 @@ public class YourlsRequest extends Request<JSONObject> {
 
     @Override
     protected void deliverResponse(JSONObject response) {
-        // TODO Auto-generated method stub
         try {
             action.setResult(response);
             listener.onResponse(action);
