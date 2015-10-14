@@ -1,39 +1,55 @@
 package de.mateware.ayourls.library;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import de.mateware.ayourls.R;
+import de.mateware.ayourls.model.Link;
 import de.mateware.ayourls.settings.SettingsActivity;
 
-public class LibraryActivity extends AppCompatActivity {
+public class LibraryActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private static Logger log = LoggerFactory.getLogger(LibraryActivity.class);
+
+    private RecyclerView recyclerView;
+    private LinkLibraryAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.blank_activity);
-        if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction()
-                                       .replace(R.id.content_frame, new LinkLibraryFragment())
-                                       .commit();
-        }
+        setContentView(R.layout.activity_link_library);
+        recyclerView = (RecyclerView) findViewById(R.id.recycler);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        adapter = new LinkLibraryAdapter();
+        recyclerView.setAdapter(adapter);
+        getSupportLoaderManager().initLoader(0, null, this);
+
     }
 
-
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        // Inflate the menu; this adds items to the action bar if it is present.
-//        getMenuInflater().inflate(R.menu.menu_link_lib, menu);
-//        return true;
-//    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_link_lib, menu);
+        return true;
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -53,5 +69,38 @@ public class LibraryActivity extends AppCompatActivity {
     private void showSettings() {
         Intent intent = new Intent(this,SettingsActivity.class);
         startActivity(intent);
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        log.debug("creating loader with id {} and args {}", id, args);
+        return new CursorLoader(this, Link.getContentUri(), null, null, null, null);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        log.debug("loader finished");
+
+
+
+        if (data != null) {
+
+            if (data.moveToLast()) {
+                List<Link> links = new ArrayList<>();
+                do {
+                    Link link = new Link();
+                    link.load(data);
+                    links.add(link);
+                } while (data.moveToPrevious());
+                adapter.setItems(links);
+            }
+        }
+
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        log.debug("loader reset {}", loader);
+        adapter.setItems(null);
     }
 }
