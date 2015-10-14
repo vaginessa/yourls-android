@@ -62,7 +62,7 @@ public class LinkDetailActivity extends AppCompatActivity implements LoaderManag
             Link link = new Link();
             link.load(data);
             log.debug("loaded {}", link);
-            binding.setViewModel(new LinkViewModel(link));
+            binding.setViewModel(new LinkViewModel(this,link));
     }
 
     @Override

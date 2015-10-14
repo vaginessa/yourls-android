@@ -39,5 +39,11 @@
     <string name="pref_app_clipboard_monitor_title">Clipboard monitor</string>
     <string name="pref_app_clipboard_monitor_summary">Checking clipboard for URL. Works only on Android 3 and higher.</string>
 
+    <plurals name="viewmodel_clicks">
+        <item quantity="zero">no clicks</item>
+        <item quantity="one">%1$d click</item>
+        <item quantity="other">%1$d clicks</item>
+    </plurals>
+
 
 </resources>

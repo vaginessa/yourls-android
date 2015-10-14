@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.databinding.BaseObservable;
 import android.view.View;
 
+import de.mateware.ayourls.R;
 import de.mateware.ayourls.linkdetail.LinkDetailActivity;
 import de.mateware.ayourls.model.Link;
 
@@ -13,10 +14,12 @@ import de.mateware.ayourls.model.Link;
  */
 public class LinkViewModel extends BaseObservable {
 
+    private Context context;
     private Link link;
 
-    public LinkViewModel(Link link) {
+    public LinkViewModel(Context context, Link link) {
         this.link = link;
+        this.context = context;
     }
 
     public String getTitle() {
@@ -33,6 +36,18 @@ public class LinkViewModel extends BaseObservable {
 
     public String getShorturl() {
         return link.getShorturl();
+    }
+
+    public String getDate() {
+        return link.getDate();
+    }
+
+    public String getIp() {
+        return link.getIp();
+    }
+
+    public String getClicksText() {
+        return context.getResources().getQuantityString(R.plurals.viewmodel_clicks, (int) link.getClicks(), link.getClicks());
     }
 
     public View.OnClickListener onClickDetails() {

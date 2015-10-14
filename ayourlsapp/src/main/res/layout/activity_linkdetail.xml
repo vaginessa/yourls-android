@@ -43,22 +43,18 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/textView"
+                android:id="@+id/title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@{viewModel.title}"/>
 
-            <TextView
-                android:id="@+id/textView2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="New Text"/>
+
 
             <TextView
-                android:id="@+id/textView3"
+                android:id="@+id/clickstext"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="New Text"/>
+                android:text="@{viewModel.clicksText}"/>
         </LinearLayout>
 
     </LinearLayout>

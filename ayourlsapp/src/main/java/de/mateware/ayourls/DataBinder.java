@@ -31,12 +31,8 @@ public final class DataBinder {
                               .getDimensionPixelSize(R.dimen.qr_size);
             if (size > 1000) size = 1000;
 
-            int color = ContextCompat.getColor(context,R.color.primary_dark);
-            StringBuilder rgbColorString = new StringBuilder().append(Color.red(color))
-                                                              .append("-")
-                                                              .append(Color.green(color))
-                                                              .append("-")
-                                                              .append(Color.blue(color));
+            int color = ContextCompat.getColor(context, R.color.primary_dark);
+            int bgcolor = ContextCompat.getColor(context, R.color.background);
 
             Uri.Builder qrGenerationUriBuilder = new Uri.Builder();
             qrGenerationUriBuilder.scheme("https")
@@ -45,8 +41,8 @@ public final class DataBinder {
                                   .appendEncodedPath("create-qr-code")
                                   .appendQueryParameter("data", url)
                                   .appendQueryParameter("charset-source", "UTF-8")
-                                  .appendQueryParameter("color", rgbColorString.toString())
-                                  .appendQueryParameter("bgcolor", "")
+                                  .appendQueryParameter("color", String.valueOf(Color.red(color)) + "-" + String.valueOf(Color.green(color)) + "-" + String.valueOf(Color.blue(color)))
+                                  .appendQueryParameter("bgcolor", String.valueOf(Color.red(bgcolor)) + "-" + String.valueOf(Color.green(bgcolor)) + "-" + String.valueOf(Color.blue(bgcolor)))
                                   .appendQueryParameter("size", size + "x" + size);
 
             Picasso.with(context)
