@@ -8,6 +8,7 @@ import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.widget.ImageView;
 
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import org.slf4j.Logger;
@@ -26,7 +27,7 @@ public final class DataBinder {
     @BindingAdapter({"bind:shorturl"})
     public static void setQr(ImageView imageView, String url) {
         if (!TextUtils.isEmpty(url)) {
-            Context context = imageView.getContext();
+            final Context context = imageView.getContext();
             int size = context.getResources()
                               .getDimensionPixelSize(R.dimen.qr_size);
             if (size > 1000) size = 1000;
@@ -47,8 +48,29 @@ public final class DataBinder {
 
             Picasso.with(context)
                    .load(qrGenerationUriBuilder.build())
-                   .into(imageView);
+                   .into(imageView, new Callback() {
+                       @Override
+                       public void onSuccess() {
+                           log.debug("call onQrImageLoaded");
+                           if (context instanceof QrImageLoaderCallback) {
+                               ((QrImageLoaderCallback) context).onQrImageLoaded();
+                           }
+                       }
+
+                       @Override
+                       public void onError() {
+                           log.error("call onQrImageLoaded");
+                           if (context instanceof QrImageLoaderCallback) {
+                               ((QrImageLoaderCallback) context).onQrImageLoaded();
+                           }
+                       }
+                   });
         }
     }
+
+    public interface QrImageLoaderCallback {
+        void onQrImageLoaded();
+    }
+
 
 }

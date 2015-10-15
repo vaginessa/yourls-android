@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="de.mateware.ayourls.viewmodel.LinkViewModel"/>
+    </data>
+
+    <ImageView
+        android:id="@+id/qrImage"
+        android:transitionName="@string/transition_name_qrimage"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="fitCenter"
+        app:shorturl="@{viewModel.shorturl}"
+        tools:showIn="@layout/activity_linkdetail"/>
+</layout>

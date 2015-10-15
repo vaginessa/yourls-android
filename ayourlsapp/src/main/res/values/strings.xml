@@ -46,4 +46,7 @@
     </plurals>
 
 
+    <string name="transition_name_qrimage" translatable="false">transQrImage</string>
+
+
 </resources>

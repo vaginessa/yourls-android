@@ -25,7 +25,8 @@
             <ImageView
                 android:layout_width="@dimen/qr_size_library"
                 android:layout_height="@dimen/qr_size_library"
-                android:id="@+id/imageview"
+                android:id="@+id/qrImage"
+                android:transitionName="@string/transition_name_qrimage"
                 app:shorturl="@{viewModel.shorturl}"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentRight="true"
@@ -46,8 +47,8 @@
                 android:layout_alignParentTop="true"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true"
-                android:layout_toLeftOf="@+id/imageview"
-                android:layout_toStartOf="@+id/imageview"/>
+                android:layout_toLeftOf="@+id/qrImage"
+                android:layout_toStartOf="@+id/qrImage"/>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -57,11 +58,11 @@
                 android:maxLines="1"
                 android:minLines="1"
                 android:ellipsize="middle"
-                android:layout_alignBottom="@+id/imageview"
+                android:layout_alignBottom="@+id/qrImage"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true"
-                android:layout_toLeftOf="@+id/imageview"
-                android:layout_toStartOf="@+id/imageview"/>
+                android:layout_toLeftOf="@+id/qrImage"
+                android:layout_toStartOf="@+id/qrImage"/>
         </RelativeLayout>
     </android.support.v7.widget.CardView>
 
