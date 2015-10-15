@@ -48,6 +48,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Settin
         sharedPreferenceChangeListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
             @Override
             public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+                log.debug("sharedPref {} changed",key);
                 if (getString(R.string.pref_key_server_check).equals(key)||getString(R.string.pref_key_app_clipboard_monitor).equals(key)){
                     ClipboardHelper.checkClipboardActivation(getContext());
                 }
