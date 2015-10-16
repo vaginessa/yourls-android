@@ -28,7 +28,9 @@ public class LinkLibraryAdapter extends RecyclerView.Adapter<LinkLibraryAdapter.
     @Override
     public void onBindViewHolder(BindingHolder holder, int position) {
         ItemLinkBinding binding = holder.binding;
-        binding.setViewModel(new LinkViewModel(binding.cardview.getContext(),links.get(position)));
+        LinkViewModel linkViewModel = new LinkViewModel(binding.cardview.getContext());
+        linkViewModel.setLink(links.get(position));
+        binding.setViewModel(linkViewModel);
     }
 
     @Override

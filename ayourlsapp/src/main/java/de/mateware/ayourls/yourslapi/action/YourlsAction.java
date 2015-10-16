@@ -21,6 +21,7 @@ public abstract class YourlsAction  {
     public static final String PARAM_URL = "url";
     public static final String PARAM_KEYWORD = "keyword";
     public static final String PARAM_TITLE = "title";
+    public static final String PARAM_SHORTURL = "shorturl";
 
     Map<String, String> params = new HashMap<>();
     private int status = STATUS_UNKNOWN;

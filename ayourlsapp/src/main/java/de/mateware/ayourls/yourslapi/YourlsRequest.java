@@ -29,7 +29,7 @@ import de.mateware.ayourls.yourslapi.action.YourlsAction;
 /**
  * Created by mate on 24.09.2015.
  */
-public class YourlsRequest extends Request<JSONObject> {
+public class YourlsRequest<T extends YourlsAction> extends Request<JSONObject> {
 
     private static final String API_URL_PART = "/yourls-api.php";
 
@@ -39,13 +39,13 @@ public class YourlsRequest extends Request<JSONObject> {
 
 
     Logger log = LoggerFactory.getLogger(YourlsRequest.class);
-    private Response.Listener<YourlsAction> listener;
+    private Response.Listener<T> listener;
     //    private Response.ErrorListener errorListener;
     Map<String, String> params = new HashMap<>();
-    private YourlsAction action;
+    private T action;
 
 
-    public YourlsRequest(Context context, YourlsAction action, Response.Listener<YourlsAction> responseListener, Response.ErrorListener errorListener) {
+    public YourlsRequest(Context context, T action, Response.Listener<T> responseListener, Response.ErrorListener errorListener) {
         super(Method.POST, getApiUrl(context), errorListener);
         this.listener = responseListener;
         //this.errorListener = errorListener;

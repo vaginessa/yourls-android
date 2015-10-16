@@ -4,6 +4,7 @@ package de.mateware.ayourls.viewmodel;
 import android.content.Context;
 import android.content.Intent;
 import android.databinding.BaseObservable;
+import android.databinding.Bindable;
 import android.os.Build;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.util.Pair;
@@ -20,37 +21,49 @@ import de.mateware.ayourls.model.Link;
 public class LinkViewModel extends BaseObservable {
 
     private Context context;
-    private Link link;
 
-    public LinkViewModel(Context context, Link link) {
-        this.link = link;
+    private Link link = new Link();
+
+    public LinkViewModel(Context context) {
         this.context = context;
     }
 
+    public void setLink(Link link) {
+        this.link = link;
+        notifyChange();
+    }
+
+    @Bindable
     public String getTitle() {
         return link.getTitle();
     }
 
+    @Bindable
     public String getUrl() {
         return link.getUrl();
     }
 
+    @Bindable
     public String getKeyword() {
         return link.getKeyword();
     }
 
+    @Bindable
     public String getShorturl() {
         return link.getShorturl();
     }
 
+    @Bindable
     public String getDate() {
         return link.getDate();
     }
 
+    @Bindable
     public String getIp() {
         return link.getIp();
     }
 
+    @Bindable
     public String getClicksText() {
         return context.getResources()
                       .getQuantityString(R.plurals.viewmodel_clicks, (int) link.getClicks(), link.getClicks());

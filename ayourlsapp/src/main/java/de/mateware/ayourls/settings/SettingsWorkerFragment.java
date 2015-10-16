@@ -10,13 +10,12 @@ import com.android.volley.VolleyError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.mateware.ayourls.network.NetworkHelper;
 import de.mateware.ayourls.R;
+import de.mateware.ayourls.network.NetworkHelper;
 import de.mateware.ayourls.yourslapi.Volley;
 import de.mateware.ayourls.yourslapi.YourlsError;
 import de.mateware.ayourls.yourslapi.YourlsRequest;
 import de.mateware.ayourls.yourslapi.action.DbStats;
-import de.mateware.ayourls.yourslapi.action.YourlsAction;
 
 /**
  * Created by Mate on 25.09.2015.
@@ -51,9 +50,9 @@ public class SettingsWorkerFragment extends Fragment {
 
     public void checkServer() {
         if (NetworkHelper.isConnected(getContext())) {
-            YourlsRequest request = new YourlsRequest(getContext(), new DbStats(), new Response.Listener<YourlsAction>() {
+            YourlsRequest<DbStats> request = new YourlsRequest<>(getContext(), new DbStats(), new Response.Listener<DbStats>() {
                 @Override
-                public void onResponse(YourlsAction response) {
+                public void onResponse(DbStats response) {
                     log.info(response.toString());
                     callback.onServerCheckSuccess(response);
                 }
@@ -73,7 +72,7 @@ public class SettingsWorkerFragment extends Fragment {
 
 
     public interface SettingsWorkerCallback {
-        void onServerCheckSuccess(YourlsAction yourlsAction);
+        void onServerCheckSuccess(DbStats dbStats);
 
         void onServerCheckFail(YourlsError error);
     }

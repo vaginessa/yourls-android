@@ -9,6 +9,8 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import org.slf4j.Logger;
@@ -18,24 +20,33 @@ import de.mateware.ayourls.DataBinder;
 import de.mateware.ayourls.R;
 import de.mateware.ayourls.databinding.ActivityLinkdetailBinding;
 import de.mateware.ayourls.model.Link;
+import de.mateware.ayourls.utils.MenuTinter;
 import de.mateware.ayourls.viewmodel.LinkViewModel;
+import de.mateware.ayourls.yourslapi.YourlsError;
 
 /**
  * Created by Mate on 12.10.2015.
  */
-public class LinkDetailActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>, DataBinder.QrImageLoaderCallback{
+public class LinkDetailActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>, DataBinder.QrImageLoaderCallback, LinkDetailWorkerFragment.LinkDetailWorkerCallback {
 
     private static Logger log = LoggerFactory.getLogger(LinkDetailActivity.class);
 
     public static final String EXTRA_LINK_ID = "extraLinkId";
 
+    private LinkDetailWorkerFragment workerFragment;
     private ActivityLinkdetailBinding binding;
+    private LinkViewModel linkViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        workerFragment = LinkDetailWorkerFragment.findOrCreateFragment(getSupportFragmentManager(), this);
+
         binding = DataBindingUtil.setContentView(this, R.layout.activity_linkdetail);
+        linkViewModel = new LinkViewModel(this);
+        binding.setViewModel(linkViewModel);
+
         ActivityCompat.postponeEnterTransition(this);
 
         Bundle loaderBundle = null;
@@ -47,11 +58,22 @@ public class LinkDetailActivity extends AppCompatActivity implements LoaderManag
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_link_detail, menu);
+        MenuTinter.tintMenu(this, menu, R.color.menu_item);
+        return true;
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             // Respond to the action bar's Up/Home button
             case android.R.id.home:
                 supportFinishAfterTransition();
+                return true;
+            case R.id.action_refresh:
+                workerFragment.refreshLinkData(linkViewModel.getKeyword());
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -67,10 +89,10 @@ public class LinkDetailActivity extends AppCompatActivity implements LoaderManag
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         log.debug("loaded {} {}", loader, data);
         if (data.isBeforeFirst()) data.moveToNext();
-            Link link = new Link();
-            link.load(data);
-            log.debug("loaded {}", link);
-            binding.setViewModel(new LinkViewModel(this, link));
+        Link link = new Link();
+        link.load(data);
+        log.debug("loaded {}", link);
+        linkViewModel.setLink(link);
     }
 
     @Override
@@ -82,5 +104,10 @@ public class LinkDetailActivity extends AppCompatActivity implements LoaderManag
     public void onQrImageLoaded() {
         log.debug("start animation");
         ActivityCompat.startPostponedEnterTransition(this);
+    }
+
+    @Override
+    public void onError(YourlsError error) {
+
     }
 }

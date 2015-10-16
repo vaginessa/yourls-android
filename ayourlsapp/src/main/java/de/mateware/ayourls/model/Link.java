@@ -15,6 +15,7 @@ import java.util.Locale;
 
 import de.mateware.ayourls.provider.AyourlsProvider;
 import de.mateware.ayourls.yourslapi.action.ShortUrl;
+import de.mateware.ayourls.yourslapi.action.UrlStats;
 
 /**
  * Created by mate on 07.10.2015.
@@ -86,6 +87,7 @@ public class Link {
         return false;
     }
 
+
     public void load(@NonNull Cursor cursor) {
         setId(cursor.getLong(cursor.getColumnIndex(Columns._ID)));
         setKeyword(cursor.getString(cursor.getColumnIndex(Columns.KEYWORD)));
@@ -98,6 +100,16 @@ public class Link {
     }
 
     public void load(@NonNull ShortUrl action) {
+        setKeyword(action.getKeyword());
+        setDate(action.getDate());
+        setTitle(action.getTitle());
+        setUrl(action.getUrl());
+        setIp(action.getIp());
+        setClicks(action.getClicks());
+        setShorturl(action.getShorturl());
+    }
+
+    public void load(@NonNull UrlStats action) {
         setKeyword(action.getKeyword());
         setDate(action.getDate());
         setTitle(action.getTitle());

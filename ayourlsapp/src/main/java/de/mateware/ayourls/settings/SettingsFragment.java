@@ -20,7 +20,6 @@ import de.mateware.ayourls.clipboard.ClipboardHelper;
 import de.mateware.ayourls.dialog.Dialog;
 import de.mateware.ayourls.yourslapi.YourlsError;
 import de.mateware.ayourls.yourslapi.action.DbStats;
-import de.mateware.ayourls.yourslapi.action.YourlsAction;
 
 /**
  * Created by mate on 22.09.2015.
@@ -48,8 +47,15 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Settin
         sharedPreferenceChangeListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
             @Override
             public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-                log.debug("sharedPref {} changed",key);
-                if (getString(R.string.pref_key_server_check).equals(key)||getString(R.string.pref_key_app_clipboard_monitor).equals(key)){
+                log.debug("sharedPref {} changed", key);
+                if (getString(R.string.pref_key_server_url).equals(key) || getString(R.string.pref_key_server_token).equals(key)) {
+                    if (sharedPreferences.getBoolean(getString(R.string.pref_key_server_check), false)) {
+                        sharedPreferences.edit().putBoolean(getString(R.string.pref_key_server_check),false).commit();
+                        serverCheckPreference.setChecked(false);
+                        serverCheckPreference.callChangeListener(false);
+                    }
+                }
+                if (getString(R.string.pref_key_server_check).equals(key) || getString(R.string.pref_key_app_clipboard_monitor).equals(key)) {
                     ClipboardHelper.checkClipboardActivation(getContext());
                 }
             }
@@ -91,7 +97,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Settin
                 if ((Boolean) o) {
                     checkServer();
                 } else {
-                    enableAppPreferenceCategory((Boolean)o);
+                    enableAppPreferenceCategory((Boolean) o);
                 }
                 return super.onPreferenceChange(preference, o);
             }
@@ -124,8 +130,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Settin
                 return super.onPreferenceChange(preference, o);
             }
         });
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-            appClipboardPreference.setEnabled(value);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) appClipboardPreference.setEnabled(value);
 
     }
 
@@ -149,7 +154,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Settin
     private void checkServerCheckEnabled(String url, String token) {
 
         if (!TextUtils.isEmpty(url) && !TextUtils.isEmpty(token)) {
-            UrlValidator urlValidator = new UrlValidator(new String[]{"http", "https"},UrlValidator.ALLOW_LOCAL_URLS);
+            UrlValidator urlValidator = new UrlValidator(new String[]{"http", "https"}, UrlValidator.ALLOW_LOCAL_URLS);
             if (urlValidator.isValid(url)) {
                 serverCheckPreference.setEnabled(true);
                 return;
@@ -189,8 +194,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Settin
 
         if (preference != null) {
             Context context = preference.getContext();
-            if (changeListener != null)
-                preference.setOnPreferenceChangeListener(changeListener);
+            if (changeListener != null) preference.setOnPreferenceChangeListener(changeListener);
 
 
             Object value = null;
@@ -213,8 +217,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Settin
     }
 
     @Override
-    public void onServerCheckSuccess(YourlsAction yourlsAction) {
-        DbStats dbStats = (DbStats) yourlsAction;
+    public void onServerCheckSuccess(DbStats dbStats) {
         Dialog.dismissDialog(getFragmentManager(), TAG_DIALOG_CHECK_SERVER);
         new Dialog().withTitle(R.string.dialog_check_server_success_title)
                     .withMessage(getString(R.string.dialog_check_server_success_message, dbStats.getTotalLinks(), dbStats.getTotalClicks()))

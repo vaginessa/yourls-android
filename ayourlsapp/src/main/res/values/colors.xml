@@ -4,4 +4,5 @@
     <color name="primary_dark">#0277BD</color>
     <color name="accent">#0091EA</color>
     <item name="background" type="color">@color/background_material_light</item>
+    <item name="menu_item" type="color">@android:color/primary_text_dark</item>
 </resources>

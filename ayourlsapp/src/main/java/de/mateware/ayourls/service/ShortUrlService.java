@@ -51,15 +51,15 @@ public class ShortUrlService extends IntentService {
                 if (urlValidator.isValid(url)) {
                     if (intent.hasExtra(EXTRA_CONFIRMED) && intent.getBooleanExtra(EXTRA_CONFIRMED, false)) {
                         log.debug("start url shortening");
-                        RequestFuture<YourlsAction> future = RequestFuture.newFuture();
+                        RequestFuture<ShortUrl> future = RequestFuture.newFuture();
                         try {
                             if (!NetworkHelper.isConnected(this))
                                 throw new VolleyError(getString(R.string.dialog_error_no_connection_message));
                             try {
-                                YourlsRequest request = new YourlsRequest(this, new ShortUrl(url), future, future);
+                                YourlsRequest<ShortUrl> request = new YourlsRequest<>(this, new ShortUrl(url), future, future);
                                 Volley.getInstance(this)
                                       .addToRequestQueue(request);
-                                ShortUrl action = (ShortUrl) future.get(20, TimeUnit.SECONDS);
+                                ShortUrl action = future.get(20, TimeUnit.SECONDS);
 
                                 Link link = new Link();
                                 link.load(action);
