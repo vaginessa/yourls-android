@@ -33,13 +33,20 @@ public class LinkDetailActivity extends AppCompatActivity implements LoaderManag
 
     public static final String EXTRA_LINK_ID = "extraLinkId";
 
+    private static final String STATE_REFRESHING = "stateRefreshing";
+
     private LinkDetailWorkerFragment workerFragment;
     private ActivityLinkdetailBinding binding;
     private LinkViewModel linkViewModel;
 
+    private boolean refreshing;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (savedInstanceState!=null)
+            refreshing = savedInstanceState.getBoolean(STATE_REFRESHING,false);
 
         workerFragment = LinkDetailWorkerFragment.findOrCreateFragment(getSupportFragmentManager(), this);
 
@@ -58,10 +65,18 @@ public class LinkDetailActivity extends AppCompatActivity implements LoaderManag
     }
 
     @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putBoolean(STATE_REFRESHING,refreshing);
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_link_detail, menu);
         MenuTinter.tintMenu(this, menu, R.color.menu_item);
+        if (refreshing)
+            menu.findItem(R.id.action_refresh).setVisible(false);
         return true;
     }
 
@@ -73,6 +88,8 @@ public class LinkDetailActivity extends AppCompatActivity implements LoaderManag
                 supportFinishAfterTransition();
                 return true;
             case R.id.action_refresh:
+                refreshing = true;
+                invalidateOptionsMenu();
                 workerFragment.refreshLinkData(linkViewModel.getKeyword());
                 return true;
         }
@@ -109,5 +126,11 @@ public class LinkDetailActivity extends AppCompatActivity implements LoaderManag
     @Override
     public void onError(YourlsError error) {
 
+    }
+
+    @Override
+    public void onRefreshFinished() {
+        refreshing = false;
+        invalidateOptionsMenu();
     }
 }

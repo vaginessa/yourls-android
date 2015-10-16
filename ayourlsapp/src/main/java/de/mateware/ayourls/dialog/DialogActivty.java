@@ -22,6 +22,7 @@ public class DialogActivty extends AppCompatActivity implements Dialog.DialogDis
 
     public static final String DIALOG_CONFIRM = "confirmDialog";
     public static final String DIALOG_ERROR_SHORTENING = "shorteningErrorDialog";
+    public static final String DIALOG_ADD = "addDialog";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +60,8 @@ public class DialogActivty extends AppCompatActivity implements Dialog.DialogDis
                               .withBundle(bundle);
                     }
                     dialog.show(getSupportFragmentManager(), DIALOG_ERROR_SHORTENING);
+                } else if (DIALOG_ADD.equals(dialogType)) {
+
                 }
             }
         }

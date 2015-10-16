@@ -1,5 +1,6 @@
 package de.mateware.ayourls.linkdetail;
 
+import android.database.Cursor;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 
@@ -49,24 +50,29 @@ public class LinkDetailWorkerFragment extends Fragment {
                 public void onResponse(UrlStats response) {
                     log.info(response.toString());
 
-
-
-                    getContext().getContentResolver().query(Link.getContentUri(),null,Link.Columns.KEYWORD + " LIKE '"+)
-
-
-
-                    link.load()
-                    link.load(response);
-
-
-
-                    getContext().getContentResolver().update(Link.getContentUri(lin))
+                    Cursor cursor = getContext().getContentResolver()
+                                                .query(Link.getContentUri(), null, Link.Columns.KEYWORD + " LIKE '" + response.getKeyword() + "'", null, null);
+                    if (cursor != null) {
+                        try {
+                            while (cursor.moveToNext()) {
+                                Link link = new Link();
+                                link.load(cursor);
+                                link.load(response);
+                                getContext().getContentResolver()
+                                            .update(Link.getContentUri(link.getId()), link.getContentValues(), null, null);
+                            }
+                        } finally {
+                            cursor.close();
+                        }
+                    }
+                    callback.onRefreshFinished();
                 }
             }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
                     log.info(error.toString());
                     callback.onError(new YourlsError(error));
+                    callback.onRefreshFinished();
                 }
             });
             Volley.getInstance(getContext())
@@ -74,9 +80,11 @@ public class LinkDetailWorkerFragment extends Fragment {
         } else {
             callback.onError(new YourlsError(new VolleyError(getString(R.string.dialog_error_no_connection_message))));
         }
+        callback.onRefreshFinished();
     }
 
     public interface LinkDetailWorkerCallback {
+        public void onRefreshFinished();
         public void onError(YourlsError error);
     }
 
