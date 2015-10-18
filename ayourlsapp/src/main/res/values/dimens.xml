@@ -4,4 +4,6 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="qr_size_library">64dp</dimen>
     <dimen name="qr_size">256dp</dimen>
+
+    <dimen name="custom_dialog_margin">16dp</dimen>
 </resources>

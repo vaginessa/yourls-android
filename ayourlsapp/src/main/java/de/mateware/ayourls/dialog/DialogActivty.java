@@ -45,7 +45,8 @@ public class DialogActivty extends AppCompatActivity implements Dialog.DialogDis
                     }
                 } else if (DIALOG_ERROR_SHORTENING.equals(dialogType)) {
                     String errorMessage;
-                    if (getIntent().hasExtra(EXTRA_ERROR_MESSAGE)) errorMessage = getIntent().getStringExtra(EXTRA_ERROR_MESSAGE);
+                    if (getIntent().hasExtra(EXTRA_ERROR_MESSAGE))
+                        errorMessage = getIntent().getStringExtra(EXTRA_ERROR_MESSAGE);
                     else errorMessage = getString(R.string.unknown);
 
                     Dialog dialog = new Dialog().withCancelable(true)
@@ -61,7 +62,9 @@ public class DialogActivty extends AppCompatActivity implements Dialog.DialogDis
                     }
                     dialog.show(getSupportFragmentManager(), DIALOG_ERROR_SHORTENING);
                 } else if (DIALOG_ADD.equals(dialogType)) {
-
+                    new AddLinkDialog().withPositiveButton(R.string.send)
+                                       .withNegativeButton()
+                                       .show(getSupportFragmentManager(), DIALOG_ADD);
                 }
             }
         }

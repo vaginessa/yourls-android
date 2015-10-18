@@ -3,6 +3,7 @@
 
     <string name="unknown">unknown</string>
     <string name="retry">Retry</string>
+    <string name="send">Send</string>
 
     <string name="action_settings">Settings</string>
     <string name="action_refresh">Refresh</string>
@@ -20,6 +21,11 @@
 
     <string name="dialog_error_shortening_title">URL Shortening Error</string>
     <string name="dialog_error_shortening_message">An error has occurred during the shortening of the URL:\n\n%1$s</string>
+
+    <string name="dialog_add_url_hint">URL to short</string>
+    <string name="dialog_add_keyword_hint">Shorturl keyword</string>
+    <string name="dialog_add_title_hint">Title</string>
+
 
     <string name="pref_cat_server_settings">Server settings</string>
 

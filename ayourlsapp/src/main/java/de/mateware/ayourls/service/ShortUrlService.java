@@ -33,6 +33,8 @@ public class ShortUrlService extends IntentService {
     Logger log = LoggerFactory.getLogger(ShortUrlService.class);
 
     public static final String EXTRA_URL = "urlExtra";
+    public static final String EXTRA_TITLE = "titleExtra";
+    public static final String EXTRA_KEYWORD = "keywordExtra";
     public static final String EXTRA_CONFIRMED = "confirmExtra";
 
     public ShortUrlService() {
@@ -45,6 +47,8 @@ public class ShortUrlService extends IntentService {
         log.debug(intent.toString());
         if (intent.hasExtra(EXTRA_URL)) {
             String url = intent.getStringExtra(EXTRA_URL);
+            String title = intent.getStringExtra(EXTRA_TITLE);
+            String keyword = intent.getStringExtra(EXTRA_KEYWORD);
             log.debug(url);
             if (!TextUtils.isEmpty(url)) {
                 UrlValidator urlValidator = new UrlValidator(new String[]{"http", "https"}, UrlValidator.ALLOW_2_SLASHES);
@@ -56,6 +60,11 @@ public class ShortUrlService extends IntentService {
                             if (!NetworkHelper.isConnected(this))
                                 throw new VolleyError(getString(R.string.dialog_error_no_connection_message));
                             try {
+                                ShortUrl shortUrl = new ShortUrl(url);
+                                if (!TextUtils.isEmpty(title))
+                                    shortUrl.setTitle(title);
+                                if (!TextUtils.isEmpty(keyword))
+                                    shortUrl.setKeyword(keyword);
                                 YourlsRequest<ShortUrl> request = new YourlsRequest<>(this, new ShortUrl(url), future, future);
                                 Volley.getInstance(this)
                                       .addToRequestQueue(request);
@@ -82,6 +91,8 @@ public class ShortUrlService extends IntentService {
                         Intent confirmIntent = new Intent(this, DialogActivty.class);
                         confirmIntent.putExtra(DialogActivty.EXTRA_DIALOG,DialogActivty.DIALOG_CONFIRM);
                         confirmIntent.putExtra(EXTRA_URL, url);
+                        confirmIntent.putExtra(EXTRA_TITLE, title);
+                        confirmIntent.putExtra(EXTRA_KEYWORD, keyword);
                         confirmIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NO_ANIMATION);
                         startActivity(confirmIntent);
                     }

@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.mateware.ayourls.R;
+import de.mateware.ayourls.dialog.DialogActivty;
 import de.mateware.ayourls.model.Link;
 import de.mateware.ayourls.settings.SettingsActivity;
 
@@ -45,6 +46,10 @@ public class LibraryActivity extends AppCompatActivity implements LoaderManager.
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Intent addIntent = new Intent(LibraryActivity.this, DialogActivty.class);
+                addIntent.putExtra(DialogActivty.EXTRA_DIALOG, DialogActivty.DIALOG_ADD);
+                //addIntent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                startActivity(addIntent);
                 log.debug("meeep");
             }
         });
