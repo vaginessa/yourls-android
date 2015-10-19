@@ -30,7 +30,7 @@ import de.mateware.ayourls.yourslapi.action.YourlsAction;
  */
 public class ShortUrlService extends IntentService {
 
-    Logger log = LoggerFactory.getLogger(ShortUrlService.class);
+    private static final Logger log = LoggerFactory.getLogger(ShortUrlService.class);
 
     public static final String EXTRA_URL = "urlExtra";
     public static final String EXTRA_TITLE = "titleExtra";
@@ -49,47 +49,50 @@ public class ShortUrlService extends IntentService {
             String url = intent.getStringExtra(EXTRA_URL);
             String title = intent.getStringExtra(EXTRA_TITLE);
             String keyword = intent.getStringExtra(EXTRA_KEYWORD);
+            boolean confirmed = intent.getBooleanExtra(EXTRA_CONFIRMED,false);
             log.debug(url);
             if (!TextUtils.isEmpty(url)) {
-                UrlValidator urlValidator = new UrlValidator(new String[]{"http", "https"}, UrlValidator.ALLOW_2_SLASHES);
+                UrlValidator urlValidator = new UrlValidator(new String[]{"http", "https"}, UrlValidator.ALLOW_2_SLASHES + UrlValidator.ALLOW_LOCAL_URLS);
                 if (urlValidator.isValid(url)) {
-                    if (intent.hasExtra(EXTRA_CONFIRMED) && intent.getBooleanExtra(EXTRA_CONFIRMED, false)) {
+                    if (confirmed) {
                         log.debug("start url shortening");
-                        RequestFuture<ShortUrl> future = RequestFuture.newFuture();
+
                         try {
-                            if (!NetworkHelper.isConnected(this))
-                                throw new VolleyError(getString(R.string.dialog_error_no_connection_message));
+                            if (!NetworkHelper.isConnected(this)) throw new VolleyError(getString(R.string.dialog_error_no_connection_message));
                             try {
                                 ShortUrl shortUrl = new ShortUrl(url);
-                                if (!TextUtils.isEmpty(title))
-                                    shortUrl.setTitle(title);
-                                if (!TextUtils.isEmpty(keyword))
-                                    shortUrl.setKeyword(keyword);
-                                YourlsRequest<ShortUrl> request = new YourlsRequest<>(this, new ShortUrl(url), future, future);
+                                if (!TextUtils.isEmpty(title)) shortUrl.setTitle(title);
+                                if (!TextUtils.isEmpty(keyword)) shortUrl.setKeyword(keyword);
+                                RequestFuture<ShortUrl> future = RequestFuture.newFuture();
+                                YourlsRequest<ShortUrl> request = new YourlsRequest<>(this, shortUrl, future, future);
                                 Volley.getInstance(this)
                                       .addToRequestQueue(request);
                                 ShortUrl action = future.get(20, TimeUnit.SECONDS);
-
-                                Link link = new Link();
-                                link.load(action);
-                                link.save(this);
                                 if (action.getStatus() != YourlsAction.STATUS_SUCCESS) {
                                     throw new VolleyError(action.getMessage());
+                                } else {
+                                    Link link = new Link();
+                                    link.load(action);
+                                    link.save(this);
                                 }
                             } catch (InterruptedException | ExecutionException | TimeoutException | UnsupportedEncodingException e) {
                                 throw new VolleyError(e);
                             }
                         } catch (VolleyError e) {
                             Intent errorIntent = new Intent(this, DialogActivty.class);
-                            errorIntent.putExtra(DialogActivty.EXTRA_DIALOG,DialogActivty.DIALOG_ERROR_SHORTENING);
-                            errorIntent.putExtra(DialogActivty.EXTRA_ERROR_MESSAGE,e.getMessage() != null ? e.getMessage():e.getCause().getClass().getSimpleName());
+                            errorIntent.putExtra(DialogActivty.EXTRA_DIALOG, DialogActivty.DIALOG_ERROR_SHORTENING);
+                            errorIntent.putExtra(DialogActivty.EXTRA_MESSAGE, e.getMessage() != null ? e.getMessage() : e.getCause()
+                                                                                                                               .getClass()
+                                                                                                                               .getSimpleName());
                             errorIntent.putExtra(EXTRA_URL, url);
+                            errorIntent.putExtra(EXTRA_TITLE, title);
+                            errorIntent.putExtra(EXTRA_KEYWORD, keyword);
                             errorIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NO_ANIMATION);
                             startActivity(errorIntent);
                         }
                     } else {
                         Intent confirmIntent = new Intent(this, DialogActivty.class);
-                        confirmIntent.putExtra(DialogActivty.EXTRA_DIALOG,DialogActivty.DIALOG_CONFIRM);
+                        confirmIntent.putExtra(DialogActivty.EXTRA_DIALOG, DialogActivty.DIALOG_CLIPBOARD_CONFIRM);
                         confirmIntent.putExtra(EXTRA_URL, url);
                         confirmIntent.putExtra(EXTRA_TITLE, title);
                         confirmIntent.putExtra(EXTRA_KEYWORD, keyword);
@@ -100,14 +103,14 @@ public class ShortUrlService extends IntentService {
                     url = "http://" + url;
                     Intent retryIntent = new Intent(this, ShortUrlService.class);
                     retryIntent.putExtra(EXTRA_URL, url);
+                    retryIntent.putExtra(EXTRA_TITLE, title);
+                    retryIntent.putExtra(EXTRA_KEYWORD, keyword);
+                    retryIntent.putExtra(EXTRA_CONFIRMED, confirmed);
                     startService(retryIntent);
                 }
-            } else {
-                throw new IllegalArgumentException("Service have to be called with extra '" + EXTRA_URL + "'");
+                return;
             }
-        } else {
-            throw new IllegalArgumentException("Service have to be called with extra '" + EXTRA_URL + "'");
         }
-
+        throw new IllegalArgumentException("Service have to be called with extra '" + EXTRA_URL + "'");
     }
 }

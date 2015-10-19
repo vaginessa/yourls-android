@@ -3,11 +3,13 @@ package de.mateware.ayourls.dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.mateware.ayourls.R;
+import de.mateware.ayourls.service.DeleteService;
 import de.mateware.ayourls.service.ShortUrlService;
 
 /**
@@ -18,11 +20,14 @@ public class DialogActivty extends AppCompatActivity implements Dialog.DialogDis
     private static Logger log = LoggerFactory.getLogger(DialogActivty.class);
 
     public static final String EXTRA_DIALOG = "extraDialog";
-    public static final String EXTRA_ERROR_MESSAGE = "extraErrorMessage";
+    public static final String EXTRA_MESSAGE = "extraMessage";
+    public static final String EXTRA_TITLE = "extraTitle";
 
-    public static final String DIALOG_CONFIRM = "confirmDialog";
+    public static final String DIALOG_CLIPBOARD_CONFIRM = "confirmClipboardDialog";
     public static final String DIALOG_ERROR_SHORTENING = "shorteningErrorDialog";
     public static final String DIALOG_ADD = "addDialog";
+    public static final String DIALOG_DELETE_CONFIRM = "confirmDeleteDialog";
+    public static final String DIALOG_ERROR = "errorDialog";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,9 +35,11 @@ public class DialogActivty extends AppCompatActivity implements Dialog.DialogDis
         if (savedInstanceState == null) {
             if (getIntent().hasExtra(EXTRA_DIALOG)) {
                 String dialogType = getIntent().getStringExtra(EXTRA_DIALOG);
-                if (DIALOG_CONFIRM.equals(dialogType)) {
-                    if (getIntent().hasExtra(ShortUrlService.EXTRA_URL)) {
-                        String url = getIntent().getStringExtra(ShortUrlService.EXTRA_URL);
+                String url = getIntent().getStringExtra(ShortUrlService.EXTRA_URL);
+                String title = getIntent().getStringExtra(ShortUrlService.EXTRA_TITLE);
+                String keyword = getIntent().getStringExtra(ShortUrlService.EXTRA_KEYWORD);
+                if (DIALOG_CLIPBOARD_CONFIRM.equals(dialogType)) {
+                    if (!TextUtils.isEmpty(url)) {
                         Bundle bundle = new Bundle();
                         bundle.putString(ShortUrlService.EXTRA_URL, url);
                         new Dialog().withMessage(getString(R.string.dialog_confirm_shortening_message, url))
@@ -40,32 +47,67 @@ public class DialogActivty extends AppCompatActivity implements Dialog.DialogDis
                                     .withTitle(R.string.dialog_confirm_shortening_title)
                                     .withNegativeButton()
                                     .withPositiveButton()
+                                    .withNeutralButton(R.string.edit)
                                     .withBundle(bundle)
-                                    .show(getSupportFragmentManager(), DIALOG_CONFIRM);
+                                    .show(getSupportFragmentManager(), DIALOG_CLIPBOARD_CONFIRM);
                     }
+                } else if (DIALOG_DELETE_CONFIRM.equals(dialogType)) {
+                    long id = getIntent().getLongExtra(DeleteService.EXTRA_ID, -1);
+                    String message = getIntent().getStringExtra(EXTRA_MESSAGE);
+                    Bundle bundle = new Bundle();
+                    bundle.putLong(DeleteService.EXTRA_ID, id);
+                    new Dialog().withMessage(message)
+                                .withTitle(R.string.dialog_confirm_delete_title)
+                                .withPositiveButton()
+                                .withNegativeButton()
+                                .withNeutralButton(R.string.dialog_confirm_delete_also_on_server)
+                                .withBundle(bundle)
+                                .show(getSupportFragmentManager(), DIALOG_DELETE_CONFIRM);
+                } else if (DIALOG_ERROR.equals(dialogType)) {
+                    String errorMessage;
+                    if (getIntent().hasExtra(EXTRA_MESSAGE)) errorMessage = getIntent().getStringExtra(EXTRA_MESSAGE);
+                    else errorMessage = getString(R.string.unknown);
+                    new Dialog().withTitle(R.string.dialog_error_title)
+                                .withMessage(getString(R.string.dialog_error_message, errorMessage))
+                                .withPositiveButton()
+                                .show(getSupportFragmentManager(), DIALOG_ERROR);
                 } else if (DIALOG_ERROR_SHORTENING.equals(dialogType)) {
                     String errorMessage;
-                    if (getIntent().hasExtra(EXTRA_ERROR_MESSAGE))
-                        errorMessage = getIntent().getStringExtra(EXTRA_ERROR_MESSAGE);
+                    if (getIntent().hasExtra(EXTRA_MESSAGE)) errorMessage = getIntent().getStringExtra(EXTRA_MESSAGE);
                     else errorMessage = getString(R.string.unknown);
 
                     Dialog dialog = new Dialog().withCancelable(true)
                                                 .withTitle(R.string.dialog_error_shortening_title)
                                                 .withMessage(getString(R.string.dialog_error_shortening_message, errorMessage))
-                                                .withPositiveButton();
+                                                .withNegativeButton();
+
+
+                    Bundle bundle = new Bundle();
+                    bundle.putString(ShortUrlService.EXTRA_URL, url);
+                    bundle.putString(ShortUrlService.EXTRA_TITLE, title);
+                    bundle.putString(ShortUrlService.EXTRA_KEYWORD, keyword);
+                    dialog.withBundle(bundle);
+                    dialog.withNeutralButton(R.string.edit);
+
                     if (getIntent().hasExtra(ShortUrlService.EXTRA_URL)) {
-                        String url = getIntent().getStringExtra(ShortUrlService.EXTRA_URL);
-                        Bundle bundle = new Bundle();
-                        bundle.putString(ShortUrlService.EXTRA_URL, url);
-                        dialog.withNeutralButton(R.string.retry)
-                              .withBundle(bundle);
+                        dialog.withPositiveButton(R.string.retry);
                     }
+
                     dialog.show(getSupportFragmentManager(), DIALOG_ERROR_SHORTENING);
                 } else if (DIALOG_ADD.equals(dialogType)) {
+                    Bundle bundle = new Bundle();
+                    bundle.putString(ShortUrlService.EXTRA_URL, url);
+                    bundle.putString(ShortUrlService.EXTRA_TITLE, title);
+                    bundle.putString(ShortUrlService.EXTRA_KEYWORD, keyword);
                     new AddLinkDialog().withPositiveButton(R.string.send)
                                        .withNegativeButton()
+                                       .withBundle(bundle)
                                        .show(getSupportFragmentManager(), DIALOG_ADD);
+                } else {
+                    closeActivity();
                 }
+            } else {
+                closeActivity();
             }
         }
     }
@@ -73,14 +115,38 @@ public class DialogActivty extends AppCompatActivity implements Dialog.DialogDis
     @Override
     public void onDialogClick(String tag, Bundle arguments, int which) {
         log.debug(tag, which);
-        if ((DIALOG_CONFIRM.equals(tag) && which == Dialog.BUTTON_POSITIVE) || (DIALOG_ERROR_SHORTENING.equals(tag) && which == Dialog.BUTTON_NEUTRAL)) {
-            String url = arguments.getString(ShortUrlService.EXTRA_URL);
-            Intent shortServiceIntent = new Intent(this, ShortUrlService.class);
-            shortServiceIntent.putExtra(ShortUrlService.EXTRA_URL, url);
-            shortServiceIntent.putExtra(ShortUrlService.EXTRA_CONFIRMED, true);
-            startService(shortServiceIntent);
+
+        Intent restartIntent = null; //Keep it null unless you want to restart this activity;
+
+        String url = arguments.getString(ShortUrlService.EXTRA_URL);
+        String title = arguments.getString(ShortUrlService.EXTRA_TITLE);
+        String keyword = arguments.getString(ShortUrlService.EXTRA_KEYWORD);
+        if ((DIALOG_CLIPBOARD_CONFIRM.equals(tag) && which == Dialog.BUTTON_POSITIVE) || (DIALOG_ERROR_SHORTENING.equals(tag) && which == Dialog.BUTTON_POSITIVE) || (DIALOG_ADD.equals(tag) && which == Dialog.BUTTON_POSITIVE)) {
+            if (!TextUtils.isEmpty(url)) {
+                Intent shortServiceIntent = new Intent(this, ShortUrlService.class);
+                shortServiceIntent.putExtra(ShortUrlService.EXTRA_URL, url);
+                shortServiceIntent.putExtra(ShortUrlService.EXTRA_TITLE, title);
+                shortServiceIntent.putExtra(ShortUrlService.EXTRA_KEYWORD, keyword);
+                shortServiceIntent.putExtra(ShortUrlService.EXTRA_CONFIRMED, true);
+                startService(shortServiceIntent);
+            }
+        } else if ((DIALOG_ERROR_SHORTENING.equals(tag) && which == Dialog.BUTTON_NEUTRAL) || (DIALOG_CLIPBOARD_CONFIRM.equals(tag) && which == Dialog.BUTTON_NEUTRAL)) {
+            restartIntent = new Intent(this, DialogActivty.class);
+            restartIntent.putExtra(DialogActivty.EXTRA_DIALOG, DialogActivty.DIALOG_ADD);
+            restartIntent.putExtra(ShortUrlService.EXTRA_TITLE, title);
+            restartIntent.putExtra(ShortUrlService.EXTRA_URL, url);
+            restartIntent.putExtra(ShortUrlService.EXTRA_KEYWORD, keyword);
+        } else if (DIALOG_DELETE_CONFIRM.equals(tag)) {
+            if (which == Dialog.BUTTON_POSITIVE || which == Dialog.BUTTON_NEUTRAL) {
+                Intent deleteServiceIntent = new Intent(this, DeleteService.class);
+                deleteServiceIntent.putExtra(DeleteService.EXTRA_ID, arguments.getLong(DeleteService.EXTRA_ID));
+                deleteServiceIntent.putExtra(DeleteService.EXTRA_CONFIRMED, true);
+                if (which == Dialog.BUTTON_NEUTRAL) deleteServiceIntent.putExtra(DeleteService.EXTRA_DELETE_ON_SERVER, true);
+                startService(deleteServiceIntent);
+            }
         }
         closeActivity();
+        if (restartIntent != null) startActivity(restartIntent);
     }
 
     @Override

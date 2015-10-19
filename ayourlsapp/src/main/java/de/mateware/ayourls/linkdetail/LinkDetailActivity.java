@@ -1,6 +1,7 @@
 package de.mateware.ayourls.linkdetail;
 
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
@@ -20,6 +21,7 @@ import de.mateware.ayourls.DataBinder;
 import de.mateware.ayourls.R;
 import de.mateware.ayourls.databinding.ActivityLinkdetailBinding;
 import de.mateware.ayourls.model.Link;
+import de.mateware.ayourls.service.DeleteService;
 import de.mateware.ayourls.utils.MenuTinter;
 import de.mateware.ayourls.viewmodel.LinkViewModel;
 import de.mateware.ayourls.yourslapi.YourlsError;
@@ -45,8 +47,7 @@ public class LinkDetailActivity extends AppCompatActivity implements LoaderManag
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (savedInstanceState!=null)
-            refreshing = savedInstanceState.getBoolean(STATE_REFRESHING,false);
+        if (savedInstanceState != null) refreshing = savedInstanceState.getBoolean(STATE_REFRESHING, false);
 
         workerFragment = LinkDetailWorkerFragment.findOrCreateFragment(getSupportFragmentManager(), this);
 
@@ -66,7 +67,7 @@ public class LinkDetailActivity extends AppCompatActivity implements LoaderManag
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        outState.putBoolean(STATE_REFRESHING,refreshing);
+        outState.putBoolean(STATE_REFRESHING, refreshing);
         super.onSaveInstanceState(outState);
     }
 
@@ -75,8 +76,8 @@ public class LinkDetailActivity extends AppCompatActivity implements LoaderManag
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_link_detail, menu);
         MenuTinter.tintMenu(this, menu, R.color.menu_item);
-        if (refreshing)
-            menu.findItem(R.id.action_refresh).setVisible(false);
+        if (refreshing) menu.findItem(R.id.action_refresh)
+                            .setVisible(false);
         return true;
     }
 
@@ -92,6 +93,11 @@ public class LinkDetailActivity extends AppCompatActivity implements LoaderManag
                 invalidateOptionsMenu();
                 workerFragment.refreshLinkData(linkViewModel.getKeyword());
                 return true;
+            case R.id.action_delete:
+                Intent deleteServiceIntent = new Intent(this, DeleteService.class);
+                deleteServiceIntent.putExtra(DeleteService.EXTRA_ID, linkViewModel.getId());
+                startService(deleteServiceIntent);
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -105,11 +111,15 @@ public class LinkDetailActivity extends AppCompatActivity implements LoaderManag
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         log.debug("loaded {} {}", loader, data);
-        if (data.isBeforeFirst()) data.moveToNext();
-        Link link = new Link();
-        link.load(data);
-        log.debug("loaded {}", link);
-        linkViewModel.setLink(link);
+        if (data.getCount() < 1) {
+            finish();
+        } else {
+            if (data.isBeforeFirst()) data.moveToNext();
+            Link link = new Link();
+            link.load(data);
+            log.debug("loaded {}", link);
+            linkViewModel.setLink(link);
+        }
     }
 
     @Override
@@ -125,12 +135,12 @@ public class LinkDetailActivity extends AppCompatActivity implements LoaderManag
 
     @Override
     public void onError(YourlsError error) {
-
+        refreshing = false;
+        invalidateOptionsMenu();
     }
 
     @Override
     public void onRefreshFinished() {
-        refreshing = false;
-        invalidateOptionsMenu();
+
     }
 }

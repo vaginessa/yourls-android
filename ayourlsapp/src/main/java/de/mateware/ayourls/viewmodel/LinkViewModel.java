@@ -69,6 +69,10 @@ public class LinkViewModel extends BaseObservable {
                       .getQuantityString(R.plurals.viewmodel_clicks, (int) link.getClicks(), link.getClicks());
     }
 
+    public long getId() {
+        return link.getId();
+    }
+
     public View.OnClickListener onClickDetails() {
         return new View.OnClickListener() {
 

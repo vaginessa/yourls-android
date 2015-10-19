@@ -7,6 +7,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.provider.BaseColumns;
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -120,6 +121,10 @@ public class Link {
     }
 
     public void save(@NonNull Context context) {
+        if (TextUtils.isEmpty(getUrl()) || TextUtils.isEmpty(getKeyword())) {
+            log.warn("cannot save link because to less info");
+            return;
+        }
         Cursor cursor = null;
         if (id != -1) {
             cursor = context.getContentResolver()

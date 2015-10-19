@@ -29,21 +29,23 @@ public class ShortUrl extends YourlsAction {
     }
 
     public void setTitle(String title) throws UnsupportedEncodingException {
-        addParam(YourlsAction.PARAM_TITLE, URLEncoder.encode(keyword, YourlsAction.CHARSET));
+        addParam(YourlsAction.PARAM_TITLE, URLEncoder.encode(title, YourlsAction.CHARSET));
     }
 
 
     @Override
     public void performResultData(JSONObject data) throws JSONException {
-        shorturl = data.getString("shorturl");
-        JSONObject details = data.getJSONObject("url");
-        url = details.getString("url");
-        title = details.getString("title");
-        date = details.getString("date");
-        ip = details.getString("ip");
-        keyword = details.getString("keyword");
-        if (data.has("clicks"))
-            clicks = data.getLong("clicks");
+        shorturl = getJsonString(data,"shorturl");
+        if (data.has("url")) {
+            JSONObject details = data.getJSONObject("url");
+            url = getJsonString(details,"url");
+            title = getJsonString(details, "title");
+            date = getJsonString(details, "date");
+            ip = getJsonString(details, "ip");
+            keyword = getJsonString(details, "keyword");
+            if (details.has("clicks"))
+                clicks = getJsonLong(details,"clicks");
+        }
     }
 
     public String getKeyword() {

@@ -50,7 +50,6 @@ public class LibraryActivity extends AppCompatActivity implements LoaderManager.
                 addIntent.putExtra(DialogActivty.EXTRA_DIALOG, DialogActivty.DIALOG_ADD);
                 //addIntent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                 startActivity(addIntent);
-                log.debug("meeep");
             }
         });
 

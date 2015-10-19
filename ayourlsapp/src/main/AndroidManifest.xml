@@ -51,6 +51,9 @@
         <service android:name=".service.ShortUrlService" >
         </service>
 
+        <service android:name=".service.DeleteService" >
+        </service>
+
         <provider
             android:name=".provider.AyourlsProvider"
             android:authorities="de.mateware.ayourls.provider" />

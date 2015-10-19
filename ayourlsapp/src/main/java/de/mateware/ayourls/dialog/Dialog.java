@@ -139,6 +139,8 @@ public class Dialog extends DialogFragment {
         @Override
         public void onClick(DialogInterface dialog, int which) {
             log.trace("Button", which);
+            Bundle additionalArguments = new Bundle();
+            args.putAll(additionalArgumentsOnClick(additionalArguments,which));
             if (buttonListener != null) buttonListener.onDialogClick(getTag(), Dialog.this.getArguments(), which);
             else log.info(DialogButtonListener.class.getSimpleName() + " not set in Activity " + getActivity().getClass()
                                                                                                               .getSimpleName());
@@ -175,6 +177,10 @@ public class Dialog extends DialogFragment {
 
     AppCompatDialog createDialogToReturn() {
         return builder.create();
+    }
+
+    public Bundle additionalArgumentsOnClick(Bundle additionalArgs, int which) {
+        return additionalArgs;
     }
 
 
