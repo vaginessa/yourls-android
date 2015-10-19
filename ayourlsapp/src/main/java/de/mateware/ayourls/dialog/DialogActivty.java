@@ -80,8 +80,6 @@ public class DialogActivty extends AppCompatActivity implements Dialog.DialogDis
                                                 .withTitle(R.string.dialog_error_shortening_title)
                                                 .withMessage(getString(R.string.dialog_error_shortening_message, errorMessage))
                                                 .withNegativeButton();
-
-
                     Bundle bundle = new Bundle();
                     bundle.putString(ShortUrlService.EXTRA_URL, url);
                     bundle.putString(ShortUrlService.EXTRA_TITLE, title);

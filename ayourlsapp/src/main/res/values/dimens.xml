@@ -6,4 +6,6 @@
     <dimen name="qr_size">256dp</dimen>
 
     <dimen name="custom_dialog_margin">16dp</dimen>
+    <dimen name="link_detail_border">7dp</dimen>
+
 </resources>

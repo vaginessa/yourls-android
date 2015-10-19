@@ -22,14 +22,15 @@
     <string name="dialog_confirm_shortening_message">Do you really want to shorten this URL?\n\n%1$s</string>
 
     <string name="dialog_confirm_delete_title">Delete</string>
-    <string name="dialog_confirm_delete_message">Do you really want to delete this URL?\n\n%1$s\n%2$s</string>
+    <string name="dialog_confirm_delete_message">Do you really want to delete this URL?\n\n%1$s\n\n%2$s</string>
     <string name="dialog_confirm_delete_also_on_server">delete also on server</string>
 
     <string name="dialog_error_message">An error has occurred:\n\n%1$s</string>
 
-
     <string name="dialog_error_shortening_title">URL Shortening Error</string>
     <string name="dialog_error_shortening_message">An error has occurred during the shortening of the URL:\n\n%1$s</string>
+
+    <string name="dialog_error_delete_api_missing">Delete is not working on your server. It seems like there is no delete api plugin installed.</string>
 
     <string name="dialog_add_url_hint">URL to short</string>
     <string name="dialog_add_keyword_hint">Shorturl keyword</string>

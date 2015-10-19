@@ -111,6 +111,17 @@ public class YourlsRequest<T extends YourlsAction> extends Request<JSONObject> {
 
     }
 
+    @Override
+    protected VolleyError parseNetworkError(VolleyError volleyError) {
+        if(volleyError.networkResponse != null && volleyError.networkResponse.data != null){
+            try {
+                String jsonString = new String(volleyError.networkResponse.data, HttpHeaderParser.parseCharset(volleyError.networkResponse.headers));
+                volleyError = new VolleyError(jsonString);
+            } catch (UnsupportedEncodingException ignored) {
+            }
+        }
+        return volleyError;
+    }
 
     private static String convertByteArrayToHexString(byte[] arrayBytes) {
         StringBuilder stringBuffer = new StringBuilder();

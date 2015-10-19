@@ -6,6 +6,8 @@ import android.content.Intent;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.RequestFuture;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,7 +61,25 @@ public class DeleteService extends IntentService {
                                   .addToRequestQueue(request);
                             deleteAction = future.get(20, TimeUnit.SECONDS);
                         } catch (UnsupportedEncodingException | InterruptedException | TimeoutException | ExecutionException e) {
-                            throw new VolleyError(e);
+                            if (e.getCause() != null && e.getCause()
+                                                         .getMessage() != null)
+                                try {
+                                    JSONObject jsonObject = new JSONObject(e.getCause()
+                                                                            .getMessage());
+                                    int errorCode = jsonObject.getInt("errorCode");
+                                    if (errorCode == 400) {
+                                        //Asume that delete api is not installed
+                                        throw new VolleyError(getString(R.string.dialog_error_delete_api_missing));
+                                    }
+                                } catch (JSONException e1) {
+                                    throw new VolleyError(e.getCause()
+                                                           .getMessage());
+                                }
+
+                            else if (e.getCause() != null)
+                                throw new VolleyError(e.getCause());
+                            else throw new VolleyError(e);
+
                         }
                     }
 
@@ -83,6 +103,7 @@ public class DeleteService extends IntentService {
                 confirmIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NO_ANIMATION);
                 startActivity(confirmIntent);
             }
-        } else throw new IllegalArgumentException("Service have to be called with extra '" + EXTRA_ID + "'");
+        } else
+            throw new IllegalArgumentException("Service have to be called with extra '" + EXTRA_ID + "'");
     }
 }

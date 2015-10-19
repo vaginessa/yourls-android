@@ -15,50 +15,82 @@
 
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
+        android:gravity="center_vertical"
         android:orientation="vertical"
         tools:showIn="@layout/activity_linkdetail">
 
         <TextView
             android:id="@+id/title"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="center"
             android:text="@{viewModel.title}"
             android:textAppearance="?android:attr/textAppearanceLarge"/>
 
         <TextView
             android:id="@+id/shorturl"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/activity_horizontal_margin"
+            android:gravity="center"
             android:text="@{viewModel.shorturl}"
             android:textAppearance="?android:attr/textAppearanceMedium"/>
 
         <TextView
             android:id="@+id/url"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@drawable/detail_background"
+            android:paddingLeft="@dimen/link_detail_border"
+            android:paddingStart="@dimen/link_detail_border"
+            android:paddingEnd="0dp"
+            android:paddingRight="0dp"
             android:layout_marginTop="@dimen/activity_horizontal_margin"
             android:text="@{viewModel.url}"/>
 
-        <TextView
-            android:id="@+id/date"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/activity_horizontal_margin"
-            android:text="@{viewModel.date}"/>
+            android:orientation="horizontal">
 
-        <TextView
-            android:id="@+id/ip"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@{viewModel.ip}"/>
+            <TextView
+                android:id="@+id/date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/detail_background"
+                android:paddingLeft="@dimen/link_detail_border"
+                android:paddingStart="@dimen/link_detail_border"
+                android:paddingEnd="0dp"
+                android:paddingRight="0dp"
+                android:text="@{viewModel.date}"/>
 
-        <TextView
-            android:id="@+id/clickstext"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@{viewModel.clicksText}"/>
+            <TextView
+                android:id="@+id/ip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/detail_background"
+                android:paddingLeft="@dimen/link_detail_border"
+                android:paddingStart="@dimen/link_detail_border"
+                android:paddingEnd="0dp"
+                android:paddingRight="0dp"
+                android:text="@{viewModel.ip}"/>
+
+            <TextView
+                android:id="@+id/clickstext"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/detail_background"
+                android:paddingLeft="@dimen/link_detail_border"
+                android:paddingStart="@dimen/link_detail_border"
+                android:paddingEnd="0dp"
+                android:paddingRight="0dp"
+                android:text="@{viewModel.clicksText}"/>
+
+        </LinearLayout>
 
 
     </LinearLayout>
