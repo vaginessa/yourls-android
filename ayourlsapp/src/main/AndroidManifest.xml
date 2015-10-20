@@ -1,62 +1,73 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="de.mateware.ayourls" >
+<manifest
+    package="de.mateware.ayourls"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 
     <application
         android:name=".AyourlsApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
+        android:theme="@style/AppTheme">
         <activity
             android:name=".library.LibraryActivity"
-            android:label="@string/app_name" >
+            android:label="@string/app_name">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.MAIN"/>
 
-                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
         <activity
             android:name=".settings.SettingsActivity"
             android:label="@string/action_settings"
-            android:parentActivityName=".library.LibraryActivity" >
+            android:parentActivityName=".library.LibraryActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".library.LibraryActivity" />
+                android:value=".library.LibraryActivity"/>
         </activity>
         <activity
             android:name=".linkdetail.LinkDetailActivity"
-            android:parentActivityName=".library.LibraryActivity" >
+            android:parentActivityName=".library.LibraryActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".library.LibraryActivity" />
+                android:value=".library.LibraryActivity"/>
         </activity>
         <activity
             android:name=".dialog.DialogActivty"
             android:excludeFromRecents="true"
             android:launchMode="singleInstance"
             android:taskAffinity=""
-            android:theme="@style/TranslucentTheme" />
+            android:theme="@style/TranslucentTheme">
+            <intent-filter
+                android:label="@string/share">
+                <action android:name="android.intent.action.SEND"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+        </activity>
 
-        <receiver android:name=".clipboard.ClipboardChangeReceiver" >
+        <receiver android:name=".clipboard.ClipboardChangeReceiver">
             <intent-filter>
-                <action android:name="de.mateware.ayourls.action.CLIP_CHANGE" />
+                <action android:name="de.mateware.ayourls.action.CLIP_CHANGE"/>
             </intent-filter>
         </receiver>
 
-        <service android:name=".service.ShortUrlService" >
+        <service android:name=".service.ShortUrlService">
         </service>
 
-        <service android:name=".service.DeleteService" >
+        <service android:name=".service.DeleteService">
+        </service>
+
+        <service android:name=".service.ClipboardService">
         </service>
 
         <provider
             android:name=".provider.AyourlsProvider"
-            android:authorities="de.mateware.ayourls.provider" />
+            android:authorities="de.mateware.ayourls.provider"/>
     </application>
 
 </manifest>

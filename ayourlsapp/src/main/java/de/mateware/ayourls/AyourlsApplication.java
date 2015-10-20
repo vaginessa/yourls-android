@@ -7,7 +7,7 @@ import android.os.StrictMode;
 import com.squareup.picasso.OkHttpDownloader;
 import com.squareup.picasso.Picasso;
 
-import de.mateware.ayourls.clipboard.ClipboardHelper;
+import de.mateware.ayourls.service.ClipboardService;
 
 
 /**
@@ -39,6 +39,7 @@ public class AyourlsApplication extends Application {
         built.setLoggingEnabled(BuildConfig.DEBUG);
         Picasso.setSingletonInstance(built);
 
-        ClipboardHelper.checkClipboardActivation(this);
+        //ClipboardHelper.checkClipboardActivation(this);
+        ClipboardService.checkClipboardServiceActivation(this);
     }
 }

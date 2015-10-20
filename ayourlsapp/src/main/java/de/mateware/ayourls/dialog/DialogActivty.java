@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import de.mateware.ayourls.R;
 import de.mateware.ayourls.service.DeleteService;
 import de.mateware.ayourls.service.ShortUrlService;
+import de.mateware.ayourls.utils.UrlValidator;
 
 /**
  * Created by mate on 05.10.2015.
@@ -33,11 +34,32 @@ public class DialogActivty extends AppCompatActivity implements Dialog.DialogDis
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (savedInstanceState == null) {
-            if (getIntent().hasExtra(EXTRA_DIALOG)) {
-                String dialogType = getIntent().getStringExtra(EXTRA_DIALOG);
-                String url = getIntent().getStringExtra(ShortUrlService.EXTRA_URL);
-                String title = getIntent().getStringExtra(ShortUrlService.EXTRA_TITLE);
-                String keyword = getIntent().getStringExtra(ShortUrlService.EXTRA_KEYWORD);
+//            if (getIntent().getAction().equals(Intent.ACTION_SEND)) {
+//
+//                String text_data = getIntent().getStringExtra(Intent.EXTRA_TEXT);
+//                log.debug("received from send: {}",text_data);
+//                // and now you can handle this text here what you want to do.
+//            }
+
+            String dialogType = getIntent().getStringExtra(EXTRA_DIALOG);
+            String url = getIntent().getStringExtra(ShortUrlService.EXTRA_URL);
+            String title = getIntent().getStringExtra(ShortUrlService.EXTRA_TITLE);
+            String keyword = getIntent().getStringExtra(ShortUrlService.EXTRA_KEYWORD);
+            String message = getIntent().getStringExtra(EXTRA_MESSAGE);
+            if (TextUtils.isEmpty(message)) message = getString(R.string.unknown);
+
+            if (Intent.ACTION_SEND.equals(getIntent().getAction())) {
+                try {
+                    url = UrlValidator.getValidUrl(getIntent().getStringExtra(Intent.EXTRA_TEXT),false);
+                    dialogType = DIALOG_ADD;
+                } catch (UrlValidator.NoValidUrlExpception noValidUrlExpception) {
+                    message = getString(R.string.dialog_error_no_valid_url);
+                    dialogType = DIALOG_ERROR;
+                }
+            }
+
+            if (!TextUtils.isEmpty(dialogType)) {
+
                 if (DIALOG_CLIPBOARD_CONFIRM.equals(dialogType)) {
                     if (!TextUtils.isEmpty(url)) {
                         Bundle bundle = new Bundle();
@@ -53,7 +75,6 @@ public class DialogActivty extends AppCompatActivity implements Dialog.DialogDis
                     }
                 } else if (DIALOG_DELETE_CONFIRM.equals(dialogType)) {
                     long id = getIntent().getLongExtra(DeleteService.EXTRA_ID, -1);
-                    String message = getIntent().getStringExtra(EXTRA_MESSAGE);
                     Bundle bundle = new Bundle();
                     bundle.putLong(DeleteService.EXTRA_ID, id);
                     new Dialog().withMessage(message)
@@ -64,11 +85,8 @@ public class DialogActivty extends AppCompatActivity implements Dialog.DialogDis
                                 .withBundle(bundle)
                                 .show(getSupportFragmentManager(), DIALOG_DELETE_CONFIRM);
                 } else if (DIALOG_ERROR.equals(dialogType)) {
-                    String errorMessage;
-                    if (getIntent().hasExtra(EXTRA_MESSAGE)) errorMessage = getIntent().getStringExtra(EXTRA_MESSAGE);
-                    else errorMessage = getString(R.string.unknown);
                     new Dialog().withTitle(R.string.dialog_error_title)
-                                .withMessage(getString(R.string.dialog_error_message, errorMessage))
+                                .withMessage(getString(R.string.dialog_error_message, message))
                                 .withPositiveButton()
                                 .show(getSupportFragmentManager(), DIALOG_ERROR);
                 } else if (DIALOG_ERROR_SHORTENING.equals(dialogType)) {

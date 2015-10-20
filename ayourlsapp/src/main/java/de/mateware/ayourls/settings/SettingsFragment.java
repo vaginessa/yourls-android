@@ -16,8 +16,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.mateware.ayourls.R;
-import de.mateware.ayourls.clipboard.ClipboardHelper;
 import de.mateware.ayourls.dialog.Dialog;
+import de.mateware.ayourls.service.ClipboardService;
 import de.mateware.ayourls.yourslapi.YourlsError;
 import de.mateware.ayourls.yourslapi.action.DbStats;
 
@@ -56,7 +56,8 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Settin
                     }
                 }
                 if (getString(R.string.pref_key_server_check).equals(key) || getString(R.string.pref_key_app_clipboard_monitor).equals(key)) {
-                    ClipboardHelper.checkClipboardActivation(getContext());
+                    ClipboardService.checkClipboardServiceActivation(getContext());
+                    //ClipboardHelper.checkClipboardActivation(getContext());
                 }
             }
         };

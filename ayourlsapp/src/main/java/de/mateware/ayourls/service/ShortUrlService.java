@@ -7,7 +7,6 @@ import android.text.TextUtils;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.RequestFuture;
 
-import org.apache.commons.validator.routines.UrlValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,10 +15,11 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import de.mateware.ayourls.dialog.DialogActivty;
-import de.mateware.ayourls.network.NetworkHelper;
 import de.mateware.ayourls.R;
+import de.mateware.ayourls.dialog.DialogActivty;
 import de.mateware.ayourls.model.Link;
+import de.mateware.ayourls.network.NetworkHelper;
+import de.mateware.ayourls.utils.UrlValidator;
 import de.mateware.ayourls.yourslapi.Volley;
 import de.mateware.ayourls.yourslapi.YourlsRequest;
 import de.mateware.ayourls.yourslapi.action.ShortUrl;
@@ -52,8 +52,8 @@ public class ShortUrlService extends IntentService {
             boolean confirmed = intent.getBooleanExtra(EXTRA_CONFIRMED,false);
             log.debug(url);
             if (!TextUtils.isEmpty(url)) {
-                UrlValidator urlValidator = new UrlValidator(new String[]{"http", "https"}, UrlValidator.ALLOW_2_SLASHES + UrlValidator.ALLOW_LOCAL_URLS);
-                if (urlValidator.isValid(url)) {
+                try {
+                    url = UrlValidator.getValidUrl(url,true);
                     if (confirmed) {
                         log.debug("start url shortening");
 
@@ -82,8 +82,8 @@ public class ShortUrlService extends IntentService {
                             Intent errorIntent = new Intent(this, DialogActivty.class);
                             errorIntent.putExtra(DialogActivty.EXTRA_DIALOG, DialogActivty.DIALOG_ERROR_SHORTENING);
                             errorIntent.putExtra(DialogActivty.EXTRA_MESSAGE, e.getMessage() != null ? e.getMessage() : e.getCause()
-                                                                                                                               .getClass()
-                                                                                                                               .getSimpleName());
+                                                                                                                         .getClass()
+                                                                                                                         .getSimpleName());
                             errorIntent.putExtra(EXTRA_URL, url);
                             errorIntent.putExtra(EXTRA_TITLE, title);
                             errorIntent.putExtra(EXTRA_KEYWORD, keyword);
@@ -99,14 +99,8 @@ public class ShortUrlService extends IntentService {
                         confirmIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NO_ANIMATION);
                         startActivity(confirmIntent);
                     }
-                } else if (!url.startsWith("http")) {
-                    url = "http://" + url;
-                    Intent retryIntent = new Intent(this, ShortUrlService.class);
-                    retryIntent.putExtra(EXTRA_URL, url);
-                    retryIntent.putExtra(EXTRA_TITLE, title);
-                    retryIntent.putExtra(EXTRA_KEYWORD, keyword);
-                    retryIntent.putExtra(EXTRA_CONFIRMED, confirmed);
-                    startService(retryIntent);
+                } catch (UrlValidator.NoValidUrlExpception noValidUrlExpception) {
+                    log.warn(noValidUrlExpception.getMessage());
                 }
                 return;
             }
