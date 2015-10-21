@@ -26,6 +26,9 @@ public abstract class YourlsAction {
     public static final String PARAM_KEYWORD = "keyword";
     public static final String PARAM_TITLE = "title";
     public static final String PARAM_SHORTURL = "shorturl";
+    public static final String PARAM_START = "start";
+    public static final String PARAM_LIMIT = "limit";
+    public static final String PARAM_FILTER = "filter";
 
     Map<String, String> params = new HashMap<>();
     private int status = STATUS_UNKNOWN;
@@ -59,6 +62,7 @@ public abstract class YourlsAction {
     public void addParam(String key, String value) {
         params.put(key, value);
     }
+
 
     public Map<String, String> getParams() {
         return params;

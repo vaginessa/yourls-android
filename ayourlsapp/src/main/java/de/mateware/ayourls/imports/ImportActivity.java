@@ -31,7 +31,7 @@ public class ImportActivity extends AppCompatActivity implements ImportWorkerFra
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         if (savedInstanceState == null) {
-
+            workerFragment.callDbStats(this);
         }
 
     }
