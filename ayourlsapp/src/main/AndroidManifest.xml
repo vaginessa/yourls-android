@@ -30,6 +30,13 @@
                 android:value=".library.LibraryActivity"/>
         </activity>
         <activity
+            android:name=".imports.ImportActivity"
+            android:parentActivityName=".library.LibraryActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".library.LibraryActivity"/>
+        </activity>
+        <activity
             android:name=".linkdetail.LinkDetailActivity"
             android:parentActivityName=".library.LibraryActivity">
             <meta-data

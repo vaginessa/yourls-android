@@ -30,6 +30,7 @@ import java.util.List;
 
 import de.mateware.ayourls.R;
 import de.mateware.ayourls.dialog.DialogActivty;
+import de.mateware.ayourls.imports.ImportActivity;
 import de.mateware.ayourls.model.Link;
 import de.mateware.ayourls.settings.SettingsActivity;
 import de.mateware.ayourls.utils.TintHelper;
@@ -40,7 +41,7 @@ public class LibraryActivity extends AppCompatActivity implements LoaderManager.
 
     private RecyclerView recyclerView;
     private LinkLibraryAdapter adapter;
-private FloatingActionButton fab;
+    private FloatingActionButton fab;
     private LinearLayout nolinksLayout;
 
     @Override
@@ -65,7 +66,6 @@ private FloatingActionButton fab;
         TintHelper.tintImageView((ImageView) findViewById(R.id.nolinks_image), R.color.primary_dark);
 
 
-
         recyclerView = (RecyclerView) findViewById(R.id.recycler);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -79,7 +79,7 @@ private FloatingActionButton fab;
     protected void onResume() {
         super.onResume();
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        if (preferences.getBoolean(getString(R.string.pref_key_server_check),false)) {
+        if (preferences.getBoolean(getString(R.string.pref_key_server_check), false)) {
             fab.setEnabled(true);
             fab.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.fab_background_tint)));
         } else {
@@ -97,22 +97,18 @@ private FloatingActionButton fab;
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            showSettings();
-            return true;
+        switch (item.getItemId()) {
+            case R.id.action_settings:
+                Intent settingsIntent = new Intent(this, SettingsActivity.class);
+                startActivity(settingsIntent);
+                return true;
+            case R.id.action_import:
+                Intent importIntent = new Intent(this, ImportActivity.class);
+                startActivity(importIntent);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-        return super.onOptionsItemSelected(item);
-    }
-
-    private void showSettings() {
-        Intent intent = new Intent(this, SettingsActivity.class);
-        startActivity(intent);
     }
 
     @Override

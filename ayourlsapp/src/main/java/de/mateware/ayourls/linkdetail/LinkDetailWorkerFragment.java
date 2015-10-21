@@ -1,6 +1,7 @@
 package de.mateware.ayourls.linkdetail;
 
 import android.database.Cursor;
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 
@@ -41,6 +42,12 @@ public class LinkDetailWorkerFragment extends Fragment {
         }
         fragment.callback = callback;
         return fragment;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setRetainInstance(true);
     }
 
     public void refreshLinkData(String keyword) {

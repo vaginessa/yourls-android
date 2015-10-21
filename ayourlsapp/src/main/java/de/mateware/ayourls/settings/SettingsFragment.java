@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 
 import de.mateware.ayourls.R;
 import de.mateware.ayourls.dialog.Dialog;
+import de.mateware.ayourls.dialog.DialogIndeterminateProgress;
 import de.mateware.ayourls.service.ClipboardService;
 import de.mateware.ayourls.utils.UrlValidator;
 import de.mateware.ayourls.yourslapi.YourlsError;
@@ -156,7 +157,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Settin
 
         if (!TextUtils.isEmpty(url) && !TextUtils.isEmpty(token)) {
             try {
-                UrlValidator.getValidUrl(url,true);
+                UrlValidator.getValidUrl(url, true);
                 serverCheckPreference.setEnabled(true);
                 return;
             } catch (UrlValidator.NoValidUrlExpception ignored) {
@@ -213,10 +214,10 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Settin
     }
 
     private void checkServer() {
-        new Dialog().withTitle(R.string.dialog_check_server_message)
-                    .withMessage(R.string.dialog_check_server_message)
-                    .withCancelable(false)
-                    .show(getFragmentManager(), TAG_DIALOG_CHECK_SERVER);
+
+        new DialogIndeterminateProgress().withMessage(R.string.dialog_check_server_message)
+                                         .withCancelable(false)
+                                         .show(getFragmentManager(), TAG_DIALOG_CHECK_SERVER);
         workerFragment.checkServer();
     }
 
