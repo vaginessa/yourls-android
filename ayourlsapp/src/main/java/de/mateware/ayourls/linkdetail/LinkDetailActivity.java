@@ -22,7 +22,7 @@ import de.mateware.ayourls.R;
 import de.mateware.ayourls.databinding.ActivityLinkdetailBinding;
 import de.mateware.ayourls.model.Link;
 import de.mateware.ayourls.service.DeleteService;
-import de.mateware.ayourls.utils.MenuTinter;
+import de.mateware.ayourls.utils.TintHelper;
 import de.mateware.ayourls.viewmodel.LinkViewModel;
 import de.mateware.ayourls.yourslapi.YourlsError;
 
@@ -75,7 +75,7 @@ public class LinkDetailActivity extends AppCompatActivity implements LoaderManag
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_link_detail, menu);
-        MenuTinter.tintMenu(this, menu, R.color.menu_item);
+        TintHelper.tintMenu(this, menu, R.color.menu_item);
         if (refreshing) menu.findItem(R.id.action_refresh)
                             .setVisible(false);
         return true;

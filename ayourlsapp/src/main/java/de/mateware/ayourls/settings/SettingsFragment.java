@@ -11,13 +11,13 @@ import android.support.v7.preference.PreferenceFragmentCompat;
 import android.support.v7.preference.PreferenceManager;
 import android.text.TextUtils;
 
-import org.apache.commons.validator.routines.UrlValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.mateware.ayourls.R;
 import de.mateware.ayourls.dialog.Dialog;
 import de.mateware.ayourls.service.ClipboardService;
+import de.mateware.ayourls.utils.UrlValidator;
 import de.mateware.ayourls.yourslapi.YourlsError;
 import de.mateware.ayourls.yourslapi.action.DbStats;
 
@@ -155,11 +155,14 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Settin
     private void checkServerCheckEnabled(String url, String token) {
 
         if (!TextUtils.isEmpty(url) && !TextUtils.isEmpty(token)) {
-            UrlValidator urlValidator = new UrlValidator(new String[]{"http", "https"}, UrlValidator.ALLOW_LOCAL_URLS);
-            if (urlValidator.isValid(url)) {
+            try {
+                UrlValidator.getValidUrl(url,true);
                 serverCheckPreference.setEnabled(true);
                 return;
+            } catch (UrlValidator.NoValidUrlExpception ignored) {
+
             }
+
         }
         prefs.edit()
              .putBoolean(getString(R.string.pref_key_server_check), false)

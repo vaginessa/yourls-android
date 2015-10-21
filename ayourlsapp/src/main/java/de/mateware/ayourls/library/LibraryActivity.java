@@ -1,6 +1,8 @@
 package de.mateware.ayourls.library;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -10,12 +12,15 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +32,7 @@ import de.mateware.ayourls.R;
 import de.mateware.ayourls.dialog.DialogActivty;
 import de.mateware.ayourls.model.Link;
 import de.mateware.ayourls.settings.SettingsActivity;
+import de.mateware.ayourls.utils.TintHelper;
 
 public class LibraryActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
@@ -34,6 +40,8 @@ public class LibraryActivity extends AppCompatActivity implements LoaderManager.
 
     private RecyclerView recyclerView;
     private LinkLibraryAdapter adapter;
+private FloatingActionButton fab;
+    private LinearLayout nolinksLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,7 +49,7 @@ public class LibraryActivity extends AppCompatActivity implements LoaderManager.
 
         setContentView(R.layout.activity_link_library);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab = (FloatingActionButton) findViewById(R.id.fab);
         DrawableCompat.setTint(DrawableCompat.wrap(fab.getDrawable()), (ContextCompat.getColor(this, R.color.menu_item)));
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -52,6 +60,11 @@ public class LibraryActivity extends AppCompatActivity implements LoaderManager.
                 startActivity(addIntent);
             }
         });
+        nolinksLayout = (LinearLayout) findViewById(R.id.nolinks_layout);
+        nolinksLayout.setVisibility(View.GONE);
+        TintHelper.tintImageView((ImageView) findViewById(R.id.nolinks_image), R.color.primary_dark);
+
+
 
         recyclerView = (RecyclerView) findViewById(R.id.recycler);
         recyclerView.setHasFixedSize(true);
@@ -60,6 +73,19 @@ public class LibraryActivity extends AppCompatActivity implements LoaderManager.
         recyclerView.setAdapter(adapter);
         getSupportLoaderManager().initLoader(0, null, this);
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        if (preferences.getBoolean(getString(R.string.pref_key_server_check),false)) {
+            fab.setEnabled(true);
+            fab.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.fab_background_tint)));
+        } else {
+            fab.setEnabled(false);
+            fab.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, android.R.color.darker_gray)));
+        }
     }
 
     @Override
@@ -101,6 +127,12 @@ public class LibraryActivity extends AppCompatActivity implements LoaderManager.
 
 
         if (data != null) {
+
+            if (data.getCount() == 0) {
+                nolinksLayout.setVisibility(View.VISIBLE);
+                adapter.setItems(null);
+                return;
+            }
 
             if (data.moveToLast()) {
                 List<Link> links = new ArrayList<>();

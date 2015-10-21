@@ -5,4 +5,5 @@
     <color name="accent">#0091EA</color>
     <item name="background" type="color">@color/background_material_light</item>
     <item name="menu_item" type="color">@android:color/primary_text_dark</item>
+    <item name="fab_background_tint" type="color">@color/primary</item>
 </resources>

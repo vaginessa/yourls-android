@@ -58,9 +58,6 @@ dependencies {
     compile 'com.github.tony19:logback-android-classic:1.1.1-4'
     compile 'org.slf4j:slf4j-api:1.7.12'
     compile 'com.mcxiaoke.volley:library:1.0.19'
-    compile('commons-validator:commons-validator:1.4.1') {
-        exclude group: 'commons-beanutils', module: 'commons-beanutils'
-    }
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'com.squareup.okhttp:okhttp:2.5.0'
     compile 'com.squareup.okhttp:okhttp-urlconnection:2.5.0'
