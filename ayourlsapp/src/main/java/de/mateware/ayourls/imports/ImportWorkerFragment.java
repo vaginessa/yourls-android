@@ -11,7 +11,9 @@ import com.android.volley.VolleyError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import de.mateware.ayourls.R;
@@ -35,7 +37,7 @@ public class ImportWorkerFragment extends Fragment {
 
     public int limitLinksPerCall = 10;
     public long totalLinksOnServer = 0;
-    public Map<String,Link> links = new HashMap<>();
+    public Map<String,Link> linksMap = new LinkedHashMap<String,Link>();
 
     public ImportWorkerFragment() {
     }
@@ -91,8 +93,9 @@ public class ImportWorkerFragment extends Fragment {
                     log.debug(response.toString());
                     if (response.getLinks()!=null) {
                         for (Link link : response.getLinks()) {
-                            links.put(link.getKeyword(),link);
+                            linksMap.put(link.getKeyword(),link);
                         }
+                        callback.onLinkListChanged();
                     }
                 }
             }, new Response.ErrorListener() {
@@ -109,12 +112,19 @@ public class ImportWorkerFragment extends Fragment {
         }
     }
 
+    public List<Link> getLinkList() {
+        return new ArrayList<>(linksMap.values());
+    }
+
+
+
     public long getTotalLinksOnServer() {
         return totalLinksOnServer;
     }
 
     public interface ImportWorkerCallback {
         void onNetworkError(YourlsError error);
+        void onLinkListChanged();
 
         void showWaitDialog();
 

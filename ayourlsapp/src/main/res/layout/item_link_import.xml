@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <variable name="viewModel" type="de.mateware.ayourls.viewmodel.LinkImportViewModel" />
+    </data>
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/cardview"
+        app:cardBackgroundColor="@android:color/white"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="2dp"
+        android:layout_marginTop="2dp"
+        app:cardCornerRadius="2dp"
+        android:onClick="@{viewModel.onClickDetails}"
+        app:cardUseCompatPadding="true">
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="6dp"
+            android:paddingRight="6dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="@{viewModel.title}"
+                android:id="@+id/title"
+                android:maxLines="1"
+                android:minLines="1"
+                android:ellipsize="end"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@{viewModel.url}"
+                android:id="@+id/url"
+                android:maxLines="1"
+                android:minLines="1"
+                android:ellipsize="middle"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@{viewModel.shorturl}"
+                android:id="@+id/shorturl"
+                android:maxLines="1"
+                android:minLines="1"
+                android:ellipsize="middle"/>
+        </LinearLayout>
+    </android.support.v7.widget.CardView>
+
+</layout>

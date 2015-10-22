@@ -5,20 +5,24 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
+import java.util.List;
+
 import de.mateware.ayourls.R;
 import de.mateware.ayourls.dialog.Dialog;
 import de.mateware.ayourls.dialog.DialogIndeterminateProgress;
+import de.mateware.ayourls.model.Link;
 import de.mateware.ayourls.yourslapi.YourlsError;
 
 /**
  * Created by mate on 21.10.2015.
  */
-public class ImportActivity extends AppCompatActivity implements ImportWorkerFragment.ImportWorkerCallback {
+public class ImportActivity extends AppCompatActivity implements ImportWorkerFragment.ImportWorkerCallback,ImportLinkAdapter.ImportLinkAdapterCallback {
 
     ImportWorkerFragment workerFragment;
 
     private static final String TAG_DIALOG_WAIT = "dialogWait";
     private static final String TAG_DIALOG_ERROR = "dialogError";
+    private ImportLinkAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,11 +33,18 @@ public class ImportActivity extends AppCompatActivity implements ImportWorkerFra
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        adapter = new ImportLinkAdapter(this);
+        recyclerView.setAdapter(adapter);
 
         if (savedInstanceState == null) {
             workerFragment.callDbStats(this);
         }
 
+    }
+
+    @Override
+    public List<Link> getLinkList() {
+        return workerFragment.getLinkList();
     }
 
     @Override
@@ -55,5 +66,10 @@ public class ImportActivity extends AppCompatActivity implements ImportWorkerFra
                     .withMessage(getString(R.string.dialog_error_message, error.getMessage()))
                     .withPositiveButton()
                     .show(getSupportFragmentManager(), TAG_DIALOG_ERROR);
+    }
+
+    @Override
+    public void onLinkListChanged() {
+        adapter.notifyDataSetChanged();
     }
 }

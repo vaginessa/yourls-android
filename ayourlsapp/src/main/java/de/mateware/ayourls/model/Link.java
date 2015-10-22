@@ -126,7 +126,7 @@ public class Link {
             return;
         }
         Cursor cursor = null;
-        if (id != -1) {
+        if (getId() != -1) {
             cursor = context.getContentResolver()
                             .query(Link.getContentUri(getId()), null, null, null, null);
         } else {
@@ -162,14 +162,14 @@ public class Link {
 
     public ContentValues getContentValues() {
         ContentValues cv = new ContentValues();
-        cv.put(Columns.KEYWORD, keyword);
-        cv.put(Columns.URL, url);
-        cv.put(Columns.TITLE, title);
-        cv.put(Columns.DATE, date);
-        cv.put(Columns.IP, ip);
-        cv.put(Columns.SHORTURL, shorturl);
-        cv.put(Columns.CLICKS, clicks);
-        cv.put(Columns._ID, id);
+        cv.put(Columns.KEYWORD, getKeyword());
+        cv.put(Columns.URL, getUrl());
+        cv.put(Columns.TITLE, getTitle());
+        cv.put(Columns.DATE, getDate());
+        cv.put(Columns.IP, getIp());
+        cv.put(Columns.SHORTURL, getShorturl());
+        cv.put(Columns.CLICKS, getClicks());
+        cv.put(Columns._ID, getId());
         return cv;
     }
 
@@ -190,6 +190,9 @@ public class Link {
     }
 
     public String getKeyword() {
+        if (keyword == null && getShorturl() != null) {
+            setKeyword(Uri.parse(getShorturl()).getLastPathSegment());
+        }
         return keyword;
     }
 
