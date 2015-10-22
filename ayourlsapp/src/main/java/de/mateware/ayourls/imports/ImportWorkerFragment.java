@@ -11,7 +11,11 @@ import com.android.volley.VolleyError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import de.mateware.ayourls.R;
+import de.mateware.ayourls.model.Link;
 import de.mateware.ayourls.network.NetworkHelper;
 import de.mateware.ayourls.yourslapi.Volley;
 import de.mateware.ayourls.yourslapi.YourlsError;
@@ -31,6 +35,7 @@ public class ImportWorkerFragment extends Fragment {
 
     public int limitLinksPerCall = 10;
     public long totalLinksOnServer = 0;
+    public Map<String,Link> links = new HashMap<>();
 
     public ImportWorkerFragment() {
     }
@@ -84,7 +89,11 @@ public class ImportWorkerFragment extends Fragment {
                 @Override
                 public void onResponse(Stats response) {
                     log.debug(response.toString());
-
+                    if (response.getLinks()!=null) {
+                        for (Link link : response.getLinks()) {
+                            links.put(link.getKeyword(),link);
+                        }
+                    }
                 }
             }, new Response.ErrorListener() {
                 @Override
