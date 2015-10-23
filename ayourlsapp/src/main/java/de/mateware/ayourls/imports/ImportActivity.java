@@ -1,14 +1,14 @@
 package de.mateware.ayourls.imports;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
+import org.apache.commons.collections4.map.LinkedMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.List;
 
 import de.mateware.ayourls.R;
 import de.mateware.ayourls.dialog.Dialog;
@@ -43,11 +43,17 @@ public class ImportActivity extends AppCompatActivity implements ImportWorkerFra
         if (savedInstanceState == null) {
             workerFragment.callDbStats(this);
         }
+
     }
 
     @Override
-    public List<Link> getLinkList() {
-        return workerFragment.getLinkList();
+    public Context getContext() {
+        return this;
+    }
+
+    @Override
+    public LinkedMap<String,Link> getLinkList() {
+        return workerFragment.getLinksMap();
     }
 
     @Override
@@ -55,9 +61,11 @@ public class ImportActivity extends AppCompatActivity implements ImportWorkerFra
         return workerFragment.hasMoreToLoad();
     }
 
+
     @Override
     public void loadMore() {
         log.debug("loadMore!");
+        adapter.notifyItemRemoved(adapter.getItemCount()-1);
         workerFragment.loadMore(this);
     }
 
@@ -81,11 +89,15 @@ public class ImportActivity extends AppCompatActivity implements ImportWorkerFra
                     .withPositiveButton()
                     .show(getSupportFragmentManager(), TAG_DIALOG_ERROR);
     }
+//
+//    @Override
+//    public void onLinkListChanged() {
+//        adapter.notifyDataSetChanged();
+//    }
+
 
     @Override
-    public void onLinkListChanged() {
-        adapter.notifyDataSetChanged();
+    public void onItemAdded(int position) {
+        adapter.notifyItemInserted(position);
     }
-
-
 }

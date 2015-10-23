@@ -1,15 +1,17 @@
 package de.mateware.ayourls.imports;
 
+import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 
+import org.apache.commons.collections4.map.LinkedMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.List;
 
 import de.mateware.ayourls.R;
 import de.mateware.ayourls.databinding.ItemImportBinding;
@@ -31,10 +33,12 @@ public class ImportLinkAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     @Override
     public int getItemViewType(int position) {
+        int type = 0;
         if (callback.hasMoreToLoad()) {
-            if (position == getItemCount()-1) return 1;
+            if (position == getItemCount() - 1) type = 1;
         }
-        return 0;
+        log.debug("{} {}",position, type);
+        return type;
     }
 
     @Override
@@ -57,22 +61,19 @@ public class ImportLinkAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 ItemImportBinding binding = ((BindingHolder) holder).binding;
                 LinkImportViewModel linkViewModel = new LinkImportViewModel(binding.cardview.getContext());
                 linkViewModel.setLink(callback.getLinkList()
-                                              .get(position));
+                                              .getValue(position));
                 binding.setViewModel(linkViewModel);
                 break;
             case 1:
-
                 holder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-
-                        v.setEnabled(false);
-                        v.setVisibility(View.INVISIBLE);
                         callback.loadMore();
                     }
                 });
                 break;
         }
+        setAnimation(holder.itemView, position);
     }
 
     @Override
@@ -83,6 +84,20 @@ public class ImportLinkAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         if (callback.hasMoreToLoad()) result += 1;
         log.debug("adapter count: {}", result);
         return result;
+    }
+
+    /**
+     * Here is the key method to apply the animation
+     */
+    private int lastPosition = -1;
+
+    private void setAnimation(View viewToAnimate, int position) {
+        // If the bound view wasn't previously displayed on screen, it's animated
+        if (position > lastPosition) {
+            Animation animation = AnimationUtils.loadAnimation(callback.getContext(), android.R.anim.slide_in_left);
+            viewToAnimate.startAnimation(animation);
+            lastPosition = position;
+        }
     }
 
 
@@ -102,8 +117,12 @@ public class ImportLinkAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     }
 
     public interface ImportLinkAdapterCallback {
-        List<Link> getLinkList();
+        LinkedMap<String, Link> getLinkList();
+
         boolean hasMoreToLoad();
+
         void loadMore();
+
+        Context getContext();
     }
 }

@@ -8,13 +8,9 @@ import android.support.v4.app.FragmentManager;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 
+import org.apache.commons.collections4.map.LinkedMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 
 import de.mateware.ayourls.R;
 import de.mateware.ayourls.model.Link;
@@ -37,7 +33,8 @@ public class ImportWorkerFragment extends Fragment {
 
     public int limitLinksPerCall = 10;
     public long totalLinksOnServer = 0;
-    public Map<String, Link> linksMap = new LinkedHashMap<String, Link>();
+    //public Map<String, Link> linksMap = new LinkedHashMap<String, Link>();
+    public LinkedMap<String, Link> linksMap = new LinkedMap<>();
 
     public ImportWorkerFragment() {
     }
@@ -91,13 +88,13 @@ public class ImportWorkerFragment extends Fragment {
                 @Override
                 public void onResponse(Stats response) {
                     log.debug(response.toString());
+                    totalLinksOnServer = response.getTotalLinks();
                     if (response.getLinks() != null) {
                         for (Link link : response.getLinks()) {
                             linksMap.put(link.getKeyword(), link);
+                            callback.onItemAdded(linksMap.indexOf(link.getKeyword()));
                         }
                     }
-                    totalLinksOnServer = response.getTotalLinks();
-                    callback.onLinkListChanged();
                 }
             }, new Response.ErrorListener() {
                 @Override
@@ -113,8 +110,13 @@ public class ImportWorkerFragment extends Fragment {
         }
     }
 
-    public List<Link> getLinkList() {
-        return new ArrayList<>(linksMap.values());
+//    public List<Link> getLinkList() {
+//        return new ArrayList<>(linksMap.values());
+//    }
+
+
+    public LinkedMap<String, Link> getLinksMap() {
+        return linksMap;
     }
 
     public boolean hasMoreToLoad() {
@@ -127,12 +129,12 @@ public class ImportWorkerFragment extends Fragment {
         //callback.onLinkListChanged();
         int load = 0;
 
-        if (totalLinksOnServer-linksMap.size() > limitLinksPerCall)
+        if (totalLinksOnServer- linksMap.size() > limitLinksPerCall)
             load = limitLinksPerCall;
         else
-            load = (int) (totalLinksOnServer-linksMap.size());
+            load = (int) (totalLinksOnServer- linksMap.size());
 
-        callUrlStats(context,linksMap.size(),load);
+        callUrlStats(context, linksMap.size(),load);
     }
 
 
@@ -143,7 +145,11 @@ public class ImportWorkerFragment extends Fragment {
     public interface ImportWorkerCallback {
         void onNetworkError(YourlsError error);
 
-        void onLinkListChanged();
+        //void onLinkListChanged();
+
+        void onItemAdded(int position);
+
+
 
         void showWaitDialog();
 
