@@ -37,7 +37,7 @@ public class ImportWorkerFragment extends Fragment {
 
     public int limitLinksPerCall = 10;
     public long totalLinksOnServer = 0;
-    public Map<String,Link> linksMap = new LinkedHashMap<String,Link>();
+    public Map<String, Link> linksMap = new LinkedHashMap<String, Link>();
 
     public ImportWorkerFragment() {
     }
@@ -68,7 +68,7 @@ public class ImportWorkerFragment extends Fragment {
                     log.debug(response.toString());
                     totalLinksOnServer = response.getTotalLinks();
                     if (totalLinksOnServer > 0) {
-                        callUrlStats(context,0,limitLinksPerCall);
+                        callUrlStats(context, 0, limitLinksPerCall);
                     }
                 }
             }, new Response.ErrorListener() {
@@ -87,16 +87,17 @@ public class ImportWorkerFragment extends Fragment {
 
     public void callUrlStats(Context context, int start, int limit) {
         if (NetworkHelper.isConnected(context)) {
-            YourlsRequest<Stats> request = new YourlsRequest<>(context, new Stats(start,limit), new Response.Listener<Stats>() {
+            YourlsRequest<Stats> request = new YourlsRequest<>(context, new Stats(start, limit), new Response.Listener<Stats>() {
                 @Override
                 public void onResponse(Stats response) {
                     log.debug(response.toString());
-                    if (response.getLinks()!=null) {
+                    if (response.getLinks() != null) {
                         for (Link link : response.getLinks()) {
-                            linksMap.put(link.getKeyword(),link);
+                            linksMap.put(link.getKeyword(), link);
                         }
-                        callback.onLinkListChanged();
                     }
+                    totalLinksOnServer = response.getTotalLinks();
+                    callback.onLinkListChanged();
                 }
             }, new Response.ErrorListener() {
                 @Override
@@ -116,6 +117,23 @@ public class ImportWorkerFragment extends Fragment {
         return new ArrayList<>(linksMap.values());
     }
 
+    public boolean hasMoreToLoad() {
+        return totalLinksOnServer > linksMap.size();
+    }
+
+    public void loadMore(Context context) {
+        //long keepTotalLinks = totalLinksOnServer;
+        //totalLinksOnServer = linksMap.size();
+        //callback.onLinkListChanged();
+        int load = 0;
+
+        if (totalLinksOnServer-linksMap.size() > limitLinksPerCall)
+            load = limitLinksPerCall;
+        else
+            load = (int) (totalLinksOnServer-linksMap.size());
+
+        callUrlStats(context,linksMap.size(),load);
+    }
 
 
     public long getTotalLinksOnServer() {
@@ -124,6 +142,7 @@ public class ImportWorkerFragment extends Fragment {
 
     public interface ImportWorkerCallback {
         void onNetworkError(YourlsError error);
+
         void onLinkListChanged();
 
         void showWaitDialog();

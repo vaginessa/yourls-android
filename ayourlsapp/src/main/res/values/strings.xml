@@ -6,6 +6,7 @@
     <string name="retry">Retry</string>
     <string name="send">Send</string>
     <string name="edit">Edit</string>
+    <string name="load_more">load more…</string>
 
     <string name="nolinks_help">There are no links yet. After you configured your server in settings you can add or import some.</string>
 

@@ -5,6 +5,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.List;
 
 import de.mateware.ayourls.R;
@@ -17,6 +20,8 @@ import de.mateware.ayourls.yourslapi.YourlsError;
  * Created by mate on 21.10.2015.
  */
 public class ImportActivity extends AppCompatActivity implements ImportWorkerFragment.ImportWorkerCallback,ImportLinkAdapter.ImportLinkAdapterCallback {
+
+    private static Logger log = LoggerFactory.getLogger(ImportActivity.class);
 
     ImportWorkerFragment workerFragment;
 
@@ -35,16 +40,25 @@ public class ImportActivity extends AppCompatActivity implements ImportWorkerFra
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         adapter = new ImportLinkAdapter(this);
         recyclerView.setAdapter(adapter);
-
         if (savedInstanceState == null) {
             workerFragment.callDbStats(this);
         }
-
     }
 
     @Override
     public List<Link> getLinkList() {
         return workerFragment.getLinkList();
+    }
+
+    @Override
+    public boolean hasMoreToLoad() {
+        return workerFragment.hasMoreToLoad();
+    }
+
+    @Override
+    public void loadMore() {
+        log.debug("loadMore!");
+        workerFragment.loadMore(this);
     }
 
     @Override
@@ -72,4 +86,6 @@ public class ImportActivity extends AppCompatActivity implements ImportWorkerFra
     public void onLinkListChanged() {
         adapter.notifyDataSetChanged();
     }
+
+
 }
