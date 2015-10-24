@@ -5,7 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
-import java.util.List;
+import org.apache.commons.collections4.map.LinkedMap;
 
 import de.mateware.ayourls.R;
 import de.mateware.ayourls.databinding.ItemLinkImportBinding;
@@ -18,6 +18,7 @@ import de.mateware.ayourls.viewmodel.LinkImportViewModel;
 public class ImportLinkAdapter extends RecyclerView.Adapter<ImportLinkAdapter.BindingHolder> {
 
     ImportLinkAdapterCallback callback;
+
 
     public ImportLinkAdapter(ImportLinkAdapterCallback callback) {
         this.callback = callback;
@@ -33,14 +34,26 @@ public class ImportLinkAdapter extends RecyclerView.Adapter<ImportLinkAdapter.Bi
     public void onBindViewHolder(BindingHolder holder, int position) {
         ItemLinkImportBinding binding = holder.binding;
         LinkImportViewModel linkViewModel = new LinkImportViewModel(binding.cardview.getContext());
-        linkViewModel.setLink(callback.getLinkList().get(position));
+        linkViewModel.setLink(callback.getData().getValue(position));
         binding.setViewModel(linkViewModel);
     }
 
+
+
     @Override
     public int getItemCount() {
-        if (callback.getLinkList() == null) return 0;
-        return callback.getLinkList().size();
+        return callback.getData().size();
+    }
+
+    public void addItem(Link link) {
+        if (callback.getData().containsKey(link.getKeyword())) {
+            callback.getData().put(link.getKeyword(), link);
+            notifyItemChanged(callback.getData().indexOf(link.getKeyword()));
+        } else {
+            callback.getData().put(link.getKeyword(), link);
+            notifyItemInserted(callback.getData()
+                                       .indexOf(link.getKeyword()));
+        }
     }
 
     public static class BindingHolder extends RecyclerView.ViewHolder {
@@ -53,6 +66,6 @@ public class ImportLinkAdapter extends RecyclerView.Adapter<ImportLinkAdapter.Bi
     }
 
     public interface ImportLinkAdapterCallback {
-        List<Link> getLinkList();
+        LinkedMap<String, Link> getData();
     }
 }

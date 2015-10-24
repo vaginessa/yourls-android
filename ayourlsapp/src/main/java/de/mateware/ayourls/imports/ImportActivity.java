@@ -5,7 +5,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
-import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.mateware.ayourls.R;
 import de.mateware.ayourls.dialog.Dialog;
@@ -16,13 +17,16 @@ import de.mateware.ayourls.yourslapi.YourlsError;
 /**
  * Created by mate on 21.10.2015.
  */
-public class ImportActivity extends AppCompatActivity implements ImportWorkerFragment.ImportWorkerCallback,ImportLinkAdapter.ImportLinkAdapterCallback {
+public class ImportActivity extends AppCompatActivity implements ImportWorkerFragment.ImportWorkerCallback {
+
+    private static Logger log = LoggerFactory.getLogger(ImportActivity.class);
 
     ImportWorkerFragment workerFragment;
 
     private static final String TAG_DIALOG_WAIT = "dialogWait";
     private static final String TAG_DIALOG_ERROR = "dialogError";
     private ImportLinkAdapter adapter;
+    private LinearLayoutManager layoutManger;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,9 +36,24 @@ public class ImportActivity extends AppCompatActivity implements ImportWorkerFra
 
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler);
         recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new ImportLinkAdapter(this);
+        layoutManger = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(layoutManger);
+        adapter = new ImportLinkAdapter(workerFragment);
         recyclerView.setAdapter(adapter);
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                if (RecyclerView.SCROLL_STATE_IDLE == newState) {
+                    int itemCount = layoutManger.getItemCount();
+                    int lastVisible = layoutManger.findLastVisibleItemPosition();
+                    if (lastVisible+1==itemCount) {
+                        if (workerFragment.hasMoreToLoad()) {
+                            workerFragment.loadMore(ImportActivity.this);
+                        }
+                    }
+                }
+            }
+        });
 
         if (savedInstanceState == null) {
             workerFragment.callDbStats(this);
@@ -43,8 +62,9 @@ public class ImportActivity extends AppCompatActivity implements ImportWorkerFra
     }
 
     @Override
-    public List<Link> getLinkList() {
-        return workerFragment.getLinkList();
+    protected void onDestroy() {
+        workerFragment.linkAdapter = adapter;
+        super.onDestroy();
     }
 
     @Override
@@ -56,9 +76,8 @@ public class ImportActivity extends AppCompatActivity implements ImportWorkerFra
 
     @Override
     public void hideWaitDialog() {
-        DialogIndeterminateProgress.dismissDialog(getSupportFragmentManager(),TAG_DIALOG_WAIT);
+        DialogIndeterminateProgress.dismissDialog(getSupportFragmentManager(), TAG_DIALOG_WAIT);
     }
-
 
     @Override
     public void onNetworkError(YourlsError error) {
@@ -69,7 +88,8 @@ public class ImportActivity extends AppCompatActivity implements ImportWorkerFra
     }
 
     @Override
-    public void onLinkListChanged() {
-        adapter.notifyDataSetChanged();
+    public void onLinkRecevied(Link link) {
+        adapter.addItem(link);
     }
+
 }

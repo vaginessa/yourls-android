@@ -8,13 +8,9 @@ import android.support.v4.app.FragmentManager;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 
+import org.apache.commons.collections4.map.LinkedMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 
 import de.mateware.ayourls.R;
 import de.mateware.ayourls.model.Link;
@@ -28,16 +24,18 @@ import de.mateware.ayourls.yourslapi.action.Stats;
 /**
  * Created by mate on 21.10.2015.
  */
-public class ImportWorkerFragment extends Fragment {
+public class ImportWorkerFragment extends Fragment implements ImportLinkAdapter.ImportLinkAdapterCallback {
 
     private static Logger log = LoggerFactory.getLogger(ImportWorkerFragment.class);
 
     private static final String TAG_WORKER_FRAGMENT = "import_worker_fragment";
     private ImportWorkerCallback callback;
+    public ImportLinkAdapter linkAdapter;
 
     public int limitLinksPerCall = 10;
     public long totalLinksOnServer = 0;
-    public Map<String,Link> linksMap = new LinkedHashMap<String,Link>();
+
+    private LinkedMap<String, Link> data = new LinkedMap<>();
 
     public ImportWorkerFragment() {
     }
@@ -60,6 +58,7 @@ public class ImportWorkerFragment extends Fragment {
         setRetainInstance(true);
     }
 
+
     public void callDbStats(final Context context) {
         if (NetworkHelper.isConnected(context)) {
             YourlsRequest<DbStats> request = new YourlsRequest<>(context, new DbStats(), new Response.Listener<DbStats>() {
@@ -68,54 +67,69 @@ public class ImportWorkerFragment extends Fragment {
                     log.debug(response.toString());
                     totalLinksOnServer = response.getTotalLinks();
                     if (totalLinksOnServer > 0) {
-                        callUrlStats(context,0,limitLinksPerCall);
+                        callUrlStats(context, 0, limitLinksPerCall);
                     }
                 }
             }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
                     log.error(error.toString());
-                    callback.onNetworkError(new YourlsError(error));
+                    if (callback != null) callback.onNetworkError(new YourlsError(error));
                 }
             });
             Volley.getInstance(context)
                   .addToRequestQueue(request);
         } else {
-            callback.onNetworkError(new YourlsError(new VolleyError(getString(R.string.dialog_error_no_connection_message))));
+            if (callback != null)
+                callback.onNetworkError(new YourlsError(new VolleyError(getString(R.string.dialog_error_no_connection_message))));
         }
     }
 
     public void callUrlStats(Context context, int start, int limit) {
         if (NetworkHelper.isConnected(context)) {
-            YourlsRequest<Stats> request = new YourlsRequest<>(context, new Stats(start,limit), new Response.Listener<Stats>() {
+            YourlsRequest<Stats> request = new YourlsRequest<>(context, new Stats(start, limit), new Response.Listener<Stats>() {
                 @Override
                 public void onResponse(Stats response) {
                     log.debug(response.toString());
-                    if (response.getLinks()!=null) {
+                    if (response.getLinks() != null) {
                         for (Link link : response.getLinks()) {
-                            linksMap.put(link.getKeyword(),link);
+                            if (callback != null) callback.onLinkRecevied(link);
                         }
-                        callback.onLinkListChanged();
                     }
                 }
             }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
                     log.error(error.toString());
-                    callback.onNetworkError(new YourlsError(error));
+                    if (callback != null) callback.onNetworkError(new YourlsError(error));
                 }
             });
             Volley.getInstance(context)
                   .addToRequestQueue(request);
         } else {
-            callback.onNetworkError(new YourlsError(new VolleyError(getString(R.string.dialog_error_no_connection_message))));
+            if (callback != null)
+                callback.onNetworkError(new YourlsError(new VolleyError(getString(R.string.dialog_error_no_connection_message))));
         }
     }
 
-    public List<Link> getLinkList() {
-        return new ArrayList<>(linksMap.values());
+    @Override
+    public LinkedMap<String, Link> getData() {
+        return data;
     }
 
+    public boolean hasMoreToLoad() {
+        return totalLinksOnServer > data.size();
+    }
+
+    public void loadMore(Context context) {
+        int load;
+        if (totalLinksOnServer-data.size() > limitLinksPerCall)
+            load = limitLinksPerCall;
+        else
+            load = (int) (totalLinksOnServer-data.size());
+
+        callUrlStats(context,data.size(),load);
+    }
 
 
     public long getTotalLinksOnServer() {
@@ -124,7 +138,8 @@ public class ImportWorkerFragment extends Fragment {
 
     public interface ImportWorkerCallback {
         void onNetworkError(YourlsError error);
-        void onLinkListChanged();
+
+        void onLinkRecevied(Link link);
 
         void showWaitDialog();
 
