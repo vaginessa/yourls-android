@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 import org.apache.commons.collections4.map.LinkedMap;
 
 import de.mateware.ayourls.R;
-import de.mateware.ayourls.databinding.ItemLinkImportBinding;
+import de.mateware.ayourls.databinding.ItemImportBinding;
 import de.mateware.ayourls.model.Link;
 import de.mateware.ayourls.viewmodel.LinkImportViewModel;
 
@@ -26,13 +26,13 @@ public class ImportLinkAdapter extends RecyclerView.Adapter<ImportLinkAdapter.Bi
 
     @Override
     public BindingHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        ItemLinkImportBinding linkBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), R.layout.item_link_import, parent, false);
+        ItemImportBinding linkBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), R.layout.item_import, parent, false);
         return new BindingHolder(linkBinding);
     }
 
     @Override
     public void onBindViewHolder(BindingHolder holder, int position) {
-        ItemLinkImportBinding binding = holder.binding;
+        ItemImportBinding binding = holder.binding;
         LinkImportViewModel linkViewModel = new LinkImportViewModel(binding.cardview.getContext());
         linkViewModel.setLink(callback.getData().getValue(position));
         binding.setViewModel(linkViewModel);
@@ -57,9 +57,9 @@ public class ImportLinkAdapter extends RecyclerView.Adapter<ImportLinkAdapter.Bi
     }
 
     public static class BindingHolder extends RecyclerView.ViewHolder {
-        private ItemLinkImportBinding binding;
+        private ItemImportBinding binding;
 
-        public BindingHolder(ItemLinkImportBinding binding) {
+        public BindingHolder(ItemImportBinding binding) {
             super(binding.cardview);
             this.binding = binding;
         }
