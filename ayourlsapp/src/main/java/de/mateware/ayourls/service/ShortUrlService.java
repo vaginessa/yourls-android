@@ -1,7 +1,13 @@
 package de.mateware.ayourls.service;
 
 import android.app.IntentService;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.NotificationCompat;
 import android.text.TextUtils;
 
 import com.android.volley.VolleyError;
@@ -41,6 +47,8 @@ public class ShortUrlService extends IntentService {
         super(ShortUrlService.class.getSimpleName());
     }
 
+    private static int notificationId = 10000;
+
     @Override
     protected void onHandleIntent(Intent intent) {
 
@@ -49,16 +57,17 @@ public class ShortUrlService extends IntentService {
             String url = intent.getStringExtra(EXTRA_URL);
             String title = intent.getStringExtra(EXTRA_TITLE);
             String keyword = intent.getStringExtra(EXTRA_KEYWORD);
-            boolean confirmed = intent.getBooleanExtra(EXTRA_CONFIRMED,false);
+            boolean confirmed = intent.getBooleanExtra(EXTRA_CONFIRMED, false);
             log.debug(url);
             if (!TextUtils.isEmpty(url)) {
                 try {
-                    url = UrlValidator.getValidUrl(url,true);
+                    url = UrlValidator.getValidUrl(url, true);
                     if (confirmed) {
                         log.debug("start url shortening");
 
                         try {
-                            if (!NetworkHelper.isConnected(this)) throw new VolleyError(getString(R.string.dialog_error_no_connection_message));
+                            if (!NetworkHelper.isConnected(this))
+                                throw new VolleyError(getString(R.string.dialog_error_no_connection_message));
                             try {
                                 ShortUrl shortUrl = new ShortUrl(url);
                                 if (!TextUtils.isEmpty(title)) shortUrl.setTitle(title);
@@ -74,6 +83,25 @@ public class ShortUrlService extends IntentService {
                                     Link link = new Link();
                                     link.load(action);
                                     link.save(this);
+
+                                    Intent shareIntent = new Intent(Intent.ACTION_SEND);
+                                    shareIntent.putExtra(Intent.EXTRA_TEXT, link.getShorturl());
+                                    shareIntent.setType("text/plain");
+                                    PendingIntent pendingShareIntent = PendingIntent.getActivity(this, 0, Intent.createChooser(shareIntent, getString(R.string.action_share)),
+                                            PendingIntent.FLAG_UPDATE_CURRENT);
+
+                                    Notification notification = new NotificationCompat.Builder(this).setContentTitle(link.getTitle())
+                                                                                                    .setContentText(link.getShorturl())
+                                                                                                    .setStyle(new NotificationCompat.BigTextStyle().bigText(link.getShorturl() + "\n\n" + link.getUrl()))
+                                                                                                    .setSmallIcon(R.drawable.ic_link_24dp)
+                                                                                                    .setColor(ContextCompat.getColor(this, R.color.primary))
+                                                                                                    .addAction(R.drawable.ic_share_24dp, getString(R.string.action_share), pendingShareIntent)
+                                                                                                    .build();
+
+                                    NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                                    notificationManager.notify(link.getShorturl(), notificationId++, notification);
+
+
                                 }
                             } catch (InterruptedException | ExecutionException | TimeoutException | UnsupportedEncodingException e) {
                                 throw new VolleyError(e);

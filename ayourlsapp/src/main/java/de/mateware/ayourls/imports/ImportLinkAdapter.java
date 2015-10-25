@@ -56,6 +56,7 @@ public class ImportLinkAdapter extends RecyclerView.Adapter<ImportLinkAdapter.Bi
         }
     }
 
+
     public static class BindingHolder extends RecyclerView.ViewHolder {
         private ItemImportBinding binding;
 

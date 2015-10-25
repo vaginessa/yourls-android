@@ -120,10 +120,12 @@ public class Link {
         setShorturl(action.getShorturl());
     }
 
-    public void save(@NonNull Context context) {
+    public enum SaveResult {INSERTED, UPDATED, ERROR}
+
+    public SaveResult save(@NonNull Context context) {
         if (TextUtils.isEmpty(getUrl()) || TextUtils.isEmpty(getKeyword())) {
             log.warn("cannot save link because to less info");
-            return;
+            return SaveResult.ERROR;
         }
         Cursor cursor = null;
         if (getId() != -1) {
@@ -131,15 +133,16 @@ public class Link {
                             .query(Link.getContentUri(getId()), null, null, null, null);
         } else {
             cursor = context.getContentResolver()
-                            .query(Link.getContentUri(), null, Columns.SHORTURL + " LIKE '"+ getShorturl() +"'", null, null);
+                            .query(Link.getContentUri(), null, Columns.SHORTURL + " LIKE '" + getShorturl() + "'", null, null);
         }
         if (cursor != null) {
             try {
                 if (cursor.moveToNext()) {
                     setId(cursor.getLong(cursor.getColumnIndex(Columns._ID)));
-                    context.getContentResolver()
-                           .update(Link.getContentUri(getId()), getContentValues(), null, null);
-                    return;
+                    if (context.getContentResolver()
+                               .update(Link.getContentUri(getId()), getContentValues(), null, null) > 0)
+                        return SaveResult.UPDATED;
+                    return SaveResult.ERROR;
                 }
             } finally {
                 cursor.close();
@@ -147,6 +150,7 @@ public class Link {
         }
         setId(ContentUris.parseId(context.getContentResolver()
                                          .insert(Link.getContentUri(), getContentValues())));
+        return SaveResult.INSERTED;
     }
 
     public boolean delete(@NonNull Context context) {
@@ -191,7 +195,8 @@ public class Link {
 
     public String getKeyword() {
         if (keyword == null && getShorturl() != null) {
-            setKeyword(Uri.parse(getShorturl()).getLastPathSegment());
+            setKeyword(Uri.parse(getShorturl())
+                          .getLastPathSegment());
         }
         return keyword;
     }

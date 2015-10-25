@@ -1,9 +1,11 @@
 package de.mateware.ayourls.imports;
 
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.widget.FrameLayout;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,12 +29,15 @@ public class ImportActivity extends AppCompatActivity implements ImportWorkerFra
     private static final String TAG_DIALOG_ERROR = "dialogError";
     private ImportLinkAdapter adapter;
     private LinearLayoutManager layoutManger;
+    private FrameLayout layout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_import);
         workerFragment = ImportWorkerFragment.findOrCreateFragment(getSupportFragmentManager(), this);
+
+        layout = (FrameLayout) findViewById(R.id.layout);
 
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler);
         recyclerView.setHasFixedSize(true);
@@ -90,6 +95,25 @@ public class ImportActivity extends AppCompatActivity implements ImportWorkerFra
     @Override
     public void onLinkRecevied(Link link) {
         adapter.addItem(link);
+    }
+
+    public void onImportLink(Link link){
+        log.debug("{}", link.getShorturl());
+        String snackText = getString(R.string.unknown);
+        switch(link.save(this)) {
+            case INSERTED:
+                snackText = getString(R.string.snack_link_import_inserted,link.getShorturl());
+                adapter.notifyItemChanged(workerFragment.getData().indexOf(link.getKeyword()));
+                break;
+            case UPDATED:
+                snackText = getString(R.string.snack_link_import_updated,link.getShorturl());
+                adapter.notifyItemChanged(workerFragment.getData().indexOf(link.getKeyword()));
+                break;
+            case ERROR:
+                snackText = getString(R.string.snack_link_import_error,link.getShorturl());
+                break;
+        }
+        Snackbar.make(layout,snackText,Snackbar.LENGTH_SHORT).show();
     }
 
 }

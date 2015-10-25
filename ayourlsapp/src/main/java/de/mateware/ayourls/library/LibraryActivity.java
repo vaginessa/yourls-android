@@ -114,7 +114,7 @@ public class LibraryActivity extends AppCompatActivity implements LoaderManager.
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         log.debug("creating loader with id {} and args {}", id, args);
-        return new CursorLoader(this, Link.getContentUri(), null, null, null, null);
+        return new CursorLoader(this, Link.getContentUri(), null, null, null, Link.Columns.DATE + " ASC");
     }
 
     @Override

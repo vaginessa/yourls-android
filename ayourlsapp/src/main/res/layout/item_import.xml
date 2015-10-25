@@ -14,6 +14,7 @@
         android:layout_marginBottom="2dp"
         android:layout_marginTop="2dp"
         app:cardCornerRadius="2dp"
+        android:foreground="?attr/selectableItemBackground"
         android:onClick="@{viewModel.onClickDetails}"
         app:cardUseCompatPadding="true">
         <LinearLayout
@@ -21,6 +22,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingLeft="6dp"
+            android:textColor="@android:color/darker_gray"
             android:paddingRight="6dp">
 
             <TextView
@@ -31,6 +33,7 @@
                 android:id="@+id/title"
                 android:maxLines="1"
                 android:minLines="1"
+                android:textColor="@{viewModel.titleTextColor}"
                 android:ellipsize="end"/>
 
             <TextView
@@ -38,6 +41,7 @@
                 android:layout_height="wrap_content"
                 android:text="@{viewModel.url}"
                 android:id="@+id/url"
+                android:textColor="@android:color/darker_gray"
                 android:maxLines="1"
                 android:minLines="1"
                 android:ellipsize="middle"/>
@@ -47,6 +51,7 @@
                 android:layout_height="wrap_content"
                 android:text="@{viewModel.shorturl}"
                 android:id="@+id/shorturl"
+                android:textColor="@android:color/darker_gray"
                 android:maxLines="1"
                 android:minLines="1"
                 android:ellipsize="middle"/>

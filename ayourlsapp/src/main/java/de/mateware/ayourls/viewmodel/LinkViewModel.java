@@ -33,6 +33,10 @@ public class LinkViewModel extends BaseObservable {
         notifyChange();
     }
 
+    public Context getContext() {
+        return context;
+    }
+
     @Bindable
     public String getTitle() {
         return link.getTitle();
@@ -71,6 +75,10 @@ public class LinkViewModel extends BaseObservable {
 
     public long getId() {
         return link.getId();
+    }
+
+    public Link getLink() {
+        return link;
     }
 
     public View.OnClickListener onClickDetails() {
