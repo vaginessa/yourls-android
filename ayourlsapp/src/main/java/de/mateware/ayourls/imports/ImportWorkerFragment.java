@@ -123,12 +123,12 @@ public class ImportWorkerFragment extends Fragment implements ImportLinkAdapter.
 
     public void loadMore(Context context) {
         int load;
-        if (totalLinksOnServer-data.size() > limitLinksPerCall)
+        if (totalLinksOnServer - data.size() > limitLinksPerCall)
             load = limitLinksPerCall;
         else
-            load = (int) (totalLinksOnServer-data.size());
+            load = (int) (totalLinksOnServer - data.size());
 
-        callUrlStats(context,data.size(),load);
+        callUrlStats(context, data.size(), load);
     }
 
 

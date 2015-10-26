@@ -15,6 +15,7 @@
     <string name="action_refresh">Refresh</string>
     <string name="action_delete">Delete</string>
     <string name="action_share">Share</string>
+    <string name="action_copy">Copy</string>
 
     <string name="service_clipboard_notification_title">@string/app_name</string>
     <string name="service_clipboard_notification_text">Monitoring your clipboard for URLs.</string>
@@ -50,6 +51,8 @@
     <string name="snack_link_import_inserted">%1$s imported.</string>
     <string name="snack_link_import_updated">%1$s updated.</string>
     <string name="snack_link_import_error">Error importing %1$s.</string>
+
+    <string name="toast_added_to_clipboard">%1$s copied to clipboard</string>
 
     <string name="pref_cat_server_settings">Server settings</string>
 

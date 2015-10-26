@@ -22,7 +22,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import de.mateware.ayourls.R;
+import de.mateware.ayourls.clipboard.NotificationClipboardReceiver;
 import de.mateware.ayourls.dialog.DialogActivty;
+import de.mateware.ayourls.linkdetail.LinkDetailActivity;
 import de.mateware.ayourls.model.Link;
 import de.mateware.ayourls.network.NetworkHelper;
 import de.mateware.ayourls.utils.UrlValidator;
@@ -90,18 +92,27 @@ public class ShortUrlService extends IntentService {
                                     PendingIntent pendingShareIntent = PendingIntent.getActivity(this, 0, Intent.createChooser(shareIntent, getString(R.string.action_share)),
                                             PendingIntent.FLAG_UPDATE_CURRENT);
 
+                                    Intent copyIntent = new Intent(NotificationClipboardReceiver.ACTION_COPY);
+                                    copyIntent.putExtra(NotificationClipboardReceiver.ARG_TEXT, link.getShorturl());
+                                    PendingIntent pendingCopyIntent = PendingIntent.getBroadcast(this, 0, copyIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+                                    Intent openIntent = new Intent(this, LinkDetailActivity.class);
+                                    openIntent.putExtra(LinkDetailActivity.EXTRA_LINK_ID, link.getId());
+                                    PendingIntent contentIntent = PendingIntent.getActivity(this, 0, openIntent, 0);
+
                                     Notification notification = new NotificationCompat.Builder(this).setContentTitle(link.getTitle())
                                                                                                     .setContentText(link.getShorturl())
                                                                                                     .setStyle(new NotificationCompat.BigTextStyle().bigText(link.getShorturl() + "\n\n" + link.getUrl()))
                                                                                                     .setSmallIcon(R.drawable.ic_link_24dp)
                                                                                                     .setColor(ContextCompat.getColor(this, R.color.primary))
+                                                                                                    .setContentIntent(contentIntent)
+                                                                                                    .setAutoCancel(true)
                                                                                                     .addAction(R.drawable.ic_share_24dp, getString(R.string.action_share), pendingShareIntent)
+                                                                                                    .addAction(R.drawable.ic_content_copy_24dp, getString(R.string.action_copy), pendingCopyIntent)
                                                                                                     .build();
 
                                     NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
                                     notificationManager.notify(link.getShorturl(), notificationId++, notification);
-
-
                                 }
                             } catch (InterruptedException | ExecutionException | TimeoutException | UnsupportedEncodingException e) {
                                 throw new VolleyError(e);

@@ -1,11 +1,11 @@
 package de.mateware.ayourls.dialog;
 
-import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatDialog;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.EditText;
 
@@ -15,16 +15,15 @@ import de.mateware.ayourls.service.ShortUrlService;
 /**
  * Created by Mate on 18.10.2015.
  */
-public class AddLinkDialog extends DialogCustomView {
+public class AddLinkDialog extends DialogScrollingCustomView {
 
     EditText titleEditText;
     EditText urlEditText;
     EditText keywordEditText;
 
-    @SuppressLint("WrongViewCast")
     @Override
-    public View getView(LayoutInflater inflater) {
-        View view = inflater.inflate(R.layout.dialog_addlink, null);
+    public View getView(LayoutInflater inflater, ViewGroup parent) {
+        View view = inflater.inflate(R.layout.dialog_addlink, parent,false);
         titleEditText = (EditText) view.findViewById(R.id.title);
         urlEditText = (EditText) view.findViewById(R.id.url);
         keywordEditText = (EditText) view.findViewById(R.id.keyword);

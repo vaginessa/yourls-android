@@ -131,6 +131,7 @@ public class LibraryActivity extends AppCompatActivity implements LoaderManager.
             }
 
             if (data.moveToLast()) {
+                nolinksLayout.setVisibility(View.GONE);
                 List<Link> links = new ArrayList<>();
                 do {
                     Link link = new Link();

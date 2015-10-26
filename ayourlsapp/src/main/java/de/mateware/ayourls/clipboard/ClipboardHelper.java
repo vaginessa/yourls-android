@@ -1,10 +1,12 @@
 package de.mateware.ayourls.clipboard;
 
+import android.annotation.TargetApi;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
+import android.text.TextUtils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +19,7 @@ public class ClipboardHelper {
     private static Logger log = LoggerFactory.getLogger(ClipboardHelper.class);
 
     private static ClipboardHelper instance;
+    private static String lastClipTextSet;
 
     public static ClipboardHelper getInstance(Context context) {
         if (instance == null) instance = new ClipboardHelper(context.getApplicationContext());
@@ -33,9 +36,12 @@ public class ClipboardHelper {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             clipboardManager = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
             listener = new ClipboardManager.OnPrimaryClipChangedListener() {
+                @TargetApi(Build.VERSION_CODES.HONEYCOMB)
                 @Override
                 public void onPrimaryClipChanged() {
-                    log.debug("clipboard content changed, listener:"+this.toString());
+                    log.debug("clipboard content changed, listener:" + this.toString());
+                    if (!TextUtils.isEmpty(lastClipTextSet) && lastClipTextSet.equals(getClipContent()))
+                        return;
                     Intent intent = new Intent(ClipboardChangeReceiver.ACTION);
                     context.sendBroadcast(intent);
                 }
@@ -100,6 +106,23 @@ public class ClipboardHelper {
             }
         }
         return null;
+    }
+
+    public boolean setClipContent(String text) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            if (clipboardManager != null) {
+                ClipData clip = ClipData.newPlainText("aYourls", text);
+                lastClipTextSet = text;
+                clipboardManager.setPrimaryClip(clip);
+                return true;
+            }
+        } else {
+            if (clipboardManagerCompat != null) {
+                clipboardManagerCompat.setText(text);
+                return true;
+            }
+        }
+        return false;
     }
 
 

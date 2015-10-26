@@ -4,6 +4,8 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatDialog;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+
 
 /**
  * Created by Mate on 18.10.2015.
@@ -19,8 +21,8 @@ public abstract class DialogCustomView extends Dialog {
     @Override
     AppCompatDialog createDialogToReturn() {
         AlertDialog result = builder.create();
-        customView = getView(LayoutInflater.from(getActivity()));
-        result.setView(customView);
+        setCustomView(getView(LayoutInflater.from(getContext()), null));
+        result.setView(getCustomView());
         return result;
     }
 
@@ -29,6 +31,14 @@ public abstract class DialogCustomView extends Dialog {
         super.onStart();
     }
 
-    public abstract View getView(LayoutInflater inflater);
+    public void setCustomView(View customView) {
+        this.customView = customView;
+    }
+
+    public View getCustomView() {
+        return customView;
+    }
+
+    public abstract View getView(LayoutInflater inflater, ViewGroup parent);
 
 }

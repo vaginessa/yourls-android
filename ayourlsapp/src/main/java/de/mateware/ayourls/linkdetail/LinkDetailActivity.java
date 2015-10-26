@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 
 import de.mateware.ayourls.DataBinder;
 import de.mateware.ayourls.R;
+import de.mateware.ayourls.clipboard.NotificationClipboardReceiver;
 import de.mateware.ayourls.databinding.ActivityLinkdetailBinding;
 import de.mateware.ayourls.model.Link;
 import de.mateware.ayourls.service.DeleteService;
@@ -93,9 +94,20 @@ public class LinkDetailActivity extends AppCompatActivity implements LoaderManag
                 invalidateOptionsMenu();
                 workerFragment.refreshLinkData(linkViewModel.getKeyword());
                 return true;
+            case R.id.action_copy:
+                Intent copyIntent = new Intent(NotificationClipboardReceiver.ACTION_COPY);
+                copyIntent.putExtra(NotificationClipboardReceiver.ARG_TEXT, linkViewModel.getShorturl());
+                sendBroadcast(copyIntent);
+                return true;
+            case R.id.action_share:
+                Intent shareIntent = new Intent(Intent.ACTION_SEND);
+                shareIntent.putExtra(Intent.EXTRA_TEXT, linkViewModel.getShorturl());
+                shareIntent.setType("text/plain");
+                startActivity(Intent.createChooser(shareIntent, getString(R.string.action_share)));
+                return true;
             case R.id.action_delete:
                 Intent deleteServiceIntent = new Intent(this, DeleteService.class);
-                deleteServiceIntent.putExtra(DeleteService.EXTRA_ID, linkViewModel.getId());
+                deleteServiceIntent.putExtra(DeleteService.EXTRA_ID,linkViewModel.getId());
                 startService(deleteServiceIntent);
                 return true;
         }

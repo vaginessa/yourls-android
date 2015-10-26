@@ -62,6 +62,11 @@
                 <action android:name="de.mateware.ayourls.action.CLIP_CHANGE"/>
             </intent-filter>
         </receiver>
+        <receiver android:name=".clipboard.NotificationClipboardReceiver">
+            <intent-filter>
+                <action android:name="de.mateware.ayourls.action.ACTION_COPY"/>
+            </intent-filter>
+        </receiver>
 
         <service android:name=".service.ShortUrlService">
         </service>
