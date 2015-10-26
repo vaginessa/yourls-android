@@ -33,8 +33,8 @@
     <string name="dialog_confirm_shortening_message">Do you really want to shorten this URL?\n\n%1$s</string>
 
     <string name="dialog_confirm_delete_title">Delete</string>
-    <string name="dialog_confirm_delete_message">Do you really want to delete this URL?\n\n%1$s\n\n%2$s</string>
-    <string name="dialog_confirm_delete_also_on_server">delete also on server</string>
+    <string name="dialog_confirm_delete_message">Do you really want to delete this URL?</string>
+    <string name="dialog_confirm_delete_also_on_server">Delete on server</string>
 
     <string name="dialog_error_message">An error has occurred:\n\n%1$s</string>
 
@@ -69,6 +69,10 @@
 
     <string name="pref_app_clipboard_monitor_title">Clipboard monitor</string>
     <string name="pref_app_clipboard_monitor_summary">Checking clipboard for URL. Works only on Android 3 and higher.</string>
+
+    <string name="pref_app_delete_server_default_title">Delete on server as default</string>
+    <string name="pref_app_delete_server_default_summary">On the delete confirm dialog "Delete on server" will be checked as default.</string>
+
 
     <plurals name="viewmodel_clicks">
         <item quantity="zero">no clicks</item>

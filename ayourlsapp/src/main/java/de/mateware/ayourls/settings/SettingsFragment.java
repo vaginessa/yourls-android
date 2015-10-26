@@ -126,14 +126,10 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Settin
 
     private void enableAppPreferenceCategory(boolean value) {
         CheckBoxPreference appClipboardPreference = (CheckBoxPreference) findPreference(getString(R.string.pref_key_app_clipboard_monitor));
-        bindPreference(appClipboardPreference, new OnPreferenceChangeListenerImpl() {
-            @Override
-            public boolean onPreferenceChange(Preference preference, Object o) {
-                return super.onPreferenceChange(preference, o);
-            }
-        });
+        bindPreference(appClipboardPreference, new OnPreferenceChangeListenerImpl());
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) appClipboardPreference.setEnabled(value);
-
+        CheckBoxPreference appDeleteServerDefaultPreference = (CheckBoxPreference) findPreference(getString(R.string.pref_key_app_delete_server_default));
+        bindPreference(appDeleteServerDefaultPreference, new OnPreferenceChangeListenerImpl());
     }
 
     @Override

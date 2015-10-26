@@ -99,7 +99,7 @@ public class DeleteService extends IntentService {
                 Intent confirmIntent = new Intent(this, DialogActivty.class);
                 confirmIntent.putExtra(DialogActivty.EXTRA_DIALOG, DialogActivty.DIALOG_DELETE_CONFIRM);
                 confirmIntent.putExtra(EXTRA_ID, linkId);
-                confirmIntent.putExtra(DialogActivty.EXTRA_MESSAGE, getString(R.string.dialog_confirm_delete_message, link.getShorturl(), link.getTitle()));
+                confirmIntent.putExtra(DialogActivty.EXTRA_MESSAGE, getString(R.string.dialog_confirm_delete_message));
                 confirmIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NO_ANIMATION);
                 startActivity(confirmIntent);
             }

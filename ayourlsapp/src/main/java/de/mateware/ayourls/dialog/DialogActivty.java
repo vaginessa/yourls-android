@@ -1,8 +1,10 @@
 package de.mateware.ayourls.dialog;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.preference.PreferenceManager;
 import android.text.TextUtils;
 
 import org.slf4j.Logger;
@@ -34,12 +36,12 @@ public class DialogActivty extends AppCompatActivity implements Dialog.DialogDis
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (savedInstanceState == null) {
-//            if (getIntent().getAction().equals(Intent.ACTION_SEND)) {
-//
-//                String text_data = getIntent().getStringExtra(Intent.EXTRA_TEXT);
-//                log.debug("received from send: {}",text_data);
-//                // and now you can handle this text here what you want to do.
-//            }
+            //            if (getIntent().getAction().equals(Intent.ACTION_SEND)) {
+            //
+            //                String text_data = getIntent().getStringExtra(Intent.EXTRA_TEXT);
+            //                log.debug("received from send: {}",text_data);
+            //                // and now you can handle this text here what you want to do.
+            //            }
 
             String dialogType = getIntent().getStringExtra(EXTRA_DIALOG);
             String url = getIntent().getStringExtra(ShortUrlService.EXTRA_URL);
@@ -50,7 +52,7 @@ public class DialogActivty extends AppCompatActivity implements Dialog.DialogDis
 
             if (Intent.ACTION_SEND.equals(getIntent().getAction())) {
                 try {
-                    url = UrlValidator.getValidUrl(getIntent().getStringExtra(Intent.EXTRA_TEXT),false);
+                    url = UrlValidator.getValidUrl(getIntent().getStringExtra(Intent.EXTRA_TEXT), false);
                     dialogType = DIALOG_ADD;
                 } catch (UrlValidator.NoValidUrlExpception noValidUrlExpception) {
                     message = getString(R.string.dialog_error_no_valid_url);
@@ -74,16 +76,20 @@ public class DialogActivty extends AppCompatActivity implements Dialog.DialogDis
                                     .show(getSupportFragmentManager(), DIALOG_CLIPBOARD_CONFIRM);
                     }
                 } else if (DIALOG_DELETE_CONFIRM.equals(dialogType)) {
+                    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+
                     long id = getIntent().getLongExtra(DeleteService.EXTRA_ID, -1);
                     Bundle bundle = new Bundle();
                     bundle.putLong(DeleteService.EXTRA_ID, id);
-                    new Dialog().withMessage(message)
-                                .withTitle(R.string.dialog_confirm_delete_title)
-                                .withPositiveButton()
-                                .withNegativeButton()
-                                .withNeutralButton(R.string.dialog_confirm_delete_also_on_server)
-                                .withBundle(bundle)
-                                .show(getSupportFragmentManager(), DIALOG_DELETE_CONFIRM);
+
+                    new DeleteLinkDialog().setLinkId(id)
+                                          .setCheckBoxChecked(prefs.getBoolean(getString(R.string.pref_key_app_delete_server_default), false))
+                                          .withMessage(message)
+                                          .withTitle(R.string.dialog_confirm_delete_title)
+                                          .withPositiveButton()
+                                          .withNegativeButton()
+                                          .withBundle(bundle)
+                                          .show(getSupportFragmentManager(), DIALOG_DELETE_CONFIRM);
                 } else if (DIALOG_ERROR.equals(dialogType)) {
                     new Dialog().withTitle(R.string.dialog_error_title)
                                 .withMessage(getString(R.string.dialog_error_message, message))
@@ -149,13 +155,22 @@ public class DialogActivty extends AppCompatActivity implements Dialog.DialogDis
             restartIntent.putExtra(ShortUrlService.EXTRA_URL, url);
             restartIntent.putExtra(ShortUrlService.EXTRA_KEYWORD, keyword);
         } else if (DIALOG_DELETE_CONFIRM.equals(tag)) {
-            if (which == Dialog.BUTTON_POSITIVE || which == Dialog.BUTTON_NEUTRAL) {
+            if (which == Dialog.BUTTON_POSITIVE) {
                 Intent deleteServiceIntent = new Intent(this, DeleteService.class);
-                deleteServiceIntent.putExtra(DeleteService.EXTRA_ID, arguments.getLong(DeleteService.EXTRA_ID));
+                deleteServiceIntent.putExtra(DeleteService.EXTRA_ID, arguments.getLong(DeleteLinkDialog.ARG_LONG_LINKID));
                 deleteServiceIntent.putExtra(DeleteService.EXTRA_CONFIRMED, true);
-                if (which == Dialog.BUTTON_NEUTRAL) deleteServiceIntent.putExtra(DeleteService.EXTRA_DELETE_ON_SERVER, true);
+                deleteServiceIntent.putExtra(DeleteService.EXTRA_DELETE_ON_SERVER, arguments.getBoolean(DeleteLinkDialog.ARG_BOOL_DELETEONSERVER,false));
                 startService(deleteServiceIntent);
             }
+
+
+//            if (which == Dialog.BUTTON_POSITIVE || which == Dialog.BUTTON_NEUTRAL) {
+//                Intent deleteServiceIntent = new Intent(this, DeleteService.class);
+//                deleteServiceIntent.putExtra(DeleteService.EXTRA_ID, arguments.getLong(DeleteService.EXTRA_ID));
+//                deleteServiceIntent.putExtra(DeleteService.EXTRA_CONFIRMED, true);
+//                if (which == Dialog.BUTTON_NEUTRAL) deleteServiceIntent.putExtra(DeleteService.EXTRA_DELETE_ON_SERVER, true);
+//                startService(deleteServiceIntent);
+//            }
         }
         closeActivity();
         if (restartIntent != null) startActivity(restartIntent);

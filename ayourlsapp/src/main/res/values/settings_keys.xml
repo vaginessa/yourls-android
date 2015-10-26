@@ -6,4 +6,5 @@
     <string name="pref_key_server_check">pref_server_check</string>
     <string name="pref_key_app_settings">pref_app_settings</string>
     <string name="pref_key_app_clipboard_monitor">pref_app_clipboard_monitor</string>
+    <string name="pref_key_app_delete_server_default">pref_app_delete_server_default</string>
 </resources>

@@ -29,7 +29,7 @@ public final class DataBinder {
         if (!TextUtils.isEmpty(url)) {
             final Context context = imageView.getContext();
             int size = context.getResources()
-                              .getDimensionPixelSize(R.dimen.qr_size);
+                              .getDimensionPixelSize(R.dimen.qr_size_library);
             if (size > 1000) size = 1000;
 
             int color = ContextCompat.getColor(context, R.color.primary_dark);
