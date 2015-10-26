@@ -8,4 +8,6 @@
     <dimen name="custom_dialog_margin">16dp</dimen>
     <dimen name="link_detail_border">7dp</dimen>
 
+    <dimen name="fab_margin">22dp</dimen>
+
 </resources>
