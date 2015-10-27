@@ -2,12 +2,11 @@ package de.mateware.ayourls.service;
 
 import android.app.IntentService;
 import android.app.Notification;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.NotificationCompat;
 import android.text.TextUtils;
 
 import com.android.volley.VolleyError;
@@ -16,6 +15,7 @@ import com.android.volley.toolbox.RequestFuture;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -27,6 +27,7 @@ import de.mateware.ayourls.dialog.DialogActivty;
 import de.mateware.ayourls.linkdetail.LinkDetailActivity;
 import de.mateware.ayourls.model.Link;
 import de.mateware.ayourls.network.NetworkHelper;
+import de.mateware.ayourls.utils.QrCodeHelper;
 import de.mateware.ayourls.utils.UrlValidator;
 import de.mateware.ayourls.yourslapi.Volley;
 import de.mateware.ayourls.yourslapi.YourlsRequest;
@@ -86,11 +87,16 @@ public class ShortUrlService extends IntentService {
                                     link.load(action);
                                     link.save(this);
 
+                                    try {
+                                        QrCodeHelper.getInstance(this).generateQr(link.getShorturl());
+                                    } catch (IOException e) {
+
+                                    }
+
                                     Intent shareIntent = new Intent(Intent.ACTION_SEND);
                                     shareIntent.putExtra(Intent.EXTRA_TEXT, link.getShorturl());
                                     shareIntent.setType("text/plain");
-                                    PendingIntent pendingShareIntent = PendingIntent.getActivity(this, 0, Intent.createChooser(shareIntent, getString(R.string.action_share)),
-                                            PendingIntent.FLAG_UPDATE_CURRENT);
+                                    PendingIntent pendingShareIntent = PendingIntent.getActivity(this, 0, Intent.createChooser(shareIntent, getString(R.string.action_share)), PendingIntent.FLAG_UPDATE_CURRENT);
 
                                     Intent copyIntent = new Intent(NotificationClipboardReceiver.ACTION_COPY);
                                     copyIntent.putExtra(NotificationClipboardReceiver.ARG_TEXT, link.getShorturl());
@@ -98,7 +104,7 @@ public class ShortUrlService extends IntentService {
 
                                     Intent openIntent = new Intent(this, LinkDetailActivity.class);
                                     openIntent.putExtra(LinkDetailActivity.EXTRA_LINK_ID, link.getId());
-                                    PendingIntent contentIntent = PendingIntent.getActivity(this, 0, openIntent, 0);
+                                    PendingIntent contentIntent = PendingIntent.getActivity(this, 0, openIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
                                     Notification notification = new NotificationCompat.Builder(this).setContentTitle(link.getTitle())
                                                                                                     .setContentText(link.getShorturl())
@@ -112,8 +118,7 @@ public class ShortUrlService extends IntentService {
                                                                                                     .build();
 
 
-
-                                    NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                                    NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
                                     notificationManager.notify(link.getShorturl(), NOTIFICATION_ID, notification);
 
                                 }

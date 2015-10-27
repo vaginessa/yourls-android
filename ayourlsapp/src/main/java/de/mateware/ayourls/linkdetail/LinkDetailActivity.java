@@ -1,14 +1,13 @@
 package de.mateware.ayourls.linkdetail;
 
 
-import android.app.NotificationManager;
-import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.LoaderManager;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
@@ -19,13 +18,13 @@ import android.view.MenuItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.mateware.ayourls.DataBinder;
 import de.mateware.ayourls.R;
 import de.mateware.ayourls.clipboard.NotificationClipboardReceiver;
 import de.mateware.ayourls.databinding.ActivityLinkdetailBinding;
 import de.mateware.ayourls.model.Link;
 import de.mateware.ayourls.service.DeleteService;
 import de.mateware.ayourls.service.ShortUrlService;
+import de.mateware.ayourls.utils.DataBinder;
 import de.mateware.ayourls.utils.TintHelper;
 import de.mateware.ayourls.viewmodel.LinkViewModel;
 import de.mateware.ayourls.yourslapi.YourlsError;
@@ -135,7 +134,7 @@ public class LinkDetailActivity extends AppCompatActivity implements LoaderManag
             log.debug("loaded {}", link);
             linkViewModel.setLink(link);
 
-            NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
             notificationManager.cancel(link.getShorturl(), ShortUrlService.NOTIFICATION_ID);
         }
     }
