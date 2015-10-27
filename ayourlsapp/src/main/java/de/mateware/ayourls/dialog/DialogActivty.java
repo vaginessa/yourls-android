@@ -69,6 +69,7 @@ public class DialogActivty extends AppCompatActivity implements Dialog.DialogDis
                         new Dialog().withMessage(getString(R.string.dialog_confirm_shortening_message, url))
                                     .withCancelable(true)
                                     .withTitle(R.string.dialog_confirm_shortening_title)
+                                    .withTimer(15)
                                     .withNegativeButton()
                                     .withPositiveButton()
                                     .withNeutralButton(R.string.edit)

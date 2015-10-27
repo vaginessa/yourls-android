@@ -49,7 +49,7 @@ public class ShortUrlService extends IntentService {
         super(ShortUrlService.class.getSimpleName());
     }
 
-    private static int notificationId = 10000;
+    public static final int NOTIFICATION_ID = 10002;
 
     @Override
     protected void onHandleIntent(Intent intent) {
@@ -111,8 +111,11 @@ public class ShortUrlService extends IntentService {
                                                                                                     .addAction(R.drawable.ic_content_copy_24dp, getString(R.string.action_copy), pendingCopyIntent)
                                                                                                     .build();
 
+
+
                                     NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-                                    notificationManager.notify(link.getShorturl(), notificationId++, notification);
+                                    notificationManager.notify(link.getShorturl(), NOTIFICATION_ID, notification);
+
                                 }
                             } catch (InterruptedException | ExecutionException | TimeoutException | UnsupportedEncodingException e) {
                                 throw new VolleyError(e);

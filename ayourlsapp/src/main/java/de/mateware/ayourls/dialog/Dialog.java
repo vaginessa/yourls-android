@@ -4,15 +4,24 @@ package de.mateware.ayourls.dialog;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatDialog;
+import android.util.TypedValue;
+import android.view.Gravity;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import de.mateware.ayourls.R;
 
 
 public class Dialog extends DialogFragment {
@@ -24,7 +33,9 @@ public class Dialog extends DialogFragment {
     static final String ARG_STRING_MESSAGE = "message";
 
     static final String ARG_INT_ICONID = "icon_id";
-//    static final String ARG_INT_STYLEID = "style";
+    //    static final String ARG_INT_STYLEID = "style";
+
+    static final String ARG_INT_TIMER = "timer";
 
     static final String ARG_INT_BUTTONTEXTPOSITIVE = "positive_button_resid";
     static final String ARG_INT_BUTTONTEXTNEGATIVE = "negative_button_resid";
@@ -41,6 +52,7 @@ public class Dialog extends DialogFragment {
     DialogButtonListener buttonListener;
     DialogDismissListener dismissListener;
     DialogCancelListener cancelListener;
+    CountDownTimer timer;
 
     public static Logger log = LoggerFactory.getLogger(Dialog.class);
 
@@ -55,6 +67,11 @@ public class Dialog extends DialogFragment {
     public int show(@NonNull FragmentTransaction transaction, String tag) {
         this.setArguments(args);
         return super.show(transaction, tag);
+    }
+
+    public Dialog withTimer(int seconds) {
+        args.putInt(ARG_INT_TIMER, seconds);
+        return this;
     }
 
     public Dialog withTitle(String title) {
@@ -140,7 +157,7 @@ public class Dialog extends DialogFragment {
         public void onClick(DialogInterface dialog, int which) {
             log.trace("Button", which);
             Bundle additionalArguments = new Bundle();
-            args.putAll(additionalArgumentsOnClick(additionalArguments,which));
+            args.putAll(additionalArgumentsOnClick(additionalArguments, which));
             if (buttonListener != null) buttonListener.onDialogClick(getTag(), Dialog.this.getArguments(), which);
             else log.info(DialogButtonListener.class.getSimpleName() + " not set in Activity " + getActivity().getClass()
                                                                                                               .getSimpleName());
@@ -150,9 +167,8 @@ public class Dialog extends DialogFragment {
     AlertDialog.Builder builder;
 
 
-
     @Override
-    public android.app.Dialog onCreateDialog(Bundle savedInstanceState) {
+    public AppCompatDialog onCreateDialog(Bundle savedInstanceState) {
         log.trace(this.getTag());
         builder = new AlertDialog.Builder(getContext());
 
@@ -168,7 +184,75 @@ public class Dialog extends DialogFragment {
 
         if (hasNegativeButton()) builder.setNegativeButton(getNegativeButton(), onClickListener);
 
-        return createDialogToReturn();
+        AppCompatDialog dialog = createDialogToReturn();
+
+
+
+        if (hasTimer()) {
+
+        }
+
+        return dialog;
+    }
+
+
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (hasTimer()) {
+            timer = new CountDownTimer(getTimer()*1000,1000) {
+
+                TextView timerText;
+
+                @Override
+                public void onTick(long millisUntilFinished) {
+                    if (timerText == null) {
+                        timerText = new TextView(getContext());
+                        FrameLayout.LayoutParams lp = getTimerTextViewLayoutParams(timerText);
+                        getDialog().addContentView(timerText, lp);
+                    }
+                    timerText.setText(getTimerText(millisUntilFinished));
+                }
+
+                @Override
+                public void onFinish() {
+                    onTimerFinished();
+                }
+            };
+            timer.start();
+        }
+    }
+
+    public String getTimerText(long millisUntilFinished) {
+        return String.valueOf(millisUntilFinished/1000);
+    }
+
+    public void onTimerFinished(){
+        dismiss();
+    }
+
+    public FrameLayout.LayoutParams getTimerTextViewLayoutParams(TextView timerTextView) {
+        int margin = getContext().getResources().getDimensionPixelSize(R.dimen.custom_dialog_padding);
+        int topMargin = getContext().getResources().getDimensionPixelSize(R.dimen.custom_dialog_padding_top);
+        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        params.setMargins(margin,topMargin,margin,0);
+        params.gravity = Gravity.END | Gravity.TOP;
+
+        timerTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX,
+                getResources().getDimension(android.support.v7.appcompat.R.dimen.abc_text_size_title_material));
+        timerTextView.setTextColor(ContextCompat.getColor(getContext(),R.color.primary_dark));
+
+        return params;
+    }
+
+    @Override
+    public void onPause() {
+        if (timer != null) {
+            timer.cancel();
+            timer = null;
+        }
+        super.onPause();
     }
 
     void setDialogContent() {
@@ -183,6 +267,13 @@ public class Dialog extends DialogFragment {
         return additionalArgs;
     }
 
+    protected boolean hasTimer() {
+        return getArguments().containsKey(ARG_INT_TIMER) && getArguments().getInt(ARG_INT_TIMER,0) > 0;
+    }
+
+    protected int getTimer() {
+        return getArguments().getInt(ARG_INT_TIMER,0);
+    }
 
     protected boolean hasTitle() {
         return (getArguments().containsKey(ARG_STRING_TITLE) || getArguments().containsKey(ARG_INT_TITLE));

@@ -1,6 +1,8 @@
 package de.mateware.ayourls.linkdetail;
 
 
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.databinding.DataBindingUtil;
@@ -23,6 +25,7 @@ import de.mateware.ayourls.clipboard.NotificationClipboardReceiver;
 import de.mateware.ayourls.databinding.ActivityLinkdetailBinding;
 import de.mateware.ayourls.model.Link;
 import de.mateware.ayourls.service.DeleteService;
+import de.mateware.ayourls.service.ShortUrlService;
 import de.mateware.ayourls.utils.TintHelper;
 import de.mateware.ayourls.viewmodel.LinkViewModel;
 import de.mateware.ayourls.yourslapi.YourlsError;
@@ -131,6 +134,9 @@ public class LinkDetailActivity extends AppCompatActivity implements LoaderManag
             link.load(data);
             log.debug("loaded {}", link);
             linkViewModel.setLink(link);
+
+            NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            notificationManager.cancel(link.getShorturl(), ShortUrlService.NOTIFICATION_ID);
         }
     }
 
