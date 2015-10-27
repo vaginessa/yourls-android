@@ -1,20 +1,25 @@
 package de.mateware.ayourls.imports;
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.google.zxing.WriterException;
 
 import org.apache.commons.collections4.map.LinkedMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+
 import de.mateware.ayourls.R;
 import de.mateware.ayourls.model.Link;
 import de.mateware.ayourls.network.NetworkHelper;
+import de.mateware.ayourls.utils.QrCodeHelper;
 import de.mateware.ayourls.yourslapi.Volley;
 import de.mateware.ayourls.yourslapi.YourlsError;
 import de.mateware.ayourls.yourslapi.YourlsRequest;
@@ -136,15 +141,48 @@ public class ImportWorkerFragment extends Fragment implements ImportLinkAdapter.
         return totalLinksOnServer;
     }
 
+    public void importLink(Link link) {
+        new ImportTask().execute(link);
+    }
+
+    private class ImportTask extends AsyncTask<Link, Void, Link.SaveResult> {
+
+        private Link link;
+
+        @Override
+        protected Link.SaveResult doInBackground(Link... params) {
+            link = params[0];
+            try {
+                QrCodeHelper.getInstance(getContext())
+                            .generateQr(link.getShorturl());
+            } catch (IOException | WriterException e) {
+                log.error("Error generating QrCode:", e);
+            }
+            Link.SaveResult saveResult = link.save(getContext());
+            if (saveResult == Link.SaveResult.ERROR)
+                QrCodeHelper.getInstance(getContext())
+                            .deleteQrFile(link.getShorturl());
+            return saveResult;
+        }
+
+        @Override
+        protected void onPostExecute(Link.SaveResult saveResult) {
+            if (callback != null) {
+                callback.onLinkImported(link, saveResult);
+            }
+        }
+    }
+
+
     public interface ImportWorkerCallback {
         void onNetworkError(YourlsError error);
 
         void onLinkRecevied(Link link);
 
+        void onLinkImported(Link link, Link.SaveResult saveResult);
+
         void showWaitDialog();
 
         void hideWaitDialog();
     }
-
-
 }

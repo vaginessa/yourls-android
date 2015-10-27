@@ -4,6 +4,7 @@ import android.app.IntentService;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.ContextCompat;
@@ -11,6 +12,7 @@ import android.text.TextUtils;
 
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.RequestFuture;
+import com.google.zxing.WriterException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -85,42 +87,76 @@ public class ShortUrlService extends IntentService {
                                 } else {
                                     Link link = new Link();
                                     link.load(action);
-                                    link.save(this);
-
                                     try {
-                                        QrCodeHelper.getInstance(this).generateQr(link.getShorturl());
-                                    } catch (IOException e) {
-
+                                        QrCodeHelper.getInstance(this)
+                                                    .generateQr(link.getShorturl());
+                                    } catch (IOException | WriterException e) {
+                                        log.error("Error generating QrCode", e);
                                     }
+                                    switch (link.save(this)) {
+                                        case ERROR:
+                                            QrCodeHelper.getInstance(this)
+                                                        .deleteQrFile(link.getShorturl());
+                                            break;
+                                        default:
+                                            Intent shareIntent = new Intent(Intent.ACTION_SEND);
+                                            shareIntent.putExtra(Intent.EXTRA_TEXT, link.getShorturl());
+                                            shareIntent.setType("text/plain");
+                                            PendingIntent pendingShareIntent = PendingIntent.getActivity(this, 0, Intent.createChooser(shareIntent, getString(R.string.action_share)), PendingIntent.FLAG_UPDATE_CURRENT);
 
-                                    Intent shareIntent = new Intent(Intent.ACTION_SEND);
-                                    shareIntent.putExtra(Intent.EXTRA_TEXT, link.getShorturl());
-                                    shareIntent.setType("text/plain");
-                                    PendingIntent pendingShareIntent = PendingIntent.getActivity(this, 0, Intent.createChooser(shareIntent, getString(R.string.action_share)), PendingIntent.FLAG_UPDATE_CURRENT);
+                                            Intent copyIntent = new Intent(NotificationClipboardReceiver.ACTION_COPY);
+                                            copyIntent.putExtra(NotificationClipboardReceiver.ARG_TEXT, link.getShorturl());
+                                            PendingIntent pendingCopyIntent = PendingIntent.getBroadcast(this, 0, copyIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-                                    Intent copyIntent = new Intent(NotificationClipboardReceiver.ACTION_COPY);
-                                    copyIntent.putExtra(NotificationClipboardReceiver.ARG_TEXT, link.getShorturl());
-                                    PendingIntent pendingCopyIntent = PendingIntent.getBroadcast(this, 0, copyIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+                                            Intent openIntent = new Intent(this, LinkDetailActivity.class);
+                                            openIntent.putExtra(LinkDetailActivity.EXTRA_LINK_ID, link.getId());
+                                            PendingIntent contentIntent = PendingIntent.getActivity(this, 0, openIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-                                    Intent openIntent = new Intent(this, LinkDetailActivity.class);
-                                    openIntent.putExtra(LinkDetailActivity.EXTRA_LINK_ID, link.getId());
-                                    PendingIntent contentIntent = PendingIntent.getActivity(this, 0, openIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+                                            NotificationCompat.Builder builder = new NotificationCompat.Builder(this).setContentTitle(link.getTitle())
+                                                                                                                     .setContentText(link.getShorturl())
+                                                                                                                     .setStyle(new NotificationCompat.BigTextStyle().bigText(link.getShorturl() + "\n\n" + link.getUrl()))
+                                                                                                                     .setSmallIcon(R.drawable.ic_link_24dp)
+                                                                                                                     .setColor(ContextCompat.getColor(this, R.color.primary))
+                                                                                                                     .setContentIntent(contentIntent)
+                                                                                                                     .setAutoCancel(true)
+                                                                                                                     .addAction(R.drawable.ic_share_24dp, getString(R.string.action_share), pendingShareIntent)
+                                                                                                                     .addAction(R.drawable.ic_content_copy_24dp, getString(R.string.action_copy), pendingCopyIntent);
 
-                                    Notification notification = new NotificationCompat.Builder(this).setContentTitle(link.getTitle())
-                                                                                                    .setContentText(link.getShorturl())
-                                                                                                    .setStyle(new NotificationCompat.BigTextStyle().bigText(link.getShorturl() + "\n\n" + link.getUrl()))
-                                                                                                    .setSmallIcon(R.drawable.ic_link_24dp)
-                                                                                                    .setColor(ContextCompat.getColor(this, R.color.primary))
-                                                                                                    .setContentIntent(contentIntent)
-                                                                                                    .setAutoCancel(true)
-                                                                                                    .addAction(R.drawable.ic_share_24dp, getString(R.string.action_share), pendingShareIntent)
-                                                                                                    .addAction(R.drawable.ic_content_copy_24dp, getString(R.string.action_copy), pendingCopyIntent)
-                                                                                                    .build();
+                                            try {
+                                                int largeIconSize = getResources().getDimensionPixelSize(android.support.v7.appcompat.R.dimen.notification_large_icon_height);
+                                                Bitmap largeIcon = QrCodeHelper.getInstance(this)
+                                                                               .getQrBitmapFromFile(link.getShorturl(), largeIconSize);
+                                                builder.setLargeIcon(largeIcon);
+                                            } catch (IOException e) {
+                                                e.printStackTrace();
+                                            }
 
+                                            NotificationCompat.WearableExtender wearableExtender = new NotificationCompat.WearableExtender();
 
-                                    NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
-                                    notificationManager.notify(link.getShorturl(), NOTIFICATION_ID, notification);
+                                            try {
+                                                int bigPictureSize = 400;
+                                                Bitmap bigPicture = QrCodeHelper.getInstance(this)
+                                                                                .generateQrBitmap(link.getShorturl(), bigPictureSize, 3, ContextCompat.getColor(this, android.R.color.black), ContextCompat.getColor(this, android.R.color.white));
 
+                                                Notification pageTwo = new NotificationCompat.WearableExtender().setBackground(bigPicture)
+                                                                                                                .setHintShowBackgroundOnly(true)
+                                                                                                                .setHintAvoidBackgroundClipping(true)
+                                                                                                                .setHintScreenTimeout(60000)
+                                                                                                                .extend(new NotificationCompat.Builder(this))
+                                                                                                                .build();
+                                                wearableExtender.addPage(pageTwo);
+                                            } catch (WriterException e) {
+                                                log.error("error:", e);
+                                            }
+
+                                            builder.extend(wearableExtender);
+
+                                            Notification notification = builder.build();
+
+                                            NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+                                            notificationManager.notify(link.getShorturl(), NOTIFICATION_ID, notification);
+                                            break;
+                                    }
                                 }
                             } catch (InterruptedException | ExecutionException | TimeoutException | UnsupportedEncodingException e) {
                                 throw new VolleyError(e);

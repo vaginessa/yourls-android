@@ -51,7 +51,7 @@ public class ImportActivity extends AppCompatActivity implements ImportWorkerFra
                 if (RecyclerView.SCROLL_STATE_IDLE == newState) {
                     int itemCount = layoutManger.getItemCount();
                     int lastVisible = layoutManger.findLastVisibleItemPosition();
-                    if (lastVisible+1==itemCount) {
+                    if (lastVisible + 1 == itemCount) {
                         if (workerFragment.hasMoreToLoad()) {
                             workerFragment.loadMore(ImportActivity.this);
                         }
@@ -97,23 +97,29 @@ public class ImportActivity extends AppCompatActivity implements ImportWorkerFra
         adapter.addItem(link);
     }
 
-    public void onImportLink(Link link){
-        log.debug("{}", link.getShorturl());
-        String snackText = getString(R.string.unknown);
-        switch(link.save(this)) {
-            case INSERTED:
-                snackText = getString(R.string.snack_link_import_inserted,link.getShorturl());
-                adapter.notifyItemChanged(workerFragment.getData().indexOf(link.getKeyword()));
-                break;
-            case UPDATED:
-                snackText = getString(R.string.snack_link_import_updated,link.getShorturl());
-                adapter.notifyItemChanged(workerFragment.getData().indexOf(link.getKeyword()));
-                break;
-            case ERROR:
-                snackText = getString(R.string.snack_link_import_error,link.getShorturl());
-                break;
-        }
-        Snackbar.make(layout,snackText,Snackbar.LENGTH_SHORT).show();
+    public void onImportLink(Link link) {
+        workerFragment.importLink(link);
     }
 
+    @Override
+    public void onLinkImported(Link link, Link.SaveResult saveResult) {
+        String snackText = getString(R.string.unknown);
+        switch (saveResult) {
+            case INSERTED:
+                snackText = getString(R.string.snack_link_import_inserted, link.getShorturl());
+                adapter.notifyItemChanged(workerFragment.getData()
+                                                        .indexOf(link.getKeyword()));
+                break;
+            case UPDATED:
+                snackText = getString(R.string.snack_link_import_updated, link.getShorturl());
+                adapter.notifyItemChanged(workerFragment.getData()
+                                                        .indexOf(link.getKeyword()));
+                break;
+            case ERROR:
+                snackText = getString(R.string.snack_link_import_error, link.getShorturl());
+                break;
+        }
+        Snackbar.make(layout, snackText, Snackbar.LENGTH_SHORT)
+                .show();
+    }
 }
