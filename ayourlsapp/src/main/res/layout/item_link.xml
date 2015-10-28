@@ -29,6 +29,7 @@
                 android:id="@+id/qrImage"
                 android:transitionName="@string/transition_name_qrimage"
                 app:shorturl="@{viewModel.shorturl}"
+                app:qrsize='@{viewModel.smallQrSize}'
                 android:layout_alignParentTop="true"
                 android:layout_alignParentRight="true"
                 android:layout_alignParentEnd="true"

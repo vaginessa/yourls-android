@@ -98,13 +98,8 @@ public class ImportActivity extends AppCompatActivity implements ImportWorkerFra
     }
 
     public void onImportLink(Link link) {
-        workerFragment.importLink(link);
-    }
-
-    @Override
-    public void onLinkImported(Link link, Link.SaveResult saveResult) {
         String snackText = getString(R.string.unknown);
-        switch (saveResult) {
+        switch (link.save(this)) {
             case INSERTED:
                 snackText = getString(R.string.snack_link_import_inserted, link.getShorturl());
                 adapter.notifyItemChanged(workerFragment.getData()

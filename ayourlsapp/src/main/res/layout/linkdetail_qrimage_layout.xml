@@ -17,5 +17,6 @@
         android:layout_height="match_parent"
         android:scaleType="fitCenter"
         app:shorturl="@{viewModel.shorturl}"
+        app:qrsize='@{viewModel.largeQrSize}'
         tools:showIn="@layout/activity_linkdetail"/>
 </layout>

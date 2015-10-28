@@ -11,6 +11,9 @@ import android.support.v4.util.Pair;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.mateware.ayourls.R;
 import de.mateware.ayourls.linkdetail.LinkDetailActivity;
 import de.mateware.ayourls.model.Link;
@@ -20,17 +23,31 @@ import de.mateware.ayourls.model.Link;
  */
 public class LinkViewModel extends BaseObservable {
 
+    private static final Logger log = LoggerFactory.getLogger(LinkViewModel.class);
+
     private Context context;
 
     private Link link = new Link();
 
+    private int largeQrSize;
+    private int smallQrSize;
+
     public LinkViewModel(Context context) {
         this.context = context;
+//        float scaleRatio = context.getResources().getDisplayMetrics().density;
+//        float largeQrPix = context.getResources().getDimension(R.dimen.qr_size);
+//        float smallQrPix = context.getResources().getDimension(R.dimen.qr_size_library);
+//        largeQrSize = (int) (largeQrPix / scaleRatio);
+//        smallQrSize = (int) (smallQrPix / scaleRatio);
+        largeQrSize = 400;
+        smallQrSize = 200;//context.getResources().getDimensionPixelSize(R.dimen.qr_size_library);
     }
 
     public void setLink(Link link) {
+        log.debug("link settled {}",link);
         this.link = link;
         notifyChange();
+        //notifyChange();
     }
 
     public Context getContext() {
@@ -101,5 +118,13 @@ public class LinkViewModel extends BaseObservable {
                 }
             }
         };
+    }
+
+    public int getSmallQrSize() {
+        return smallQrSize;
+    }
+
+    public int getLargeQrSize() {
+        return largeQrSize;
     }
 }

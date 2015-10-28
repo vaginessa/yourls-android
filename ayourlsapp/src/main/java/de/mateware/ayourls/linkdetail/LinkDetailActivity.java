@@ -32,7 +32,7 @@ import de.mateware.ayourls.yourslapi.YourlsError;
 /**
  * Created by Mate on 12.10.2015.
  */
-public class LinkDetailActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>, DataBinder.QrImageLoaderCallback, LinkDetailWorkerFragment.LinkDetailWorkerCallback {
+public class LinkDetailActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>/*, DataBinder.QrImageLoaderCallback*/, LinkDetailWorkerFragment.LinkDetailWorkerCallback {
 
     private static Logger log = LoggerFactory.getLogger(LinkDetailActivity.class);
 
@@ -136,18 +136,13 @@ public class LinkDetailActivity extends AppCompatActivity implements LoaderManag
 
             NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
             notificationManager.cancel(link.getShorturl(), ShortUrlService.NOTIFICATION_ID);
+            ActivityCompat.startPostponedEnterTransition(this);
         }
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         log.debug("reset {}", loader);
-    }
-
-    @Override
-    public void onQrImageLoaded() {
-        log.debug("start animation");
-        ActivityCompat.startPostponedEnterTransition(this);
     }
 
     @Override

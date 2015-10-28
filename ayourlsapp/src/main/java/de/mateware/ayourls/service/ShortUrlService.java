@@ -17,7 +17,6 @@ import com.google.zxing.WriterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -87,16 +86,8 @@ public class ShortUrlService extends IntentService {
                                 } else {
                                     Link link = new Link();
                                     link.load(action);
-                                    try {
-                                        QrCodeHelper.getInstance(this)
-                                                    .generateQr(link.getShorturl());
-                                    } catch (IOException | WriterException e) {
-                                        log.error("Error generating QrCode", e);
-                                    }
                                     switch (link.save(this)) {
                                         case ERROR:
-                                            QrCodeHelper.getInstance(this)
-                                                        .deleteQrFile(link.getShorturl());
                                             break;
                                         default:
                                             Intent shareIntent = new Intent(Intent.ACTION_SEND);
@@ -124,11 +115,12 @@ public class ShortUrlService extends IntentService {
 
                                             try {
                                                 int largeIconSize = getResources().getDimensionPixelSize(android.support.v7.appcompat.R.dimen.notification_large_icon_height);
-                                                Bitmap largeIcon = QrCodeHelper.getInstance(this)
-                                                                               .getQrBitmapFromFile(link.getShorturl(), largeIconSize);
+                                                Bitmap largeIcon = QrCodeHelper.getInstance(this).generateQrBitmap(link.getShorturl(),largeIconSize,0);
+//                                                Bitmap largeIcon = QrCodeHelper.getInstance(this)
+//                                                                               .getQrBitmapFromFile(link.getShorturl(), largeIconSize);
                                                 builder.setLargeIcon(largeIcon);
-                                            } catch (IOException e) {
-                                                e.printStackTrace();
+                                            } catch (WriterException e) {
+                                                log.error("Error generating large Icon for Notification",e);
                                             }
 
                                             NotificationCompat.WearableExtender wearableExtender = new NotificationCompat.WearableExtender();
@@ -136,7 +128,7 @@ public class ShortUrlService extends IntentService {
                                             try {
                                                 int bigPictureSize = 400;
                                                 Bitmap bigPicture = QrCodeHelper.getInstance(this)
-                                                                                .generateQrBitmap(link.getShorturl(), bigPictureSize, 3, ContextCompat.getColor(this, android.R.color.black), ContextCompat.getColor(this, android.R.color.white));
+                                                                                .generateQrBitmap(link.getShorturl(), bigPictureSize, 20, ContextCompat.getColor(this, android.R.color.black), ContextCompat.getColor(this, android.R.color.darker_gray));
 
                                                 Notification pageTwo = new NotificationCompat.WearableExtender().setBackground(bigPicture)
                                                                                                                 .setHintShowBackgroundOnly(true)
