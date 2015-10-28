@@ -16,6 +16,7 @@
     <string name="action_delete">Delete</string>
     <string name="action_share">Share</string>
     <string name="action_copy">Copy</string>
+    <string name="action_browser">Open in browser</string>
 
     <string name="service_clipboard_notification_title">@string/app_name</string>
     <string name="service_clipboard_notification_text">Monitoring your clipboard for URLs.</string>

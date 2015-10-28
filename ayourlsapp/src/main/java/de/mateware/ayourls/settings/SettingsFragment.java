@@ -51,7 +51,9 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Settin
                 log.debug("sharedPref {} changed", key);
                 if (getString(R.string.pref_key_server_url).equals(key) || getString(R.string.pref_key_server_token).equals(key)) {
                     if (sharedPreferences.getBoolean(getString(R.string.pref_key_server_check), false)) {
-                        sharedPreferences.edit().putBoolean(getString(R.string.pref_key_server_check),false).commit();
+                        sharedPreferences.edit()
+                                         .putBoolean(getString(R.string.pref_key_server_check), false)
+                                         .commit();
                         serverCheckPreference.setChecked(false);
                         serverCheckPreference.callChangeListener(false);
                     }
@@ -128,6 +130,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Settin
         CheckBoxPreference appClipboardPreference = (CheckBoxPreference) findPreference(getString(R.string.pref_key_app_clipboard_monitor));
         bindPreference(appClipboardPreference, new OnPreferenceChangeListenerImpl());
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) appClipboardPreference.setEnabled(value);
+        else appClipboardPreference.setEnabled(false);
         CheckBoxPreference appDeleteServerDefaultPreference = (CheckBoxPreference) findPreference(getString(R.string.pref_key_app_delete_server_default));
         bindPreference(appDeleteServerDefaultPreference, new OnPreferenceChangeListenerImpl());
         appDeleteServerDefaultPreference.setEnabled(value);

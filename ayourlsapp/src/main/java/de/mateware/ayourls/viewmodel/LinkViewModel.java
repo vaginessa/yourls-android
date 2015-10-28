@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.databinding.BaseObservable;
 import android.databinding.Bindable;
+import android.net.Uri;
 import android.os.Build;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.util.Pair;
@@ -34,13 +35,8 @@ public class LinkViewModel extends BaseObservable {
 
     public LinkViewModel(Context context) {
         this.context = context;
-//        float scaleRatio = context.getResources().getDisplayMetrics().density;
-//        float largeQrPix = context.getResources().getDimension(R.dimen.qr_size);
-//        float smallQrPix = context.getResources().getDimension(R.dimen.qr_size_library);
-//        largeQrSize = (int) (largeQrPix / scaleRatio);
-//        smallQrSize = (int) (smallQrPix / scaleRatio);
         largeQrSize = 400;
-        smallQrSize = 200;//context.getResources().getDimensionPixelSize(R.dimen.qr_size_library);
+        smallQrSize = 200;
     }
 
     public void setLink(Link link) {
@@ -116,6 +112,17 @@ public class LinkViewModel extends BaseObservable {
                 } else {
                     context.startActivity(intent);
                 }
+            }
+        };
+    }
+
+    public View.OnClickListener onClickVisit() {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(Intent.ACTION_VIEW);
+                i.setData(Uri.parse(link.getShorturl()));
+                context.startActivity(i);
             }
         };
     }

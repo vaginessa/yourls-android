@@ -43,6 +43,7 @@ public class LibraryActivity extends AppCompatActivity implements LoaderManager.
     private LinkLibraryAdapter adapter;
     private FloatingActionButton fab;
     private LinearLayout nolinksLayout;
+    private SharedPreferences preferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,7 +79,7 @@ public class LibraryActivity extends AppCompatActivity implements LoaderManager.
     @Override
     protected void onResume() {
         super.onResume();
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        preferences = PreferenceManager.getDefaultSharedPreferences(this);
         if (preferences.getBoolean(getString(R.string.pref_key_server_check), false)) {
             fab.setEnabled(true);
             fab.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.fab_background_tint)));
@@ -92,6 +93,8 @@ public class LibraryActivity extends AppCompatActivity implements LoaderManager.
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_link_lib, menu);
+        MenuItem importItem = menu.findItem(R.id.action_import);
+            importItem.setEnabled(preferences.getBoolean(getString(R.string.pref_key_server_check),false));
         return true;
     }
 

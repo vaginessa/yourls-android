@@ -17,6 +17,7 @@
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
         android:orientation="vertical"
+        android:onClick="@{viewModel.onClickVisit}"
         tools:showIn="@layout/activity_linkdetail">
 
         <TextView

@@ -24,7 +24,6 @@ import de.mateware.ayourls.databinding.ActivityLinkdetailBinding;
 import de.mateware.ayourls.model.Link;
 import de.mateware.ayourls.service.DeleteService;
 import de.mateware.ayourls.service.ShortUrlService;
-import de.mateware.ayourls.utils.DataBinder;
 import de.mateware.ayourls.utils.TintHelper;
 import de.mateware.ayourls.viewmodel.LinkViewModel;
 import de.mateware.ayourls.yourslapi.YourlsError;

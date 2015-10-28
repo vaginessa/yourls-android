@@ -5,8 +5,6 @@ import android.content.Context;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 
-import de.mateware.ayourls.network.OkHttpStack;
-
 public class Volley {
 
     private static Volley mInstance;
@@ -29,7 +27,7 @@ public class Volley {
         if (mRequestQueue == null) {
             // getApplicationContext() is key, it keeps you from leaking the
             // Activity or BroadcastReceiver if someone passes one in.
-            mRequestQueue = com.android.volley.toolbox.Volley.newRequestQueue(mCtx.getApplicationContext(),new OkHttpStack());
+            mRequestQueue = com.android.volley.toolbox.Volley.newRequestQueue(mCtx.getApplicationContext());
         }
         return mRequestQueue;
     }

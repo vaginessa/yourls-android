@@ -11,14 +11,6 @@ buildscript {
 apply plugin: 'com.android.application'
 apply plugin: 'com.android.databinding'
 
-def matewarePropFile = file("mateware.properties")
-if (matewarePropFile.exists()) {
-    def matewareProps = new Properties();
-    matewareProps.load(matewarePropFile.newDataInputStream())
-    project.ext.set('mateware', matewareProps.getProperty('dir'))
-    apply from: project.ext.mateware + "/mateware.gradle"
-}
-
 android {
     compileSdkVersion 23
     buildToolsVersion "23.0.1"
@@ -32,7 +24,9 @@ android {
     }
     buildTypes {
         release {
-            minifyEnabled false
+            zipAlignEnabled true
+            minifyEnabled true
+            debuggable false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
@@ -43,6 +37,14 @@ android {
         exclude 'META-INF/LICENSE.txt'
         exclude 'META-INF/NOTICE.txt'
     }
+}
+
+def matewarePropFile = file("mateware.properties")
+if (matewarePropFile.exists()) {
+    def matewareProps = new Properties();
+    matewareProps.load(matewarePropFile.newDataInputStream())
+    project.ext.set('mateware', matewareProps.getProperty('dir'))
+    apply from: project.ext.mateware + "/mateware.gradle"
 }
 
 dependencies {
@@ -58,9 +60,6 @@ dependencies {
     compile 'com.github.tony19:logback-android-classic:1.1.1-4'
     compile 'org.slf4j:slf4j-api:1.7.12'
     compile 'com.mcxiaoke.volley:library:1.0.19'
-    compile 'com.squareup.picasso:picasso:2.5.2'
-    compile 'com.squareup.okhttp:okhttp:2.5.0'
-    compile 'com.squareup.okhttp:okhttp-urlconnection:2.5.0'
     compile 'org.apache.commons:commons-collections4:4.0'
     compile 'com.google.zxing:core:3.2.1'
 

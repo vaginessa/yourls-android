@@ -33,7 +33,6 @@ public class Dialog extends DialogFragment {
     static final String ARG_STRING_MESSAGE = "message";
 
     static final String ARG_INT_ICONID = "icon_id";
-    //    static final String ARG_INT_STYLEID = "style";
 
     static final String ARG_INT_TIMER = "timer";
 

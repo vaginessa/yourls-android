@@ -5,6 +5,7 @@ import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.ContextCompat;
@@ -99,9 +100,14 @@ public class ShortUrlService extends IntentService {
                                             copyIntent.putExtra(NotificationClipboardReceiver.ARG_TEXT, link.getShorturl());
                                             PendingIntent pendingCopyIntent = PendingIntent.getBroadcast(this, 0, copyIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
+                                            Intent browserIntent = new Intent(Intent.ACTION_VIEW);
+                                            browserIntent.setData(Uri.parse(link.getShorturl()));
+                                            PendingIntent browserPendingIntent = PendingIntent.getActivity(this, 0, browserIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
                                             Intent openIntent = new Intent(this, LinkDetailActivity.class);
                                             openIntent.putExtra(LinkDetailActivity.EXTRA_LINK_ID, link.getId());
                                             PendingIntent contentIntent = PendingIntent.getActivity(this, 0, openIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
 
                                             NotificationCompat.Builder builder = new NotificationCompat.Builder(this).setContentTitle(link.getTitle())
                                                                                                                      .setContentText(link.getShorturl())
@@ -111,7 +117,8 @@ public class ShortUrlService extends IntentService {
                                                                                                                      .setContentIntent(contentIntent)
                                                                                                                      .setAutoCancel(true)
                                                                                                                      .addAction(R.drawable.ic_share_24dp, getString(R.string.action_share), pendingShareIntent)
-                                                                                                                     .addAction(R.drawable.ic_content_copy_24dp, getString(R.string.action_copy), pendingCopyIntent);
+                                                                                                                     .addAction(R.drawable.ic_content_copy_24dp, getString(R.string.action_copy), pendingCopyIntent)
+                                                                                                                     .addAction(R.drawable.ic_browser_24dp, getString(R.string.action_browser), browserPendingIntent);
 
                                             try {
                                                 int largeIconSize = getResources().getDimensionPixelSize(android.support.v7.appcompat.R.dimen.notification_large_icon_height);
