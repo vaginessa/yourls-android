@@ -4,7 +4,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 
 /**
  * Created by Mate on 26.09.2015.
@@ -21,15 +20,15 @@ public class ShortUrl extends YourlsAction {
 
     public ShortUrl(String url) throws UnsupportedEncodingException {
         super("shorturl");
-        addParam(YourlsAction.PARAM_URL, URLEncoder.encode(url, YourlsAction.CHARSET));
+        addParam(YourlsAction.PARAM_URL, url);
     }
 
     public void setKeyword(String keyword) throws UnsupportedEncodingException {
-        addParam(YourlsAction.PARAM_KEYWORD, URLEncoder.encode(keyword, YourlsAction.CHARSET));
+        addParam(YourlsAction.PARAM_KEYWORD, keyword);
     }
 
     public void setTitle(String title) throws UnsupportedEncodingException {
-        addParam(YourlsAction.PARAM_TITLE, URLEncoder.encode(title, YourlsAction.CHARSET));
+        addParam(YourlsAction.PARAM_TITLE, title);
     }
 
 
