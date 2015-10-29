@@ -63,6 +63,11 @@
     public <init>(android.content.Context);
 }
 
+#Suppor Preference
+-keep public class * extends android.support.v7.preference.Preference { *; }
+
 #Support cardview
 -keep class android.support.v7.widget.RoundRectDrawable { *; }
+
+#
 
