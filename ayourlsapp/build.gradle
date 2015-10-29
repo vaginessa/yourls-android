@@ -19,7 +19,7 @@ android {
         applicationId "de.mateware.ayourls"
         minSdkVersion 8
         targetSdkVersion 23
-        versionCode 3
+        versionCode 4
         versionName "1.0." + versionCode
     }
     buildTypes {

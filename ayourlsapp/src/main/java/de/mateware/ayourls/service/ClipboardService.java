@@ -40,7 +40,7 @@ public class ClipboardService extends Service {
         clipboardHelper = ClipboardHelper.getInstance(this);
         clipboardHelper.registerClipBoardListener();
 
-        PendingIntent contentIntent = PendingIntent.getActivity(this, 0, new Intent(this, LibraryActivity.class), 0);
+        PendingIntent contentIntent = PendingIntent.getActivity(this, 0, new Intent(this, LibraryActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);
 
         Notification notification = new NotificationCompat.Builder(this).setContentTitle(getString(R.string.app_name))
                                                                         .setContentText(getString(R.string.service_clipboard_notification_text))
