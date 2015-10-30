@@ -26,14 +26,13 @@ public class ClipboardChangeReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         log.debug("Recevied intent:"+intent.toString());
-        String clipboardContent = ClipboardHelper.getInstance(context)
-                       .getClipContent().toString();
+        CharSequence clipboardContent = ClipboardHelper.getInstance(context)
+                       .getClipContent();
         if (!TextUtils.isEmpty(clipboardContent)) {
-            if (!clipboardContent.equals(lastClipboardContent)) {
-                lastClipboardContent = clipboardContent;
-
+            if (!clipboardContent.toString().equals(lastClipboardContent)) {
+                lastClipboardContent = clipboardContent.toString();
                 try {
-                    String url = UrlValidator.getValidUrl(clipboardContent,false);
+                    String url = UrlValidator.getValidUrl(clipboardContent.toString(),false);
                     Intent serviceIntent = new Intent(context, ShortUrlService.class);
                     serviceIntent.putExtra(ShortUrlService.EXTRA_URL, clipboardContent);
                     context.startService(serviceIntent);
