@@ -187,6 +187,5 @@ public class ShortUrlService extends IntentService {
                 return;
             }
         }
-        throw new IllegalArgumentException("Service have to be called with extra '" + EXTRA_URL + "'");
     }
 }

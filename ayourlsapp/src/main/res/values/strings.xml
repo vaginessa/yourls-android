@@ -2,6 +2,7 @@
     <string name="app_name">aYourls</string>
     <string name="share">Short URL with aYourls</string>
 
+
     <string name="unknown">unknown</string>
     <string name="retry">Retry</string>
     <string name="send">Send</string>
@@ -17,10 +18,13 @@
     <string name="action_share">Share</string>
     <string name="action_copy">Copy</string>
     <string name="action_browser">Open in browser</string>
+    <string name="action_about">About this app</string>
 
     <string name="service_clipboard_notification_title">@string/app_name</string>
     <string name="service_clipboard_notification_text">Monitoring your clipboard for URLs.</string>
     <string name="service_clipboard_notification_text_long">%1$s You can deactivate the clipboard monitor in app settings.</string>
+
+    <string name="dialog_about_version">Version %1$s</string>
 
     <string name="dialog_error_title">Error</string>
     <string name="dialog_error_no_connection_message">No network connection.</string>

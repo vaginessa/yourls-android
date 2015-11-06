@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.mateware.ayourls.R;
+import de.mateware.ayourls.dialog.AboutDialog;
 import de.mateware.ayourls.dialog.DialogActivty;
 import de.mateware.ayourls.imports.ImportActivity;
 import de.mateware.ayourls.model.Link;
@@ -38,6 +39,8 @@ import de.mateware.ayourls.utils.TintHelper;
 public class LibraryActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private static Logger log = LoggerFactory.getLogger(LibraryActivity.class);
+
+    private static final String DIALOG_ABOUT = "aboutDialog";
 
     private RecyclerView recyclerView;
     private LinkLibraryAdapter adapter;
@@ -94,7 +97,7 @@ public class LibraryActivity extends AppCompatActivity implements LoaderManager.
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_link_lib, menu);
         MenuItem importItem = menu.findItem(R.id.action_import);
-            importItem.setEnabled(preferences.getBoolean(getString(R.string.pref_key_server_check),false));
+        importItem.setEnabled(preferences.getBoolean(getString(R.string.pref_key_server_check), false));
         return true;
     }
 
@@ -109,6 +112,12 @@ public class LibraryActivity extends AppCompatActivity implements LoaderManager.
                 Intent importIntent = new Intent(this, ImportActivity.class);
                 startActivity(importIntent);
                 return true;
+            case R.id.action_about:
+                new AboutDialog().withTitle(R.string.action_about)
+                                 .withPositiveButton()
+                                 .show(getSupportFragmentManager(), DIALOG_ABOUT);
+                return true;
+
             default:
                 return super.onOptionsItemSelected(item);
         }

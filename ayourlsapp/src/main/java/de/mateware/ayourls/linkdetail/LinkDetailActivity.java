@@ -62,7 +62,9 @@ public class LinkDetailActivity extends AppCompatActivity implements LoaderManag
         Bundle loaderBundle = null;
         if (savedInstanceState == null) {
             loaderBundle = new Bundle();
-            loaderBundle.putLong(EXTRA_LINK_ID, getIntent().getLongExtra(EXTRA_LINK_ID, -1));
+            long linkId = getIntent().getLongExtra(EXTRA_LINK_ID, -1L);
+            if (linkId == -1L) finish();
+            loaderBundle.putLong(EXTRA_LINK_ID, linkId);
         }
         getSupportLoaderManager().initLoader(0, loaderBundle, this);
     }
@@ -108,7 +110,7 @@ public class LinkDetailActivity extends AppCompatActivity implements LoaderManag
                 return true;
             case R.id.action_delete:
                 Intent deleteServiceIntent = new Intent(this, DeleteService.class);
-                deleteServiceIntent.putExtra(DeleteService.EXTRA_ID,linkViewModel.getId());
+                deleteServiceIntent.putExtra(DeleteService.EXTRA_ID, linkViewModel.getId());
                 startService(deleteServiceIntent);
                 return true;
         }
