@@ -18,4 +18,12 @@
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:text="@string/dialog_about_version"
         android:id="@+id/version"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:text="@string/dialog_about_rate"
+        android:id="@+id/rateButton"/>
+
 </LinearLayout>

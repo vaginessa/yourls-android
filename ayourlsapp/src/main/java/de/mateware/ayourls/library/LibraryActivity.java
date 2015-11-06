@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.LoaderManager;
@@ -30,13 +31,14 @@ import java.util.List;
 
 import de.mateware.ayourls.R;
 import de.mateware.ayourls.dialog.AboutDialog;
+import de.mateware.ayourls.dialog.Dialog;
 import de.mateware.ayourls.dialog.DialogActivty;
 import de.mateware.ayourls.imports.ImportActivity;
 import de.mateware.ayourls.model.Link;
 import de.mateware.ayourls.settings.SettingsActivity;
 import de.mateware.ayourls.utils.TintHelper;
 
-public class LibraryActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
+public class LibraryActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>,Dialog.DialogButtonListener {
 
     private static Logger log = LoggerFactory.getLogger(LibraryActivity.class);
 
@@ -115,6 +117,7 @@ public class LibraryActivity extends AppCompatActivity implements LoaderManager.
             case R.id.action_about:
                 new AboutDialog().withTitle(R.string.action_about)
                                  .withPositiveButton()
+                                 .withNeutralButton(R.string.dialog_about_website)
                                  .show(getSupportFragmentManager(), DIALOG_ABOUT);
                 return true;
 
@@ -160,5 +163,14 @@ public class LibraryActivity extends AppCompatActivity implements LoaderManager.
     public void onLoaderReset(Loader<Cursor> loader) {
         log.debug("loader reset {}", loader);
         adapter.setItems(null);
+    }
+
+    @Override
+    public void onDialogClick(String tag, Bundle arguments, int which) {
+        if (DIALOG_ABOUT.equals(tag) && which == Dialog.BUTTON_NEUTRAL) {
+            Intent i = new Intent(Intent.ACTION_VIEW);
+            i.setData(Uri.parse("https://url.bunteban.de/ayourls"));
+            startActivity(i);
+        }
     }
 }
