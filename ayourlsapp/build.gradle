@@ -19,12 +19,13 @@ android {
         applicationId "de.mateware.ayourls"
         minSdkVersion 8
         targetSdkVersion 23
-        versionCode 5
+        versionCode 7
         versionName "1.0." + versionCode
     }
     buildTypes {
         debug {
             ext.crashlytics = false
+            versionNameSuffix "-DEBUG"
         }
         release {
             zipAlignEnabled true

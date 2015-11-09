@@ -11,6 +11,8 @@ import android.text.TextUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.mateware.ayourls.utils.PowerManagerCompat;
+
 /**
  * Created by mate on 02.10.2015.
  */
@@ -40,6 +42,13 @@ public class ClipboardHelper {
                 @Override
                 public void onPrimaryClipChanged() {
                     log.debug("clipboard content changed, listener:" + this.toString());
+
+                    //Only handle it if device is in interactive mode
+                    if (!PowerManagerCompat.isInteractive(context)) {
+                        log.debug("Device is not interactive, return without work");
+                        return ;
+                    }
+
                     if (!TextUtils.isEmpty(lastClipTextSet) && lastClipTextSet.equals(getClipContent()))
                         return;
                     Intent intent = new Intent(ClipboardChangeReceiver.ACTION);
@@ -90,6 +99,7 @@ public class ClipboardHelper {
 
 
     public CharSequence getClipContent() {
+        log.debug("Getting clip content");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             if (clipboardManager != null) {
                 if (clipboardManager.hasPrimaryClip()) {

@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.text.TextUtils;
 
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,14 +24,17 @@ public class ClipboardChangeReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        log.debug("Recevied intent:"+intent.toString());
+        log.debug("Recevied intent:" + intent.toString());
+
         CharSequence clipboardContent = ClipboardHelper.getInstance(context)
-                       .getClipContent();
+                                                       .getClipContent();
         if (!TextUtils.isEmpty(clipboardContent)) {
-            if (!clipboardContent.toString().equals(lastClipboardContent)) {
+            log.debug("comparing clip with last one saved");
+            if (!clipboardContent.toString()
+                                 .equals(lastClipboardContent)) {
                 lastClipboardContent = clipboardContent.toString();
                 try {
-                    String url = UrlValidator.getValidUrl(clipboardContent.toString(),false);
+                    String url = UrlValidator.getValidUrl(clipboardContent.toString(), false);
                     Intent serviceIntent = new Intent(context, ShortUrlService.class);
                     serviceIntent.putExtra(ShortUrlService.EXTRA_URL, clipboardContent);
                     context.startService(serviceIntent);

@@ -50,8 +50,8 @@
     <string name="dialog_error_delete_api_missing">Delete is not working on your server. It seems like there is no delete api plugin installed.</string>
 
     <string name="dialog_add_url_hint">URL to short</string>
-    <string name="dialog_add_keyword_hint">Shorturl keyword</string>
-    <string name="dialog_add_title_hint">Title</string>
+    <string name="dialog_add_keyword_hint">Shorturl keyword (optional)</string>
+    <string name="dialog_add_title_hint">Title (optional)</string>
 
     <string name="snack_link_import_inserted">%1$s imported.</string>
     <string name="snack_link_import_updated">%1$s updated.</string>
@@ -76,7 +76,7 @@
     <string name="pref_cat_app_settings">App settings</string>
 
     <string name="pref_app_clipboard_monitor_title">Clipboard monitor</string>
-    <string name="pref_app_clipboard_monitor_summary">Checking clipboard for URL. Works only on Android 3 and higher.</string>
+    <string name="pref_app_clipboard_monitor_summary">Checking clipboard for URL. Works only on Android 3 and newer.</string>
 
     <string name="pref_app_delete_server_default_title">Delete on server as default</string>
     <string name="pref_app_delete_server_default_summary">On the delete confirm dialog "Delete on server" will be checked as default.</string>

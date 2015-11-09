@@ -3,6 +3,9 @@ package de.mateware.ayourls.utils;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -12,11 +15,14 @@ import java.util.regex.Pattern;
  */
 public class UrlValidator {
 
+    private static Logger log = LoggerFactory.getLogger(UrlValidator.class);
+
     private static final String REGEX_NONLOCAL = "^\\b(?:(?:\\w+)://)(?:\\S+(?::\\S*)?@)?(?:(?:[1-9]\\d?|1\\d\\d|2[01]\\d|22[0-3])(?:\\.(?:1?\\d{1,2}|2[0-4]\\d|25[0-5])){2}(?:\\.(?:[1-9]\\d?|1\\d\\d|2[0-4]\\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]+-?)*[a-z\u00a1-\uffff0-9]+)(?:\\.(?:[a-z\u00a1-\uffff0-9]+-?)*[a-z\u00a1-\uffff0-9]+)*(?:\\.(?:[a-z\u00a1-\uffff]{2,})))(?::\\d{2,5})?(?:/[^\\s]*)?\\b";
     private static final String REGEX_LOCAL = "^\\b(?:(?:\\w+)://)(?:\\S+(?::\\S*)?@)?(?:(?:[1-9]\\d?|1\\d\\d|2[01]\\d|22[0-3])(?:\\.(?:1?\\d{1,2}|2[0-4]\\d|25[0-5])){2}(?:\\.(?:[1-9]\\d?|1\\d\\d|2[0-4]\\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]+-?)*[a-z\u00a1-\uffff0-9]+)(?:\\.(?:[a-z\u00a1-\uffff0-9]+-?)*[a-z\u00a1-\uffff0-9]+)*)(?::\\d{2,5})?(?:/[^\\s]*)?\\b";
 
     public static String getValidUrl(@NonNull String text, boolean allowLocal) throws NoValidUrlExpception {
         if (!TextUtils.isEmpty(text)) {
+            log.debug("validating url");
             text = text.trim();
 
             Pattern pattern;

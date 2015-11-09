@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="pref_key_server_settings">pref_server_settings</string>
-    <string name="pref_key_server_url">pref_server_url</string>
-    <string name="pref_key_server_token">pref_server_token</string>
-    <string name="pref_key_server_check">pref_server_check</string>
-    <string name="pref_key_app_settings">pref_app_settings</string>
-    <string name="pref_key_app_clipboard_monitor">pref_app_clipboard_monitor</string>
-    <string name="pref_key_app_delete_server_default">pref_app_delete_server_default</string>
+    <string name="pref_key_server_settings" translatable="false">pref_server_settings</string>
+    <string name="pref_key_server_url" translatable="false">pref_server_url</string>
+    <string name="pref_key_server_token" translatable="false">pref_server_token</string>
+    <string name="pref_key_server_check" translatable="false">pref_server_check</string>
+    <string name="pref_key_app_settings" translatable="false">pref_app_settings</string>
+    <string name="pref_key_app_clipboard_monitor" translatable="false">pref_app_clipboard_monitor</string>
+    <string name="pref_key_app_delete_server_default" translatable="false">pref_app_delete_server_default</string>
 </resources>
