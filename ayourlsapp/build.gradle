@@ -4,12 +4,21 @@ buildscript {
     }
 
     dependencies {
-        classpath 'io.fabric.tools:gradle:1.20.1'
+        classpath 'io.fabric.tools:gradle:1.+'
     }
 }
 
 apply plugin: 'com.android.application'
 apply plugin: 'io.fabric'
+apply plugin: 'com.android.databinding'
+
+def matewarePropFile = file("mateware.properties")
+if (matewarePropFile.exists()) {
+    def matewareProps = new Properties();
+    matewareProps.load(matewarePropFile.newDataInputStream())
+    project.ext.set('mateware', matewareProps.getProperty('dir'))
+    apply from: project.ext.mateware + "/mateware.gradle"
+}
 
 android {
     compileSdkVersion 23
@@ -34,9 +43,6 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-    dataBinding {
-        enabled = true
-    }
     lintOptions {
         abortOnError false
     }
@@ -44,14 +50,6 @@ android {
         exclude 'META-INF/LICENSE.txt'
         exclude 'META-INF/NOTICE.txt'
     }
-}
-
-def matewarePropFile = file("mateware.properties")
-if (matewarePropFile.exists()) {
-    def matewareProps = new Properties();
-    matewareProps.load(matewarePropFile.newDataInputStream())
-    project.ext.set('mateware', matewareProps.getProperty('dir'))
-    apply from: project.ext.mateware + "/mateware.gradle"
 }
 
 repositories {

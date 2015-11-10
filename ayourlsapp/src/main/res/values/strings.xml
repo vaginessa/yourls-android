@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">aYourls</string>
+    <string name="app_name" translatable="false">aYourls</string>
     <string name="share">Short URL with aYourls</string>
 
 
@@ -20,7 +20,7 @@
     <string name="action_browser">Open in browser</string>
     <string name="action_about">About this app</string>
 
-    <string name="service_clipboard_notification_title">@string/app_name</string>
+    <string name="service_clipboard_notification_title" translatable="false">@string/app_name</string>
     <string name="service_clipboard_notification_text">Monitoring your clipboard for URLs.</string>
     <string name="service_clipboard_notification_text_long">%1$s You can deactivate the clipboard monitor in app settings.</string>
 
@@ -66,11 +66,11 @@
     <string name="pref_server_url_title">Yourls URL</string>
     <string name="pref_server_url_summary">URL to your Yourls installation - %s</string>
     <string name="pref_server_url_summary_empty">URL to your Yourls installation, e.g. http://your-short-url.xy</string>
-    <string name="pref_server_url_hint">http://your-short-url.xy</string>
+    <string name="pref_server_url_hint" translatable="false">http://your-short-url.xy</string>
 
-    <string name="pref_server_token_title">Signature Token</string>
+    <string name="pref_server_token_title" translatable="false">Signature Token</string>
     <string name="pref_server_token_summary">The token can be found on Yourls Tab "Tools".</string>
-    <string name="pref_server_token_hint">xxxx123xxxx</string>
+    <string name="pref_server_token_hint" translatable="false">xxxx123xxxx</string>
 
     <string name="pref_server_check_title">Check server credentials</string>
     <string name="pref_server_check_summary">Connects to your installation to prove your credentials are working.</string>
