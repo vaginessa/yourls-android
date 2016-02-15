@@ -10,7 +10,7 @@ buildscript {
 
 apply plugin: 'com.android.application'
 apply plugin: 'io.fabric'
-apply plugin: 'com.android.databinding'
+//apply plugin: 'com.android.databinding'
 
 def matewarePropFile = file("mateware.properties")
 if (matewarePropFile.exists()) {
@@ -24,11 +24,15 @@ android {
     compileSdkVersion 23
     buildToolsVersion "23.0.2"
 
+    dataBinding {
+        enabled = true
+    }
+
     defaultConfig {
         applicationId "de.mateware.ayourls"
         minSdkVersion 8
         targetSdkVersion 23
-        versionCode 7
+        versionCode 8
         versionName "1.0." + versionCode
     }
     buildTypes {
@@ -57,7 +61,7 @@ repositories {
 }
 
 dependencies {
-    final SUPPORT_LIBRARY_VERSION = "23.1.0"
+    final SUPPORT_LIBRARY_VERSION = "23.1.1"
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'com.android.support:appcompat-v7:' + SUPPORT_LIBRARY_VERSION;
     compile 'com.android.support:support-v4:' + SUPPORT_LIBRARY_VERSION;
