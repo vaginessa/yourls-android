@@ -19,7 +19,7 @@
     <string name="dialog_confirm_delete_also_on_server">Auf Server löschen</string>
     <string name="dialog_confirm_delete_message">Möchtest Du diese URL wirklich löschen?</string>
     <string name="dialog_confirm_delete_title">Löschen</string>
-    <string name="dialog_confirm_shortening_message">Möchtest Du diese URL wirklich löschen?\n\n%1$s</string>
+    <string name="dialog_confirm_shortening_message">Möchtest Du diese URL wirklich kürzen?\n\n%1$s</string>
     <string name="dialog_confirm_shortening_title">URL kürzen</string>
     <string name="dialog_error_delete_api_missing">Löschen funktioniert auf deinem Server nicht. Es scheint dass das Delete Api Plugin nihct installiert ist.</string>
     <string name="dialog_error_message">Ein Fehler ist aufgetreten:\n\n%1$s</string>
@@ -54,4 +54,6 @@
     <string name="dialog_about_rate">App bewerten</string>
     <string name="dialog_about_website">Webseite</string>
     <string name="pref_server_url_title">Yourls URL</string>
+    <string name="pref_app_clipboard_replace_title">Zwischenablage ersetzen</string>
+    <string name="pref_app_clipboard_replace_summary">Ersetze immer den Inhalt der Zwischenablage mit der neuen Kurz-URL.</string>
 </resources>

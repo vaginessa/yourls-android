@@ -105,6 +105,8 @@ public class ClipboardHelper {
                 if (clipboardManager.hasPrimaryClip()) {
                     ClipData clip = clipboardManager.getPrimaryClip();
                     ClipData.Item item = clip.getItemAt(0);
+                    if (item.getText() != null)
+                        return item.getText().toString();
                     return item.getText();
                 }
             }

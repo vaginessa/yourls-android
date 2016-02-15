@@ -4,11 +4,13 @@ import android.app.IntentService;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.preference.PreferenceManager;
 import android.text.TextUtils;
 
 import com.android.volley.VolleyError;
@@ -91,6 +93,9 @@ public class ShortUrlService extends IntentService {
                                         case ERROR:
                                             break;
                                         default:
+
+                                            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+
                                             Intent shareIntent = new Intent(Intent.ACTION_SEND);
                                             shareIntent.putExtra(Intent.EXTRA_TEXT, link.getShorturl());
                                             shareIntent.setType("text/plain");
@@ -154,6 +159,13 @@ public class ShortUrlService extends IntentService {
 
                                             NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
                                             notificationManager.notify(link.getShorturl(), NOTIFICATION_ID, notification);
+
+                                            if (prefs.getBoolean(getString(R.string.pref_key_app_always_replace_clipboard),false)) {
+                                                Intent copyAlwaysIntent = new Intent(NotificationClipboardReceiver.ACTION_COPY);
+                                                copyAlwaysIntent.putExtra(NotificationClipboardReceiver.ARG_TEXT, link.getShorturl());
+                                                sendBroadcast(copyAlwaysIntent);
+                                            }
+
                                             break;
                                     }
                                 }

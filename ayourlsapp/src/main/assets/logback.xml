@@ -7,6 +7,16 @@
         </encoder>
     </appender>
 
+    <appender name="Crashlytics" class="de.mateware.ayourls.utils.CrashlyticsAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <root level="TRACE">
+        <appender-ref ref="Crashlytics" />
+    </root>
+
     <!-- Write TRACE (and higher-level) messages to logcat -->
     <root level="TRACE">
         <appender-ref ref="logcat" />

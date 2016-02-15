@@ -27,6 +27,11 @@
             android:title="@string/pref_app_clipboard_monitor_title"
             />
         <CheckBoxPreference
+            android:key="@string/pref_key_app_always_replace_clipboard"
+            android:title="@string/pref_app_clipboard_replace_title"
+            />
+
+        <CheckBoxPreference
             android:key="@string/pref_key_app_delete_server_default"
             android:title="@string/pref_app_delete_server_default_title"
             />

@@ -80,6 +80,9 @@
     <string name="pref_app_clipboard_monitor_title">Clipboard monitor</string>
     <string name="pref_app_clipboard_monitor_summary">Checking clipboard for URL. Works only on Android 3 and newer.</string>
 
+    <string name="pref_app_clipboard_replace_title">Replace clipboard content</string>
+    <string name="pref_app_clipboard_replace_summary">Always replace the clipboard content with new short url.</string>
+
     <string name="pref_app_delete_server_default_title">Delete on server as default</string>
     <string name="pref_app_delete_server_default_summary">On the delete confirm dialog "Delete on server" will be checked as default.</string>
 
