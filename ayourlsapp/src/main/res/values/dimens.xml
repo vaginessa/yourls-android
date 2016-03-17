@@ -5,9 +5,6 @@
     <dimen name="qr_size_library">64dp</dimen>
     <dimen name="qr_size">256dp</dimen>
 
-    <dimen name="custom_dialog_padding">@dimen/abc_dialog_padding_material</dimen>
-    <dimen name="custom_dialog_padding_top">@dimen/abc_dialog_padding_top_material</dimen>
-
     <dimen name="link_detail_border">7dp</dimen>
 
     <dimen name="fab_margin">22dp</dimen>
