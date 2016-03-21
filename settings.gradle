@@ -1,1 +1,1 @@
-include ':ayourlsapp'
+include ':ayourlsapp', ':ayourlsware'
