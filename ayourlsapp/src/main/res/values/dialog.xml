@@ -2,7 +2,7 @@
 <resources>
     <dimen name="custom_dialog_padding">@dimen/abc_dialog_padding_material</dimen>
     <dimen name="custom_dialog_padding_top">@dimen/abc_dialog_padding_top_material</dimen>
-
+    <dimen name="text_size_title_material">@dimen/abc_text_size_title_material</dimen>
     <style name="Dialog" parent="Theme.AppCompat.Light.Dialog">
         <item name="colorPrimary">@color/primary</item>
         <item name="colorPrimaryDark">@color/primary_dark</item>

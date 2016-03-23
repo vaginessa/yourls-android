@@ -239,7 +239,7 @@ public class Dialog extends DialogFragment {
         params.gravity = Gravity.END | Gravity.TOP;
 
         timerTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX,
-                getResources().getDimension(android.support.v7.appcompat.R.dimen.abc_text_size_title_material));
+                getResources().getDimension(R.dimen.text_size_title_material));
         timerTextView.setTextColor(ContextCompat.getColor(getContext(),R.color.primary_dark));
 
         return params;
