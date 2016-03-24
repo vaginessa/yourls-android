@@ -11,6 +11,7 @@ import android.widget.EditText;
 
 import de.mateware.ayourls.R;
 import de.mateware.ayourls.service.ShortUrlService;
+import de.mateware.dialog.DialogScrollingCustomView;
 
 /**
  * Created by Mate on 18.10.2015.
@@ -40,7 +41,7 @@ public class AddLinkDialog extends DialogScrollingCustomView {
     }
 
     @Override
-    AppCompatDialog createDialogToReturn() {
+    public AppCompatDialog createDialogToReturn() {
         AppCompatDialog dialog = super.createDialogToReturn();
         dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
         return dialog;

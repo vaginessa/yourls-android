@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import de.mateware.ayourls.R;
 import de.mateware.ayourls.model.Link;
+import de.mateware.dialog.DialogScrollingCustomView;
 
 /**
  * Created by mate on 26.10.2015.

@@ -14,6 +14,7 @@ import de.mateware.ayourls.R;
 import de.mateware.ayourls.service.DeleteService;
 import de.mateware.ayourls.service.ShortUrlService;
 import de.mateware.ayourls.utils.UrlValidator;
+import de.mateware.dialog.Dialog;
 
 /**
  * Created by mate on 05.10.2015.

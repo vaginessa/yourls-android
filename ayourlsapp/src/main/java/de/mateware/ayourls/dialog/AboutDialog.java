@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import de.mateware.ayourls.BuildConfig;
 import de.mateware.ayourls.R;
+import de.mateware.dialog.DialogScrollingCustomView;
 
 /**
  * Created by mate on 06.11.2015.

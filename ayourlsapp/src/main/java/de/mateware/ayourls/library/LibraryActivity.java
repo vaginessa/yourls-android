@@ -31,12 +31,12 @@ import java.util.List;
 
 import de.mateware.ayourls.R;
 import de.mateware.ayourls.dialog.AboutDialog;
-import de.mateware.ayourls.dialog.Dialog;
 import de.mateware.ayourls.dialog.DialogActivty;
 import de.mateware.ayourls.imports.ImportActivity;
 import de.mateware.ayourls.model.Link;
 import de.mateware.ayourls.settings.SettingsActivity;
 import de.mateware.ayourls.utils.TintHelper;
+import de.mateware.dialog.Dialog;
 
 public class LibraryActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>,Dialog.DialogButtonListener {
 

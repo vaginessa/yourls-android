@@ -11,10 +11,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.mateware.ayourls.R;
-import de.mateware.ayourls.dialog.Dialog;
-import de.mateware.ayourls.dialog.DialogIndeterminateProgress;
 import de.mateware.ayourls.model.Link;
 import de.mateware.ayourls.yourslapi.YourlsError;
+import de.mateware.dialog.Dialog;
+import de.mateware.dialog.DialogIndeterminateProgress;
 
 /**
  * Created by mate on 21.10.2015.
