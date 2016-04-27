@@ -49,6 +49,9 @@
     <string name="dialog_error_shortening_title">URL Shortening Error</string>
     <string name="dialog_error_shortening_message">An error has occurred during the shortening of the URL:\n\n%1$s</string>
 
+    <string name="dialog_error_nosetup_title">No setup for yourls server</string>
+    <string name="dialog_error_nosetup_message">You first have to set up your YOURLS server in aYourls settings before you can shorten URLs.</string>
+
     <string name="dialog_error_delete_api_missing">Delete is not working on your server. It seems like there is no delete api plugin installed.</string>
 
     <string name="dialog_add_url_hint">URL to short</string>

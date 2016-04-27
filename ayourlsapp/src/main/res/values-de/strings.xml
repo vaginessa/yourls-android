@@ -56,4 +56,6 @@
     <string name="pref_server_url_title">Yourls URL</string>
     <string name="pref_app_clipboard_replace_title">Zwischenablage ersetzen</string>
     <string name="pref_app_clipboard_replace_summary">Ersetze immer den Inhalt der Zwischenablage mit der neuen Kurz-URL.</string>
+    <string name="dialog_error_nosetup_message">Du musst zuerst deinen YOURLS Server in den App Einstellungen konfigurien, bevor du URLs kürzen kannst.</string>
+    <string name="dialog_error_nosetup_title">Kein Yourls Server konfiguriert</string>
 </resources>

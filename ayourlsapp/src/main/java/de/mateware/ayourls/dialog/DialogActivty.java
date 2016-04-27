@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import de.mateware.ayourls.R;
 import de.mateware.ayourls.service.DeleteService;
 import de.mateware.ayourls.service.ShortUrlService;
+import de.mateware.ayourls.settings.SettingsActivity;
 import de.mateware.ayourls.utils.UrlValidator;
 import de.mateware.dialog.Dialog;
 
@@ -71,7 +72,7 @@ public class DialogActivty extends AppCompatActivity implements Dialog.DialogDis
                         new Dialog().withMessage(getString(R.string.dialog_confirm_shortening_message, url))
                                     .withCancelable(true)
                                     .withTitle(R.string.dialog_confirm_shortening_title)
-                                    .withTimer(15)
+                                    .withTimer(15000)
                                     .withNegativeButton()
                                     .withStyle(R.style.Dialog)
                                     .withPositiveButton()
@@ -119,15 +120,22 @@ public class DialogActivty extends AppCompatActivity implements Dialog.DialogDis
 
                     dialog.show(getSupportFragmentManager(), DIALOG_ERROR_SHORTENING);
                 } else if (DIALOG_ADD.equals(dialogType)) {
-                    Bundle bundle = new Bundle();
-                    bundle.putString(ShortUrlService.EXTRA_URL, url);
-                    bundle.putString(ShortUrlService.EXTRA_TITLE, title);
-                    bundle.putString(ShortUrlService.EXTRA_KEYWORD, keyword);
-                    new AddLinkDialog().withPositiveButton(R.string.send)
-                                       .withStyle(R.style.Dialog)
-                                       .withNegativeButton()
-                                       .withBundle(bundle)
-                                       .show(getSupportFragmentManager(), DIALOG_ADD);
+                    if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean(getString(R.string.pref_key_server_check),false)) {
+                        Bundle bundle = new Bundle();
+                        bundle.putString(ShortUrlService.EXTRA_URL, url);
+                        bundle.putString(ShortUrlService.EXTRA_TITLE, title);
+                        bundle.putString(ShortUrlService.EXTRA_KEYWORD, keyword);
+                        new AddLinkDialog().withPositiveButton(R.string.send)
+                                           .withStyle(R.style.Dialog)
+                                           .withNegativeButton()
+                                           .withBundle(bundle)
+                                           .show(getSupportFragmentManager(), DIALOG_ADD);
+
+                    } else {
+                        showNoSetupDialog();
+                    }
+                } else if (DIALOG_NOSETUP.equals(dialogType)) {
+                    showNoSetupDialog();
                 } else {
                     closeActivity();
                 }
@@ -135,6 +143,15 @@ public class DialogActivty extends AppCompatActivity implements Dialog.DialogDis
                 closeActivity();
             }
         }
+    }
+
+    private void showNoSetupDialog() {
+        new Dialog().withTitle(R.string.dialog_error_nosetup_title)
+                    .withMessage(R.string.dialog_error_nosetup_message)
+                    .withPositiveButton(R.string.action_settings)
+                    .withNegativeButton()
+                    .withStyle(R.style.Dialog)
+                    .show(getSupportFragmentManager(), DIALOG_NOSETUP);
     }
 
     @Override
@@ -169,15 +186,9 @@ public class DialogActivty extends AppCompatActivity implements Dialog.DialogDis
                 deleteServiceIntent.putExtra(DeleteService.EXTRA_DELETE_ON_SERVER, arguments.getBoolean(DeleteLinkDialog.ARG_BOOL_DELETEONSERVER,false));
                 startService(deleteServiceIntent);
             }
-
-
-//            if (which == Dialog.BUTTON_POSITIVE || which == Dialog.BUTTON_NEUTRAL) {
-//                Intent deleteServiceIntent = new Intent(this, DeleteService.class);
-//                deleteServiceIntent.putExtra(DeleteService.EXTRA_ID, arguments.getLong(DeleteService.EXTRA_ID));
-//                deleteServiceIntent.putExtra(DeleteService.EXTRA_CONFIRMED, true);
-//                if (which == Dialog.BUTTON_NEUTRAL) deleteServiceIntent.putExtra(DeleteService.EXTRA_DELETE_ON_SERVER, true);
-//                startService(deleteServiceIntent);
-//            }
+        } else if (DIALOG_NOSETUP.equals(tag) && which == Dialog.BUTTON_POSITIVE) {
+            Intent setupIntent = new Intent(this, SettingsActivity.class);
+            startActivity(setupIntent);
         }
         closeActivity();
         if (restartIntent != null) startActivity(restartIntent);
