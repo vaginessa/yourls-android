@@ -10,7 +10,7 @@ buildscript {
 
 apply plugin: 'com.android.application'
 apply plugin: 'io.fabric'
-//apply plugin: 'com.android.databinding'
+apply plugin: 'com.github.gfx.ribbonizer'
 
 def matewarePropFile = file("mateware.properties")
 if (matewarePropFile.exists()) {
@@ -37,8 +37,9 @@ android {
     }
     buildTypes {
         debug {
-            ext.crashlytics = false
+            ext.enableCrashlytics = false
             versionNameSuffix "-DEBUG"
+            applicationIdSuffix ".debug"
         }
         release {
             zipAlignEnabled true
@@ -53,6 +54,17 @@ android {
     packagingOptions {
         exclude 'META-INF/LICENSE.txt'
         exclude 'META-INF/NOTICE.txt'
+    }
+}
+
+def buildConfigAndResStringField(variant, name, value) {
+    variant.resValue 'string', name.toLowerCase(), value
+    variant.buildConfigField 'String', name, "\"$value\""
+}
+
+afterEvaluate {
+    android.applicationVariants.all { variant ->
+        buildConfigAndResStringField variant, "CONTENT_AUTHORITY", variant.applicationId + ".provider"
     }
 }
 
@@ -78,7 +90,7 @@ dependencies {
     compile('com.crashlytics.sdk.android:crashlytics:2.5.2@aar') {
         transitive = true;
     }
-    compile 'com.gitlab.matecode:androiddialog:1.0.3'
+    compile 'com.gitlab.matecode:androiddialog:1.0.6'
 }
 
 

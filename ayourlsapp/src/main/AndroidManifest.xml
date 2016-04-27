@@ -85,7 +85,7 @@
 
         <provider
             android:name=".provider.AyourlsProvider"
-            android:authorities="de.mateware.ayourls.provider"/>
+            android:authorities="@string/content_authority"/>
     </application>
 
 </manifest>

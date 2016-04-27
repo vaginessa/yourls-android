@@ -32,6 +32,7 @@ public class DialogActivty extends AppCompatActivity implements Dialog.DialogDis
     public static final String DIALOG_ADD = "addDialog";
     public static final String DIALOG_DELETE_CONFIRM = "confirmDeleteDialog";
     public static final String DIALOG_ERROR = "errorDialog";
+    public static final String DIALOG_NOSETUP = "noSetupDialog";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +73,7 @@ public class DialogActivty extends AppCompatActivity implements Dialog.DialogDis
                                     .withTitle(R.string.dialog_confirm_shortening_title)
                                     .withTimer(15)
                                     .withNegativeButton()
+                                    .withStyle(R.style.Dialog)
                                     .withPositiveButton()
                                     .withNeutralButton(R.string.edit)
                                     .withBundle(bundle)
@@ -89,6 +91,7 @@ public class DialogActivty extends AppCompatActivity implements Dialog.DialogDis
                                           .withMessage(message)
                                           .withTitle(R.string.dialog_confirm_delete_title)
                                           .withPositiveButton()
+                                          .withStyle(R.style.Dialog)
                                           .withNegativeButton()
                                           .withBundle(bundle)
                                           .show(getSupportFragmentManager(), DIALOG_DELETE_CONFIRM);
@@ -100,6 +103,7 @@ public class DialogActivty extends AppCompatActivity implements Dialog.DialogDis
                 } else if (DIALOG_ERROR_SHORTENING.equals(dialogType)) {
                     Dialog dialog = new Dialog().withCancelable(true)
                                                 .withTitle(R.string.dialog_error_shortening_title)
+                                                .withStyle(R.style.Dialog)
                                                 .withMessage(getString(R.string.dialog_error_shortening_message, message))
                                                 .withNegativeButton();
                     Bundle bundle = new Bundle();
@@ -120,6 +124,7 @@ public class DialogActivty extends AppCompatActivity implements Dialog.DialogDis
                     bundle.putString(ShortUrlService.EXTRA_TITLE, title);
                     bundle.putString(ShortUrlService.EXTRA_KEYWORD, keyword);
                     new AddLinkDialog().withPositiveButton(R.string.send)
+                                       .withStyle(R.style.Dialog)
                                        .withNegativeButton()
                                        .withBundle(bundle)
                                        .show(getSupportFragmentManager(), DIALOG_ADD);

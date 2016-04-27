@@ -10,6 +10,7 @@ import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
 import android.support.v7.preference.PreferenceManager;
 import android.text.TextUtils;
+import android.view.inputmethod.EditorInfo;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -132,7 +133,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Settin
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) appClipboardPreference.setEnabled(value);
         else appClipboardPreference.setEnabled(false);
         CheckBoxPreference replaceClipboardPreference = (CheckBoxPreference) findPreference(getString(R.string.pref_key_app_always_replace_clipboard));
-        bindPreference(replaceClipboardPreference,new OnPreferenceChangeListenerImpl());
+        bindPreference(replaceClipboardPreference, new OnPreferenceChangeListenerImpl());
         CheckBoxPreference appDeleteServerDefaultPreference = (CheckBoxPreference) findPreference(getString(R.string.pref_key_app_delete_server_default));
         bindPreference(appDeleteServerDefaultPreference, new OnPreferenceChangeListenerImpl());
         appDeleteServerDefaultPreference.setEnabled(value);
@@ -147,7 +148,16 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Settin
         if (preference.getKey()
                       .equals(getString(R.string.pref_key_server_url)) || preference.getKey()
                                                                                     .equals(getString(R.string.pref_key_server_token))) {
-            DialogFragment f = EditTextPreferenceDialogFragmentCompatSingleLine.newInstance(preference.getKey());
+            DialogFragment f;
+            if (preference.getKey()
+                          .equals(getString(R.string.pref_key_server_url))) {
+                f = EditTextPreferenceDialogFragmentCompatSingleLine.newInstance(preference.getKey(), EditorInfo.TYPE_CLASS_TEXT | EditorInfo.TYPE_TEXT_VARIATION_URI);
+            } else if (preference.getKey()
+                                 .equals(getString(R.string.pref_key_server_token))) {
+                f = EditTextPreferenceDialogFragmentCompatSingleLine.newInstance(preference.getKey(), EditorInfo.TYPE_CLASS_TEXT | EditorInfo.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
+            } else {
+                f = EditTextPreferenceDialogFragmentCompatSingleLine.newInstance(preference.getKey());
+            }
             f.setTargetFragment(this, 0);
             f.show(getFragmentManager(), DIALOG_FRAGMENT_TAG);
         } else {

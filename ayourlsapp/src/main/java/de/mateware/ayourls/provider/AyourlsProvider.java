@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
+import de.mateware.ayourls.BuildConfig;
 import de.mateware.ayourls.model.Link;
 
 /**
@@ -27,7 +28,7 @@ public class AyourlsProvider extends ContentProvider {
 
     private static final Logger log = LoggerFactory.getLogger(AyourlsProvider.class);
 
-    public static final String AUTHORITY = "de.mateware.ayourls.provider";
+    public static final String AUTHORITY = BuildConfig.CONTENT_AUTHORITY;
 
     private static final int LINK_DIR = 1;
     private static final int LINK_ID = 2;
