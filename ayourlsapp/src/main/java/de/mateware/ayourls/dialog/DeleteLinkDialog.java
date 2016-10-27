@@ -1,5 +1,6 @@
 package de.mateware.ayourls.dialog;
 
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,19 +20,7 @@ public class DeleteLinkDialog extends DialogScrollingCustomView {
     public static final String ARG_LONG_LINKID = "linkId";
     public static final String ARG_BOOL_DELETEONSERVER = "deleteOnServer";
 
-    public DeleteLinkDialog setLinkId(long linkId) {
-        args.putLong(ARG_LONG_LINKID, linkId);
-        return this;
-    }
-
-    public DeleteLinkDialog setCheckBoxChecked(boolean checked) {
-        args.putBoolean(ARG_BOOL_DELETEONSERVER, checked);
-        return this;
-    }
-
-    public DeleteLinkDialog setLink(Link link) {
-        return setLinkId(link.getId());
-    }
+private boolean checkBoxChecked = false;
 
     private long getLinkId() {
         long linkId = getArguments().getLong(ARG_LONG_LINKID, -1L);
@@ -71,10 +60,45 @@ public class DeleteLinkDialog extends DialogScrollingCustomView {
         checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                setCheckBoxChecked(isChecked);
+                checkBoxChecked = isChecked;
             }
         });
 
         return view;
+    }
+
+    @Override
+    public Bundle addArgumentsToDialogAfterButtonClick(Bundle dialogArguments, int which) {
+        dialogArguments.putBoolean(ARG_BOOL_DELETEONSERVER,checkBoxChecked);
+        return dialogArguments;
+    }
+
+    public static class Builder extends AbstractBuilder<Builder,DeleteLinkDialog> {
+
+        Bundle bundle = new Bundle();
+
+        public Builder() {
+            super(DeleteLinkDialog.class);
+        }
+
+        public Builder setLinkId(long linkId) {
+            bundle.putLong(ARG_LONG_LINKID, linkId);
+            return this;
+        }
+
+        public Builder setCheckBoxChecked(boolean checked) {
+            bundle.putBoolean(ARG_BOOL_DELETEONSERVER, checked);
+            return this;
+        }
+
+        public Builder setLink(Link link) {
+            return setLinkId(link.getId());
+        }
+
+        @Override
+        public DeleteLinkDialog build() {
+            addBundle(bundle);
+            return super.build();
+        }
     }
 }

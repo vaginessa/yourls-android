@@ -28,9 +28,9 @@ public class AddLinkDialog extends DialogScrollingCustomView {
         titleEditText = (EditText) view.findViewById(R.id.title);
         urlEditText = (EditText) view.findViewById(R.id.url);
         keywordEditText = (EditText) view.findViewById(R.id.keyword);
-        String url = args.getString(ShortUrlService.EXTRA_URL);
-        String title = args.getString(ShortUrlService.EXTRA_TITLE);
-        String keyword = args.getString(ShortUrlService.EXTRA_KEYWORD);
+        String url = getArguments().getString(ShortUrlService.EXTRA_URL);
+        String title = getArguments().getString(ShortUrlService.EXTRA_TITLE);
+        String keyword = getArguments().getString(ShortUrlService.EXTRA_KEYWORD);
         if (!TextUtils.isEmpty(url))
             urlEditText.setText(url);
         if (!TextUtils.isEmpty(title))
@@ -47,19 +47,29 @@ public class AddLinkDialog extends DialogScrollingCustomView {
         return dialog;
     }
 
+
     @Override
-    public Bundle additionalArgumentsOnClick(Bundle additionalArgs, int which) {
+    public Bundle addArgumentsToDialogAfterButtonClick(Bundle dialogArguments, int which) {
         String url = urlEditText.getText().toString();
         String title = titleEditText.getText().toString();
         String keyword = keywordEditText.getText().toString();
 
         if (!TextUtils.isEmpty(url))
-            additionalArgs.putString(ShortUrlService.EXTRA_URL,url);
+            dialogArguments.putString(ShortUrlService.EXTRA_URL,url);
         if (!TextUtils.isEmpty(title))
-            additionalArgs.putString(ShortUrlService.EXTRA_TITLE,title);
+            dialogArguments.putString(ShortUrlService.EXTRA_TITLE,title);
         if (!TextUtils.isEmpty(keyword))
-            additionalArgs.putString(ShortUrlService.EXTRA_KEYWORD,keyword);
+            dialogArguments.putString(ShortUrlService.EXTRA_KEYWORD,keyword);
 
-        return additionalArgs;
+        return dialogArguments;
+    }
+
+
+
+    public static class Builder extends AbstractBuilder<Builder,AddLinkDialog> {
+        public Builder() {
+            super(AddLinkDialog.class);
+        }
     }
 }
+

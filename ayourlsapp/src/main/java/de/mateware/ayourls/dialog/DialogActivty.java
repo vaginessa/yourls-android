@@ -91,15 +91,16 @@ public class DialogActivty extends AppCompatActivity implements DialogDismissLis
                     Bundle bundle = new Bundle();
                     bundle.putLong(DeleteService.EXTRA_ID, id);
 
-                    new DeleteLinkDialog().setLinkId(id)
-                                          .setCheckBoxChecked(prefs.getBoolean(getString(R.string.pref_key_app_delete_server_default), false))
-                                          .withMessage(message)
-                                          .withTitle(R.string.dialog_confirm_delete_title)
-                                          .withPositiveButton()
-                                          .withStyle(R.style.Dialog)
-                                          .withNegativeButton()
-                                          .withBundle(bundle)
-                                          .show(getSupportFragmentManager(), DIALOG_DELETE_CONFIRM);
+                    new DeleteLinkDialog.Builder().setLinkId(id)
+                                                  .setCheckBoxChecked(prefs.getBoolean(getString(R.string.pref_key_app_delete_server_default), false))
+                                                  .setMessage(message)
+                                                  .setTitle(R.string.dialog_confirm_delete_title)
+                                                  .setPositiveButton()
+                                                  .setStyle(R.style.Dialog)
+                                                  .setNegativeButton()
+                                                  .addBundle(bundle)
+                                                  .build()
+                                                  .show(getSupportFragmentManager(), DIALOG_DELETE_CONFIRM);
                 } else if (DIALOG_ERROR.equals(dialogType)) {
                     new Dialog.Builder().setTitle(R.string.dialog_error_title)
                                         .setMessage(getString(R.string.dialog_error_message, message))
@@ -130,11 +131,12 @@ public class DialogActivty extends AppCompatActivity implements DialogDismissLis
                         bundle.putString(ShortUrlService.EXTRA_URL, url);
                         bundle.putString(ShortUrlService.EXTRA_TITLE, title);
                         bundle.putString(ShortUrlService.EXTRA_KEYWORD, keyword);
-                        new AddLinkDialog().withPositiveButton(R.string.send)
-                                           .withStyle(R.style.Dialog)
-                                           .withNegativeButton()
-                                           .withBundle(bundle)
-                                           .show(getSupportFragmentManager(), DIALOG_ADD);
+                        new AddLinkDialog.Builder().setPositiveButton(R.string.send)
+                                                   .setStyle(R.style.Dialog)
+                                                   .setNegativeButton()
+                                                   .addBundle(bundle)
+                                                   .build()
+                                                   .show(getSupportFragmentManager(), DIALOG_ADD);
 
                     } else {
                         showNoSetupDialog();

@@ -37,8 +37,9 @@ import de.mateware.ayourls.model.Link;
 import de.mateware.ayourls.settings.SettingsActivity;
 import de.mateware.ayourls.utils.TintHelper;
 import de.mateware.dialog.Dialog;
+import de.mateware.dialog.listener.DialogButtonListener;
 
-public class LibraryActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>,Dialog.DialogButtonListener {
+public class LibraryActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>, DialogButtonListener {
 
     private static Logger log = LoggerFactory.getLogger(LibraryActivity.class);
 
@@ -115,10 +116,11 @@ public class LibraryActivity extends AppCompatActivity implements LoaderManager.
                 startActivity(importIntent);
                 return true;
             case R.id.action_about:
-                new AboutDialog().withTitle(R.string.action_about)
-                                 .withPositiveButton()
-                                 .withNeutralButton(R.string.dialog_about_website)
-                                 .show(getSupportFragmentManager(), DIALOG_ABOUT);
+                new AboutDialog.Builder().setTitle(R.string.action_about)
+                                         .setPositiveButton()
+                                         .setNeutralButton(R.string.dialog_about_website)
+                                         .build()
+                                         .show(getSupportFragmentManager(), DIALOG_ABOUT);
                 return true;
 
             default:

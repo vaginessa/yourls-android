@@ -38,4 +38,10 @@ public class AboutDialog extends DialogScrollingCustomView {
         });
         return view;
     }
+
+    public static class Builder extends AbstractBuilder<Builder, AboutDialog> {
+        public Builder() {
+            super(AboutDialog.class);
+        }
+    }
 }

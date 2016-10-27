@@ -130,7 +130,8 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Settin
     private void enableAppPreferenceCategory(boolean value) {
         CheckBoxPreference appClipboardPreference = (CheckBoxPreference) findPreference(getString(R.string.pref_key_app_clipboard_monitor));
         bindPreference(appClipboardPreference, new OnPreferenceChangeListenerImpl());
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) appClipboardPreference.setEnabled(value);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+            appClipboardPreference.setEnabled(value);
         else appClipboardPreference.setEnabled(false);
         CheckBoxPreference replaceClipboardPreference = (CheckBoxPreference) findPreference(getString(R.string.pref_key_app_always_replace_clipboard));
         bindPreference(replaceClipboardPreference, new OnPreferenceChangeListenerImpl());
@@ -227,19 +228,21 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Settin
 
     private void checkServer() {
 
-        new DialogIndeterminateProgress().withMessage(R.string.dialog_check_server_message)
-                                         .withCancelable(false)
-                                         .show(getFragmentManager(), TAG_DIALOG_CHECK_SERVER);
+        new DialogIndeterminateProgress.Builder().setMessage(R.string.dialog_check_server_message)
+                                                 .setCancelable(false)
+                                                 .build()
+                                                 .show(getFragmentManager(), TAG_DIALOG_CHECK_SERVER);
         workerFragment.checkServer();
     }
 
     @Override
     public void onServerCheckSuccess(DbStats dbStats) {
         Dialog.dismissDialog(getFragmentManager(), TAG_DIALOG_CHECK_SERVER);
-        new Dialog().withTitle(R.string.dialog_check_server_success_title)
-                    .withMessage(getString(R.string.dialog_check_server_success_message, dbStats.getTotalLinks(), dbStats.getTotalClicks()))
-                    .withPositiveButton()
-                    .show(getFragmentManager(), TAG_DIALOG_CHECK_SUCCESS);
+        new Dialog.Builder().setTitle(R.string.dialog_check_server_success_title)
+                            .setMessage(getString(R.string.dialog_check_server_success_message, dbStats.getTotalLinks(), dbStats.getTotalClicks()))
+                            .setPositiveButton()
+                            .build()
+                            .show(getFragmentManager(), TAG_DIALOG_CHECK_SUCCESS);
         enableAppPreferenceCategory(true);
     }
 
@@ -247,10 +250,11 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Settin
     public void onServerCheckFail(YourlsError error) {
         serverCheckPreference.setChecked(false);
         Dialog.dismissDialog(getFragmentManager(), TAG_DIALOG_CHECK_SERVER);
-        new Dialog().withTitle(R.string.dialog_error_title)
-                    .withMessage(error.getMessage())
-                    .withPositiveButton()
-                    .show(getFragmentManager(), TAG_DIALOG_CHECK_ERROR);
+        new Dialog.Builder().setTitle(R.string.dialog_error_title)
+                            .setMessage(error.getMessage())
+                            .setPositiveButton()
+                            .build()
+                            .show(getFragmentManager(), TAG_DIALOG_CHECK_ERROR);
         enableAppPreferenceCategory(false);
     }
 

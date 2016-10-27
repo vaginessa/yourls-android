@@ -74,9 +74,10 @@ public class ImportActivity extends AppCompatActivity implements ImportWorkerFra
 
     @Override
     public void showWaitDialog() {
-        new DialogIndeterminateProgress().withMessage(R.string.dialog_check_server_message)
-                                         .withCancelable(false)
-                                         .show(getSupportFragmentManager(), TAG_DIALOG_WAIT);
+        new DialogIndeterminateProgress.Builder().setMessage(R.string.dialog_check_server_message)
+                                                 .setCancelable(false)
+                                                 .build()
+                                                 .show(getSupportFragmentManager(), TAG_DIALOG_WAIT);
     }
 
     @Override
@@ -86,10 +87,11 @@ public class ImportActivity extends AppCompatActivity implements ImportWorkerFra
 
     @Override
     public void onNetworkError(YourlsError error) {
-        new Dialog().withTitle(R.string.dialog_error_title)
-                    .withMessage(getString(R.string.dialog_error_message, error.getMessage()))
-                    .withPositiveButton()
-                    .show(getSupportFragmentManager(), TAG_DIALOG_ERROR);
+        new Dialog.Builder().setTitle(R.string.dialog_error_title)
+                            .setMessage(getString(R.string.dialog_error_message, error.getMessage()))
+                            .setPositiveButton()
+                            .build()
+                            .show(getSupportFragmentManager(), TAG_DIALOG_ERROR);
     }
 
     @Override
