@@ -16,11 +16,14 @@ import de.mateware.ayourls.service.ShortUrlService;
 import de.mateware.ayourls.settings.SettingsActivity;
 import de.mateware.ayourls.utils.UrlValidator;
 import de.mateware.dialog.Dialog;
+import de.mateware.dialog.listener.DialogButtonListener;
+import de.mateware.dialog.listener.DialogCancelListener;
+import de.mateware.dialog.listener.DialogDismissListener;
 
 /**
  * Created by mate on 05.10.2015.
  */
-public class DialogActivty extends AppCompatActivity implements Dialog.DialogDismissListener, Dialog.DialogCancelListener, Dialog.DialogButtonListener {
+public class DialogActivty extends AppCompatActivity implements DialogDismissListener, DialogCancelListener, DialogButtonListener {
 
     private static Logger log = LoggerFactory.getLogger(DialogActivty.class);
 
@@ -69,16 +72,17 @@ public class DialogActivty extends AppCompatActivity implements Dialog.DialogDis
                     if (!TextUtils.isEmpty(url)) {
                         Bundle bundle = new Bundle();
                         bundle.putString(ShortUrlService.EXTRA_URL, url);
-                        new Dialog().withMessage(getString(R.string.dialog_confirm_shortening_message, url))
-                                    .withCancelable(true)
-                                    .withTitle(R.string.dialog_confirm_shortening_title)
-                                    .withTimer(15000)
-                                    .withNegativeButton()
-                                    .withStyle(R.style.Dialog)
-                                    .withPositiveButton()
-                                    .withNeutralButton(R.string.edit)
-                                    .withBundle(bundle)
-                                    .show(getSupportFragmentManager(), DIALOG_CLIPBOARD_CONFIRM);
+                        new Dialog.Builder().setMessage(getString(R.string.dialog_confirm_shortening_message, url))
+                                            .setCancelable(true)
+                                            .setTitle(R.string.dialog_confirm_shortening_title)
+                                            .setTimer(15000)
+                                            .setNegativeButton()
+                                            .setStyle(R.style.Dialog)
+                                            .setPositiveButton()
+                                            .setNeutralButton(R.string.edit)
+                                            .addBundle(bundle)
+                                            .build()
+                                            .show(getSupportFragmentManager(), DIALOG_CLIPBOARD_CONFIRM);
                     }
                 } else if (DIALOG_DELETE_CONFIRM.equals(dialogType)) {
                     SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
@@ -97,30 +101,31 @@ public class DialogActivty extends AppCompatActivity implements Dialog.DialogDis
                                           .withBundle(bundle)
                                           .show(getSupportFragmentManager(), DIALOG_DELETE_CONFIRM);
                 } else if (DIALOG_ERROR.equals(dialogType)) {
-                    new Dialog().withTitle(R.string.dialog_error_title)
-                                .withMessage(getString(R.string.dialog_error_message, message))
-                                .withPositiveButton()
-                                .show(getSupportFragmentManager(), DIALOG_ERROR);
+                    new Dialog.Builder().setTitle(R.string.dialog_error_title)
+                                        .setMessage(getString(R.string.dialog_error_message, message))
+                                        .setPositiveButton()
+                                        .build()
+                                        .show(getSupportFragmentManager(), DIALOG_ERROR);
                 } else if (DIALOG_ERROR_SHORTENING.equals(dialogType)) {
-                    Dialog dialog = new Dialog().withCancelable(true)
-                                                .withTitle(R.string.dialog_error_shortening_title)
-                                                .withStyle(R.style.Dialog)
-                                                .withMessage(getString(R.string.dialog_error_shortening_message, message))
-                                                .withNegativeButton();
+                    Dialog.Builder builder = new Dialog.Builder().setCancelable(true)
+                                                                 .setTitle(R.string.dialog_error_shortening_title)
+                                                                 .setStyle(R.style.Dialog)
+                                                                 .setMessage(getString(R.string.dialog_error_shortening_message, message))
+                                                                 .setNegativeButton();
                     Bundle bundle = new Bundle();
                     bundle.putString(ShortUrlService.EXTRA_URL, url);
                     bundle.putString(ShortUrlService.EXTRA_TITLE, title);
                     bundle.putString(ShortUrlService.EXTRA_KEYWORD, keyword);
-                    dialog.withBundle(bundle);
-                    dialog.withNeutralButton(R.string.edit);
-
+                    builder.addBundle(bundle)
+                           .setNeutralButton(R.string.edit);
                     if (getIntent().hasExtra(ShortUrlService.EXTRA_URL)) {
-                        dialog.withPositiveButton(R.string.retry);
+                        builder.setPositiveButton(R.string.retry);
                     }
-
-                    dialog.show(getSupportFragmentManager(), DIALOG_ERROR_SHORTENING);
+                    builder.build()
+                           .show(getSupportFragmentManager(), DIALOG_ERROR_SHORTENING);
                 } else if (DIALOG_ADD.equals(dialogType)) {
-                    if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean(getString(R.string.pref_key_server_check),false)) {
+                    if (PreferenceManager.getDefaultSharedPreferences(this)
+                                         .getBoolean(getString(R.string.pref_key_server_check), false)) {
                         Bundle bundle = new Bundle();
                         bundle.putString(ShortUrlService.EXTRA_URL, url);
                         bundle.putString(ShortUrlService.EXTRA_TITLE, title);
@@ -146,12 +151,13 @@ public class DialogActivty extends AppCompatActivity implements Dialog.DialogDis
     }
 
     private void showNoSetupDialog() {
-        new Dialog().withTitle(R.string.dialog_error_nosetup_title)
-                    .withMessage(R.string.dialog_error_nosetup_message)
-                    .withPositiveButton(R.string.action_settings)
-                    .withNegativeButton()
-                    .withStyle(R.style.Dialog)
-                    .show(getSupportFragmentManager(), DIALOG_NOSETUP);
+        new Dialog.Builder().setTitle(R.string.dialog_error_nosetup_title)
+                            .setMessage(R.string.dialog_error_nosetup_message)
+                            .setPositiveButton(R.string.action_settings)
+                            .setNegativeButton()
+                            .setStyle(R.style.Dialog)
+                            .build()
+                            .show(getSupportFragmentManager(), DIALOG_NOSETUP);
     }
 
     @Override
@@ -183,7 +189,7 @@ public class DialogActivty extends AppCompatActivity implements Dialog.DialogDis
                 Intent deleteServiceIntent = new Intent(this, DeleteService.class);
                 deleteServiceIntent.putExtra(DeleteService.EXTRA_ID, arguments.getLong(DeleteLinkDialog.ARG_LONG_LINKID));
                 deleteServiceIntent.putExtra(DeleteService.EXTRA_CONFIRMED, true);
-                deleteServiceIntent.putExtra(DeleteService.EXTRA_DELETE_ON_SERVER, arguments.getBoolean(DeleteLinkDialog.ARG_BOOL_DELETEONSERVER,false));
+                deleteServiceIntent.putExtra(DeleteService.EXTRA_DELETE_ON_SERVER, arguments.getBoolean(DeleteLinkDialog.ARG_BOOL_DELETEONSERVER, false));
                 startService(deleteServiceIntent);
             }
         } else if (DIALOG_NOSETUP.equals(tag) && which == Dialog.BUTTON_POSITIVE) {
