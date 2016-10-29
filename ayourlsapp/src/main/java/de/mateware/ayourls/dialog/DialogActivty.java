@@ -81,7 +81,7 @@ public class DialogActivty extends AppCompatActivity implements DialogDismissLis
                                             .setPositiveButton()
                                             .setNeutralButton(R.string.edit)
                                             .addBundle(bundle)
-                                            .build()
+                                            .buildSupport()
                                             .show(getSupportFragmentManager(), DIALOG_CLIPBOARD_CONFIRM);
                     }
                 } else if (DIALOG_DELETE_CONFIRM.equals(dialogType)) {
@@ -99,13 +99,13 @@ public class DialogActivty extends AppCompatActivity implements DialogDismissLis
                                                   .setStyle(R.style.Dialog)
                                                   .setNegativeButton()
                                                   .addBundle(bundle)
-                                                  .build()
+                                                  .buildSupport()
                                                   .show(getSupportFragmentManager(), DIALOG_DELETE_CONFIRM);
                 } else if (DIALOG_ERROR.equals(dialogType)) {
                     new Dialog.Builder().setTitle(R.string.dialog_error_title)
                                         .setMessage(getString(R.string.dialog_error_message, message))
                                         .setPositiveButton()
-                                        .build()
+                                        .buildSupport()
                                         .show(getSupportFragmentManager(), DIALOG_ERROR);
                 } else if (DIALOG_ERROR_SHORTENING.equals(dialogType)) {
                     Dialog.Builder builder = new Dialog.Builder().setCancelable(true)
@@ -122,7 +122,7 @@ public class DialogActivty extends AppCompatActivity implements DialogDismissLis
                     if (getIntent().hasExtra(ShortUrlService.EXTRA_URL)) {
                         builder.setPositiveButton(R.string.retry);
                     }
-                    builder.build()
+                    builder.buildSupport()
                            .show(getSupportFragmentManager(), DIALOG_ERROR_SHORTENING);
                 } else if (DIALOG_ADD.equals(dialogType)) {
                     if (PreferenceManager.getDefaultSharedPreferences(this)
@@ -135,7 +135,7 @@ public class DialogActivty extends AppCompatActivity implements DialogDismissLis
                                                    .setStyle(R.style.Dialog)
                                                    .setNegativeButton()
                                                    .addBundle(bundle)
-                                                   .build()
+                                                   .buildSupport()
                                                    .show(getSupportFragmentManager(), DIALOG_ADD);
 
                     } else {
@@ -158,7 +158,7 @@ public class DialogActivty extends AppCompatActivity implements DialogDismissLis
                             .setPositiveButton(R.string.action_settings)
                             .setNegativeButton()
                             .setStyle(R.style.Dialog)
-                            .build()
+                            .buildSupport()
                             .show(getSupportFragmentManager(), DIALOG_NOSETUP);
     }
 

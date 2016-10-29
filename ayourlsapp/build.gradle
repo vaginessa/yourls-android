@@ -91,7 +91,7 @@ dependencies {
     compile('com.crashlytics.sdk.android:crashlytics:2.5.2@aar') {
         transitive = true;
     }
-    compile 'com.gitlab.matecode:androiddialog:1.1.12'
+    compile 'com.gitlab.matecode:androiddialog:42c9ce29'
 }
 
 

@@ -230,7 +230,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Settin
 
         new DialogIndeterminateProgress.Builder().setMessage(R.string.dialog_check_server_message)
                                                  .setCancelable(false)
-                                                 .build()
+                                                 .buildSupport()
                                                  .show(getFragmentManager(), TAG_DIALOG_CHECK_SERVER);
         workerFragment.checkServer();
     }
@@ -241,7 +241,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Settin
         new Dialog.Builder().setTitle(R.string.dialog_check_server_success_title)
                             .setMessage(getString(R.string.dialog_check_server_success_message, dbStats.getTotalLinks(), dbStats.getTotalClicks()))
                             .setPositiveButton()
-                            .build()
+                            .buildSupport()
                             .show(getFragmentManager(), TAG_DIALOG_CHECK_SUCCESS);
         enableAppPreferenceCategory(true);
     }
@@ -253,7 +253,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Settin
         new Dialog.Builder().setTitle(R.string.dialog_error_title)
                             .setMessage(error.getMessage())
                             .setPositiveButton()
-                            .build()
+                            .buildSupport()
                             .show(getFragmentManager(), TAG_DIALOG_CHECK_ERROR);
         enableAppPreferenceCategory(false);
     }

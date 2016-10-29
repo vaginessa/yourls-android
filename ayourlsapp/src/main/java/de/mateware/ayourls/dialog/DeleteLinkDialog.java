@@ -96,9 +96,8 @@ private boolean checkBoxChecked = false;
         }
 
         @Override
-        public DeleteLinkDialog build() {
+        public void preBuild() {
             addBundle(bundle);
-            return super.build();
         }
     }
 }

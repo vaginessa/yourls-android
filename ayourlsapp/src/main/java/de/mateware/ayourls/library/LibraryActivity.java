@@ -119,7 +119,7 @@ public class LibraryActivity extends AppCompatActivity implements LoaderManager.
                 new AboutDialog.Builder().setTitle(R.string.action_about)
                                          .setPositiveButton()
                                          .setNeutralButton(R.string.dialog_about_website)
-                                         .build()
+                                         .buildSupport()
                                          .show(getSupportFragmentManager(), DIALOG_ABOUT);
                 return true;
 

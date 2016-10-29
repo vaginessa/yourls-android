@@ -76,13 +76,13 @@ public class ImportActivity extends AppCompatActivity implements ImportWorkerFra
     public void showWaitDialog() {
         new DialogIndeterminateProgress.Builder().setMessage(R.string.dialog_check_server_message)
                                                  .setCancelable(false)
-                                                 .build()
+                                                 .buildSupport()
                                                  .show(getSupportFragmentManager(), TAG_DIALOG_WAIT);
     }
 
     @Override
     public void hideWaitDialog() {
-        DialogIndeterminateProgress.dismissDialog(getSupportFragmentManager(), TAG_DIALOG_WAIT);
+        Dialog.dismissDialog(getSupportFragmentManager(), TAG_DIALOG_WAIT);
     }
 
     @Override
@@ -90,7 +90,7 @@ public class ImportActivity extends AppCompatActivity implements ImportWorkerFra
         new Dialog.Builder().setTitle(R.string.dialog_error_title)
                             .setMessage(getString(R.string.dialog_error_message, error.getMessage()))
                             .setPositiveButton()
-                            .build()
+                            .buildSupport()
                             .show(getSupportFragmentManager(), TAG_DIALOG_ERROR);
     }
 

@@ -23,7 +23,7 @@ public class AboutDialog extends DialogScrollingCustomView {
     public View getView(LayoutInflater inflater, ViewGroup parent) {
         View view = inflater.inflate(R.layout.dialog_about, parent, false);
         TextView versionTextView = (TextView) view.findViewById(R.id.version);
-        versionTextView.setText(getString(R.string.dialog_about_version, BuildConfig.VERSION_NAME));
+        versionTextView.setText(getContext().getString(R.string.dialog_about_version, BuildConfig.VERSION_NAME));
         Button rateButton = (Button) view.findViewById(R.id.rateButton);
         rateButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -31,7 +31,7 @@ public class AboutDialog extends DialogScrollingCustomView {
                 Uri uri = Uri.parse("market://details?id=" + getContext().getPackageName());
                 Intent goToMarket = new Intent(Intent.ACTION_VIEW, uri);
                 try {
-                    startActivity(goToMarket);
+                    getContext().startActivity(goToMarket);
                 } catch (ActivityNotFoundException ignored) {
                 }
             }
